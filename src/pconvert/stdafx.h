@@ -14,6 +14,10 @@
 #pragma comment(lib, "zlib.lib")
 #endif
 
+#ifndef RUN_ABORT
+#define RUN_ABORT exit(0)
+#endif
+
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 

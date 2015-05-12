@@ -6,7 +6,7 @@ void abort_(const char *s, ...) {
     vfprintf(stderr, s, args);
     fprintf(stderr, "\n");
     va_end(args);
-    abort();
+	RUN_ABORT;
 }
 
 void read_png(char *file_name, struct pcv_image *image) {
@@ -240,7 +240,7 @@ void release_image(struct pcv_image *image) {
     free(image->rows);
 }
 
-void swear_demo() {
+void compose_images(char *path) {
 	struct pcv_image bottom, top;
 	read_png("C:/repo.extra/swear/src/swear/static/demo/background_alpha.png", &bottom);
 	read_png("C:/repo.extra/swear/src/swear/static/demo/front.png", &top);
@@ -259,16 +259,12 @@ void swear_demo() {
 int main(int argc, char **argv) {
     struct pcv_image image;
 
-	swear_demo();
-
-  /*  if(argc != 3) {
-        abort_("Usage: program_name <file_in> <file_out>");
-    }
+    if(argc != 3) { abort_("Usage: program_name <file_in> <file_out>"); }
 
     read_png(argv[1], &image);
     process_image(&image);
     write_png(&image, argv[2]);
-    release_image(&image);*/
+    release_image(&image);
 
     return 0;
 }
