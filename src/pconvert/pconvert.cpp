@@ -10,6 +10,18 @@
 #pragma comment(lib, "libpng.lib")
 #pragma comment(lib, "zlib.lib")
 
+int x;
+int y;
+
+int width, height;
+png_byte color_type;
+png_byte bit_depth;
+
+png_structp png_ptr;
+png_infop info_ptr;
+int number_of_passes;
+png_bytep *row_pointers;
+
 void abort_(const char * s, ...) {
     va_list args;
     va_start(args, s);
@@ -19,18 +31,9 @@ void abort_(const char * s, ...) {
     abort();
 }
 
-int x, y;
-
-int width, height;
-png_byte color_type;
-png_byte bit_depth;
-
-png_structp png_ptr;
-png_infop info_ptr;
-int number_of_passes;
-png_bytep * row_pointers;
-
 void read_png_file(char* file_name) {
+	/* allocates space for the header part of the image so that
+	it must be possible to check for the correct png header */
     char header[8];
 
     /* opens the file and tests for it being a png, this is required
@@ -40,7 +43,7 @@ void read_png_file(char* file_name) {
         abort_("[read_png_file] File %s could not be opened for reading", file_name);
     }
     fread(header, 1, 8, fp);
-    if(png_sig_cmp(header, 0, 8)) {
+    if(png_sig_cmp((png_const_bytep) header, 0, 8)) {
         abort_("[read_png_file] File %s is not recognized as a PNG file", file_name);
     }
 
