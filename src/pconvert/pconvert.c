@@ -1,15 +1,5 @@
 #include "stdafx.h"
 
-typedef struct pcv_image {
-    int width;
-    int height;
-    png_byte color_type;
-    png_byte bit_depth;
-    png_structp png_ptr;
-    png_infop info_ptr;
-    png_bytep *rows;
-} pcv_image_t;
-
 void abort_(const char *s, ...) {
     va_list args;
     va_start(args, s);
@@ -200,7 +190,7 @@ void release_image(struct pcv_image *image) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
     row pointer level (two level of allocation) */
-	int y;
+    int y;
     for(y = 0; y < image->height; y++) {
         free(image->rows[y]);
     }
@@ -217,7 +207,7 @@ int main(int argc, char **argv) {
     read_png(argv[1], &image);
     process_image(&image);
     write_png(&image, argv[2]);
-	release_image(&image);
+    release_image(&image);
 
     return 0;
 }

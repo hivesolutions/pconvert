@@ -5,7 +5,7 @@ LDFLAGS=
 RMFLAGS=-rf
 LIBS=-lpng
 SRC_DIR=src/pconvert
-SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c
+SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/pcompose.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 
