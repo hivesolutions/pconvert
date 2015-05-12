@@ -3,14 +3,16 @@
 int x;
 int y;
 
-int width, height;
-png_byte color_type;
-png_byte bit_depth;
-
 png_structp png_ptr;
 png_infop info_ptr;
-int number_of_passes;
-png_bytep *row_pointers;
+
+typedef struct pcv_image {
+    int width;
+    int height;
+	png_byte color_type;
+	png_byte bit_depth;
+	png_bytep *rows;
+} pcv_image_t;
 
 void abort_(const char *s, ...) {
     va_list args;
@@ -21,7 +23,11 @@ void abort_(const char *s, ...) {
     abort();
 }
 
-void read_png_file(char* file_name) {
+void read_png_file(char *file_name, struct pcv_image *image) {
+	/* allocates space for some of the simple values that are 
+	going to be used in the image processing */
+	int number_of_passes;
+
     /* allocates space for the header part of the image so that
     it must be possible to check for the correct png header */
     char header[8];
@@ -57,29 +63,30 @@ void read_png_file(char* file_name) {
     png_set_sig_bytes(png_ptr, 8);
     png_read_info(png_ptr, info_ptr);
 
-    width = png_get_image_width(png_ptr, info_ptr);
-    height = png_get_image_height(png_ptr, info_ptr);
-    color_type = png_get_color_type(png_ptr, info_ptr);
-    bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+    image->width = png_get_image_width(png_ptr, info_ptr);
+    image->height = png_get_image_height(png_ptr, info_ptr);
+    image->color_type = png_get_color_type(png_ptr, info_ptr);
+    image->bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
     number_of_passes = png_set_interlace_handling(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
 
-    /* read file */
+    /* reads the complete file value in file, meaning that
+	from this point on only decompression is remaining */
     if(setjmp(png_jmpbuf(png_ptr))) {
         abort_("[read_png_file] Error during read_image");
     }
 
-    row_pointers = (png_bytep *) malloc(sizeof(png_bytep) * height);
-    for(y = 0; y < height; y++) {
-        row_pointers[y] = (png_byte *) malloc(png_get_rowbytes(png_ptr,info_ptr));
+	image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
+    for(y = 0; y < image->height; y++) {
+        image->rows[y] = (png_byte *) malloc(png_get_rowbytes(png_ptr,info_ptr));
     }
 
-    png_read_image(png_ptr, row_pointers);
+    png_read_image(png_ptr, image->rows);
     fclose(fp);
 }
 
-void write_png_file(char* file_name) {
+void write_png_file(struct pcv_image *image, char *file_name) {
     /* create file, that is going to be used as the target for the
     writting of the final file and the verifies it the open operation
     has been completed with the proper success */
@@ -114,10 +121,10 @@ void write_png_file(char* file_name) {
     png_set_IHDR(
         png_ptr,
         info_ptr,
-        width,
-        height,
-        bit_depth,
-        color_type,
+        image->width,
+        image->height,
+        image->bit_depth,
+        image->color_type,
         PNG_INTERLACE_NONE,
         PNG_COMPRESSION_TYPE_BASE,
         PNG_FILTER_TYPE_BASE
@@ -130,7 +137,7 @@ void write_png_file(char* file_name) {
         abort_("[write_png_file] Error during writing bytes");
     }
 
-    png_write_image(png_ptr, row_pointers);
+    png_write_image(png_ptr, image->rows);
 
     /* end write */
     if(setjmp(png_jmpbuf(png_ptr))) {
@@ -139,16 +146,17 @@ void write_png_file(char* file_name) {
 
     png_write_end(png_ptr, NULL);
 
-    /* cleanup heap allocation, avoids memory leaks */
-    for(y = 0; y < height; y++) {
-        free(row_pointers[y]);
+    /* cleanup heap allocation, avoids memory leaks, note that
+	the cleanup is performed first on row level and then at a
+	row pointer level (two level of allocation) */
+    for(y = 0; y < image->height; y++) {
+        free(image->rows[y]);
     }
-
-    free(row_pointers);
+    free(image->rows);
     fclose(fp);
 }
 
-void process_file(void) {
+void process_file(struct pcv_image *image) {
     if(png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB) {
         abort_(
             "[process_file] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
@@ -164,9 +172,9 @@ void process_file(void) {
         );
     }
 
-    for(y = 0; y < height; y++) {
-        png_byte *row = row_pointers[y];
-        for(x = 0; x < width; x++) {
+    for(y = 0; y < image->height; y++) {
+        png_byte *row = image->rows[y];
+        for(x = 0; x < image->width; x++) {
             png_byte *ptr = &(row[x * 4]);
 
 			/* verifies if the current iteration is valid for debug
@@ -193,13 +201,15 @@ void process_file(void) {
 }
 
 int main(int argc, char **argv) {
+	struct pcv_image image;
+
     if(argc != 3) {
         abort_("Usage: program_name <file_in> <file_out>");
     }
 
-    read_png_file(argv[1]);
-    process_file();
-    write_png_file(argv[2]);
+    read_png_file(argv[1], &image);
+    process_file(&image);
+    write_png_file(&image, argv[2]);
 
     return 0;
 }
