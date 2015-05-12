@@ -1,17 +1,13 @@
 #include "stdafx.h"
 
-int x;
-int y;
-
-png_structp png_ptr;
-png_infop info_ptr;
-
 typedef struct pcv_image {
     int width;
     int height;
-	png_byte color_type;
-	png_byte bit_depth;
-	png_bytep *rows;
+    png_byte color_type;
+    png_byte bit_depth;
+    png_structp png_ptr;
+    png_infop info_ptr;
+    png_bytep *rows;
 } pcv_image_t;
 
 void abort_(const char *s, ...) {
@@ -24,9 +20,10 @@ void abort_(const char *s, ...) {
 }
 
 void read_png_file(char *file_name, struct pcv_image *image) {
-	/* allocates space for some of the simple values that are 
-	going to be used in the image processing */
-	int number_of_passes;
+    /* allocates space for some of the simple values that are
+    going to be used in the image processing */
+    int y;
+    size_t number_of_passes;
 
     /* allocates space for the header part of the image so that
     it must be possible to check for the correct png header */
@@ -45,48 +42,57 @@ void read_png_file(char *file_name, struct pcv_image *image) {
 
     /* initialize stuff, this is the structu that will be populated
     withe the complete stat of the png file reading */
-    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if(!png_ptr) {
+    image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if(!image->png_ptr) {
         abort_("[read_png_file] png_create_read_struct failed");
     }
 
-    info_ptr = png_create_info_struct(png_ptr);
-    if(!info_ptr) {
+    image->info_ptr = png_create_info_struct(image->png_ptr);
+    if(!image->info_ptr) {
         abort_("[read_png_file] png_create_info_struct failed");
     }
 
-    if(setjmp(png_jmpbuf(png_ptr))) {
+    if(setjmp(png_jmpbuf(image->png_ptr))) {
         abort_("[read_png_file] Error during init_io");
     }
 
-    png_init_io(png_ptr, fp);
-    png_set_sig_bytes(png_ptr, 8);
-    png_read_info(png_ptr, info_ptr);
+    png_init_io(image->png_ptr, fp);
+    png_set_sig_bytes(image->png_ptr, 8);
+    png_read_info(image->png_ptr, image->info_ptr);
 
-    image->width = png_get_image_width(png_ptr, info_ptr);
-    image->height = png_get_image_height(png_ptr, info_ptr);
-    image->color_type = png_get_color_type(png_ptr, info_ptr);
-    image->bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+    image->width = png_get_image_width(image->png_ptr, image->info_ptr);
+    image->height = png_get_image_height(image->png_ptr, image->info_ptr);
+    image->color_type = png_get_color_type(image->png_ptr, image->info_ptr);
+    image->bit_depth = png_get_bit_depth(image->png_ptr, image->info_ptr);
 
-    number_of_passes = png_set_interlace_handling(png_ptr);
-    png_read_update_info(png_ptr, info_ptr);
+    number_of_passes = png_set_interlace_handling(image->png_ptr);
+    png_read_update_info(image->png_ptr, image->info_ptr);
 
     /* reads the complete file value in file, meaning that
-	from this point on only decompression is remaining */
-    if(setjmp(png_jmpbuf(png_ptr))) {
+    from this point on only decompression is remaining */
+    if(setjmp(png_jmpbuf(image->png_ptr))) {
         abort_("[read_png_file] Error during read_image");
     }
 
-	image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
+    image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
     for(y = 0; y < image->height; y++) {
-        image->rows[y] = (png_byte *) malloc(png_get_rowbytes(png_ptr,info_ptr));
+        image->rows[y] = (png_byte *) malloc(png_get_rowbytes(image->png_ptr, image->info_ptr));
     }
 
-    png_read_image(png_ptr, image->rows);
+    png_read_image(image->png_ptr, image->rows);
     fclose(fp);
 }
 
 void write_png_file(struct pcv_image *image, char *file_name) {
+    /* allocates space for some of the local counter variables that
+    are going to be used during this function execution */
+    int y;
+
+    /* allocates space for temporary pointer values to both the global
+    png file tables and the (meta-)information tables */
+    png_structp png_ptr;
+    png_infop info_ptr;
+
     /* create file, that is going to be used as the target for the
     writting of the final file and the verifies it the open operation
     has been completed with the proper success */
@@ -147,8 +153,8 @@ void write_png_file(struct pcv_image *image, char *file_name) {
     png_write_end(png_ptr, NULL);
 
     /* cleanup heap allocation, avoids memory leaks, note that
-	the cleanup is performed first on row level and then at a
-	row pointer level (two level of allocation) */
+    the cleanup is performed first on row level and then at a
+    row pointer level (two level of allocation) */
     for(y = 0; y < image->height; y++) {
         free(image->rows[y]);
     }
@@ -157,18 +163,21 @@ void write_png_file(struct pcv_image *image, char *file_name) {
 }
 
 void process_file(struct pcv_image *image) {
-    if(png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB) {
+    int x;
+    int y;
+
+    if(png_get_color_type(image->png_ptr, image->info_ptr) == PNG_COLOR_TYPE_RGB) {
         abort_(
             "[process_file] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
             "(lacks the alpha channel)"
         );
     }
 
-    if(png_get_color_type(png_ptr, info_ptr) != PNG_COLOR_TYPE_RGBA) {
+    if(png_get_color_type(image->png_ptr, image->info_ptr) != PNG_COLOR_TYPE_RGBA) {
         abort_(
             "[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
             PNG_COLOR_TYPE_RGBA,
-            png_get_color_type(png_ptr, info_ptr)
+            png_get_color_type(image->png_ptr, image->info_ptr)
         );
     }
 
@@ -177,11 +186,11 @@ void process_file(struct pcv_image *image) {
         for(x = 0; x < image->width; x++) {
             png_byte *ptr = &(row[x * 4]);
 
-			/* verifies if the current iteration is valid for debug
-			information printing and if that's the case prints it */
-			int is_valid = x % 100 == 0;
-			if(is_valid) {
-				printf(
+            /* verifies if the current iteration is valid for debug
+            information printing and if that's the case prints it */
+            int is_valid = x % 100 == 0;
+            if(is_valid) {
+                printf(
                     "Pixel at position [ %d - %d ] has RGBA values: (%d,%d,%d,%d)\n",
                     x,
                     y,
@@ -190,7 +199,7 @@ void process_file(struct pcv_image *image) {
                     ptr[2],
                     ptr[3]
                 );
-			}
+            }
 
             /* sets red value to 0 and green value to the blue one,
             this will create a special kind of effect */
@@ -201,7 +210,7 @@ void process_file(struct pcv_image *image) {
 }
 
 int main(int argc, char **argv) {
-	struct pcv_image image;
+    struct pcv_image image;
 
     if(argc != 3) {
         abort_("Usage: program_name <file_in> <file_out>");
