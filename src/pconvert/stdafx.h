@@ -27,4 +27,9 @@ typedef struct pcv_image {
 void read_png(char *file_name, struct pcv_image *image);
 void write_png(struct pcv_image *image, char *file_name);
 void process_image(struct pcv_image *image);
+void blend_images(
+    struct pcv_image *bottom,
+	struct pcv_image *top,
+	struct pcv_image *result
+);
 void release_image(struct pcv_image *image);

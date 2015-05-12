@@ -186,6 +186,22 @@ void process_image(struct pcv_image *image) {
     }
 }
 
+void blend_images(
+    struct pcv_image *bottom,
+	struct pcv_image *top,
+	struct pcv_image *result
+) {
+	int x;
+    int y;
+	for(y = 0; y < bottom->height; y++) {
+        png_byte *row = bottom->rows[y];
+        for(x = 0; x < bottom->width; x++) {
+            png_byte *ptr = &(row[x * 4]);
+			
+        }
+    }
+}
+
 void release_image(struct pcv_image *image) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
