@@ -23,7 +23,6 @@ void read_png_file(char *file_name, struct pcv_image *image) {
     /* allocates space for some of the simple values that are
     going to be used in the image processing */
     int y;
-    size_t number_of_passes;
 
     /* allocates space for the header part of the image so that
     it must be possible to check for the correct png header */
@@ -65,7 +64,7 @@ void read_png_file(char *file_name, struct pcv_image *image) {
     image->color_type = png_get_color_type(image->png_ptr, image->info_ptr);
     image->bit_depth = png_get_bit_depth(image->png_ptr, image->info_ptr);
 
-    number_of_passes = png_set_interlace_handling(image->png_ptr);
+    png_set_interlace_handling(image->png_ptr);
     png_read_update_info(image->png_ptr, image->info_ptr);
 
     /* reads the complete file value in file, meaning that
