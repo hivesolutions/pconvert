@@ -22,8 +22,8 @@ void abort_(const char * s, ...) {
 }
 
 void read_png_file(char* file_name) {
-	/* allocates space for the header part of the image so that
-	it must be possible to check for the correct png header */
+    /* allocates space for the header part of the image so that
+    it must be possible to check for the correct png header */
     char header[8];
 
     /* opens the file and tests for it being a png, this is required
@@ -82,15 +82,15 @@ void read_png_file(char* file_name) {
 
 void write_png_file(char* file_name) {
     /* create file, that is going to be used as the target for the
-	writting of the final file and the verifies it the open operation
-	has been completed with the proper success */
+    writting of the final file and the verifies it the open operation
+    has been completed with the proper success */
     FILE *fp = fopen(file_name, "wb");
     if(!fp) {
         abort_("[write_png_file] File %s could not be opened for writing", file_name);
     }
 
     /* initialize stuff of the main structure, so that it may be used
-	latter for the write operation */
+    latter for the write operation */
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png_ptr) {
         abort_("[write_png_file] png_create_write_struct failed");
