@@ -19,7 +19,7 @@ void abort_(const char *s, ...) {
     abort();
 }
 
-void read_png_file(char *file_name, struct pcv_image *image) {
+void read_png(char *file_name, struct pcv_image *image) {
     /* allocates space for some of the simple values that are
     going to be used in the image processing */
     int y;
@@ -82,11 +82,7 @@ void read_png_file(char *file_name, struct pcv_image *image) {
     fclose(fp);
 }
 
-void write_png_file(struct pcv_image *image, char *file_name) {
-    /* allocates space for some of the local counter variables that
-    are going to be used during this function execution */
-    int y;
-
+void write_png(struct pcv_image *image, char *file_name) {
     /* allocates space for temporary pointer values to both the global
     png file tables and the (meta-)information tables */
     png_structp png_ptr;
@@ -150,18 +146,10 @@ void write_png_file(struct pcv_image *image, char *file_name) {
     }
 
     png_write_end(png_ptr, NULL);
-
-    /* cleanup heap allocation, avoids memory leaks, note that
-    the cleanup is performed first on row level and then at a
-    row pointer level (two level of allocation) */
-    for(y = 0; y < image->height; y++) {
-        free(image->rows[y]);
-    }
-    free(image->rows);
     fclose(fp);
 }
 
-void process_file(struct pcv_image *image) {
+void process_image(struct pcv_image *image) {
     int x;
     int y;
 
@@ -208,6 +196,17 @@ void process_file(struct pcv_image *image) {
     }
 }
 
+void release_image(struct pcv_image *image) {
+    /* cleanup heap allocation, avoids memory leaks, note that
+    the cleanup is performed first on row level and then at a
+    row pointer level (two level of allocation) */
+	int y;
+    for(y = 0; y < image->height; y++) {
+        free(image->rows[y]);
+    }
+    free(image->rows);
+}
+
 int main(int argc, char **argv) {
     struct pcv_image image;
 
@@ -215,9 +214,10 @@ int main(int argc, char **argv) {
         abort_("Usage: program_name <file_in> <file_out>");
     }
 
-    read_png_file(argv[1], &image);
-    process_file(&image);
-    write_png_file(&image, argv[2]);
+    read_png(argv[1], &image);
+    process_image(&image);
+    write_png(&image, argv[2]);
+	release_image(&image);
 
     return 0;
 }
