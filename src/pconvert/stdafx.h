@@ -8,3 +8,6 @@
 #include <stdarg.h>
 
 #include <png.h>
+
+#pragma comment(lib, "libpng.lib")
+#pragma comment(lib, "zlib.lib")

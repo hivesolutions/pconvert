@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-#pragma comment(lib, "libpng.lib")
-#pragma comment(lib, "zlib.lib")
-
 int x;
 int y;
 
@@ -84,15 +81,17 @@ void read_png_file(char* file_name) {
 }
 
 void write_png_file(char* file_name) {
-    /* create file */
+    /* create file, that is going to be used as the target for the
+	writting of the final file and the verifies it the open operation
+	has been completed with the proper success */
     FILE *fp = fopen(file_name, "wb");
     if(!fp) {
         abort_("[write_png_file] File %s could not be opened for writing", file_name);
     }
 
-    /* initialize stuff */
+    /* initialize stuff of the main structure, so that it may be used
+	latter for the write operation */
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
     if(!png_ptr) {
         abort_("[write_png_file] png_create_write_struct failed");
     }
