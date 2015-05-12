@@ -168,16 +168,21 @@ void process_file(void) {
         png_byte *row = row_pointers[y];
         for(x = 0; x < width; x++) {
             png_byte *ptr = &(row[x * 4]);
+
+			/* verifies if the current iteration is valid for debug
+			information printing and if that's the case prints it */
 			int is_valid = x % 100 == 0;
-            is_valid && printf(
-                "Pixel at position [ %d - %d ] has RGBA values: (%d,%d,%d,%d)\n",
-                x,
-                y,
-                ptr[0],
-                ptr[1],
-                ptr[2],
-                ptr[3]
-            );
+			if(is_valid) {
+				printf(
+                    "Pixel at position [ %d - %d ] has RGBA values: (%d,%d,%d,%d)\n",
+                    x,
+                    y,
+                    ptr[0],
+                    ptr[1],
+                    ptr[2],
+                    ptr[3]
+                );
+			}
 
             /* sets red value to 0 and green value to the blue one,
             this will create a special kind of effect */
