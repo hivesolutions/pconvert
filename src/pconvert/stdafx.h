@@ -14,6 +14,9 @@
 #pragma comment(lib, "zlib.lib")
 #endif
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 typedef struct pcv_image {
     int width;
     int height;
