@@ -3,7 +3,7 @@ RM=rm
 CFLAGS=-c -Wall
 LDFLAGS=
 RMFLAGS=-rf
-LIBRARIES=-lpng
+LIBS=-lpng
 SRC_DIR=src/pconvert
 SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c
 OBJECTS=$(SOURCES:.c=.o)
@@ -15,7 +15,7 @@ clean:
 	$(RM) $(RMFLAGS) $(OBJECTS) 
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBRARIES)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
