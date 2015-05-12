@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall
-LDFLAGS=
+LDFLAGS=-lpng
 SRC_DIR=src/pconvert
 SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c
 OBJECTS=$(SOURCES:.c=.o)
