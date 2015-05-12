@@ -36,3 +36,5 @@ void write_png(struct pcv_image *image, char *file_name);
 void process_image(struct pcv_image *image);
 void blend_images(struct pcv_image *bottom, struct pcv_image *top);
 void release_image(struct pcv_image *image);
+void compose_images(char *base_path);
+char *join_path(char *base, char *extra, char *result);

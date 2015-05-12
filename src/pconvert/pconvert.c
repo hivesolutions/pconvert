@@ -158,6 +158,8 @@ void process_image(struct pcv_image *image) {
         );
     }
 
+	/* iterates over the complete buffer for the image pixels to be
+	able to print some information about the provided image */
     for(y = 0; y < image->height; y++) {
         png_byte *row = image->rows[y];
         for(x = 0; x < image->width; x++) {
@@ -240,18 +242,19 @@ void release_image(struct pcv_image *image) {
     free(image->rows);
 }
 
-void compose_images(char *path) {
+void compose_images(char *base_path) {
+	char path[1024];
 	struct pcv_image bottom, top;
-	read_png("C:/repo.extra/swear/src/swear/static/demo/background_alpha.png", &bottom);
-	read_png("C:/repo.extra/swear/src/swear/static/demo/front.png", &top);
+	read_png(join_path(base_path, "background_alpha.png", path), &bottom);
+	read_png(join_path(base_path, "front.png", path), &top);
 	blend_images(&bottom, &top);
-	read_png("C:/repo.extra/swear/src/swear/static/demo/top.png", &top);
+	read_png(join_path(base_path, "top.png", path), &top);
 	blend_images(&bottom, &top);
-	read_png("C:/repo.extra/swear/src/swear/static/demo/shoelace.png", &top);
+	read_png(join_path(base_path, "shoelace.png", path), &top);
 	blend_images(&bottom, &top);
-	read_png("C:/repo.extra/swear/src/swear/static/demo/sole.png", &top);
+	read_png(join_path(base_path, "sole.png", path), &top);
 	blend_images(&bottom, &top);
-	write_png(&bottom, "C:/repo.extra/swear/src/swear/static/demo/result.png");
+	write_png(&bottom, join_path(base_path, "result.png", path));
 	release_image(&top);
 	release_image(&bottom);
 }
