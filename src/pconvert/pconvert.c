@@ -259,7 +259,7 @@ void compose_images(char *path) {
 int main(int argc, char **argv) {
     struct pcv_image image;
 
-    if(argc != 3) { abort_("Usage: program_name <file_in> <file_out>"); }
+    if(argc != 3) { abort_("Usage: pconvert <file_in> <file_out>"); }
 
     read_png(argv[1], &image);
     process_image(&image);
