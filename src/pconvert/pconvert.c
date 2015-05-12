@@ -12,7 +12,7 @@ png_infop info_ptr;
 int number_of_passes;
 png_bytep *row_pointers;
 
-void abort_(const char * s, ...) {
+void abort_(const char *s, ...) {
     va_list args;
     va_start(args, s);
     vfprintf(stderr, s, args);
