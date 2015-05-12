@@ -15,7 +15,7 @@ EXECUTABLE=pconvert
 all: $(SOURCES) $(EXECUTABLE)
 
 install: all
-    $(CP) $(EXECUTABLE) $(PREFIX)/bin
+	$(CP) $(EXECUTABLE) $(PREFIX)/bin
 
 clean:
 	$(RM) $(RMFLAGS) $(OBJECTS) $(EXECUTABLE)
