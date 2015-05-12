@@ -6,7 +6,7 @@ void abort_(const char *s, ...) {
     vfprintf(stderr, s, args);
     fprintf(stderr, "\n");
     va_end(args);
-	RUN_ABORT;
+    RUN_ABORT;
 }
 
 void read_png(char *file_name, struct pcv_image *image) {
@@ -158,8 +158,8 @@ void process_image(struct pcv_image *image) {
         );
     }
 
-	/* iterates over the complete buffer for the image pixels to be
-	able to print some information about the provided image */
+    /* iterates over the complete buffer for the image pixels to be
+    able to print some information about the provided image */
     for(y = 0; y < image->height; y++) {
         png_byte *row = image->rows[y];
         for(x = 0; x < image->width; x++) {
@@ -190,24 +190,24 @@ void process_image(struct pcv_image *image) {
 
 void blend_images(struct pcv_image *bottom, struct pcv_image *top) {
     int x, y;
-	float atf;
-	png_byte r, g, b, a;
-	png_byte rb, gb, bb, ab;
-	png_byte rt, gt, bt, at;
+    float atf;
+    png_byte r, g, b, a;
+    png_byte rb, gb, bb, ab;
+    png_byte rt, gt, bt, at;
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];
-		png_byte *rowTop = top->rows[y];
+        png_byte *rowTop = top->rows[y];
         for(x = 0; x < bottom->width; x++) {
             png_byte *ptrBottom = &(rowBottom[x * 4]);
-			png_byte *ptrTop = &(rowTop[x * 4]);
-			
+            png_byte *ptrTop = &(rowTop[x * 4]);
+
             rb = *ptrBottom;
             gb = *(ptrBottom + 1);
             bb = *(ptrBottom + 2);
             ab = *(ptrBottom + 3);
 
-			rt = *ptrTop;
+            rt = *ptrTop;
             gt = *(ptrTop + 1);
             bt = *(ptrTop + 2);
             at = *(ptrTop + 3);
@@ -223,10 +223,10 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top) {
             g = MAX(0, MIN(255, g));
             b = MAX(0, MIN(255, b));
 
-			*ptrBottom = r;
-			*(ptrBottom + 1) = g;
-			*(ptrBottom + 2) = b;
-			*(ptrBottom + 3) = a;
+            *ptrBottom = r;
+            *(ptrBottom + 1) = g;
+            *(ptrBottom + 2) = b;
+            *(ptrBottom + 3) = a;
         }
     }
 }
@@ -243,20 +243,20 @@ void release_image(struct pcv_image *image) {
 }
 
 void compose_images(char *base_path) {
-	char path[1024];
-	struct pcv_image bottom, top;
-	read_png(join_path(base_path, "background_alpha.png", path), &bottom);
-	read_png(join_path(base_path, "front.png", path), &top);
-	blend_images(&bottom, &top);
-	read_png(join_path(base_path, "top.png", path), &top);
-	blend_images(&bottom, &top);
-	read_png(join_path(base_path, "shoelace.png", path), &top);
-	blend_images(&bottom, &top);
-	read_png(join_path(base_path, "sole.png", path), &top);
-	blend_images(&bottom, &top);
-	write_png(&bottom, join_path(base_path, "result.png", path));
-	release_image(&top);
-	release_image(&bottom);
+    char path[1024];
+    struct pcv_image bottom, top;
+    read_png(join_path(base_path, "background_alpha.png", path), &bottom);
+    read_png(join_path(base_path, "front.png", path), &top);
+    blend_images(&bottom, &top);
+    read_png(join_path(base_path, "top.png", path), &top);
+    blend_images(&bottom, &top);
+    read_png(join_path(base_path, "shoelace.png", path), &top);
+    blend_images(&bottom, &top);
+    read_png(join_path(base_path, "sole.png", path), &top);
+    blend_images(&bottom, &top);
+    write_png(&bottom, join_path(base_path, "result.png", path));
+    release_image(&top);
+    release_image(&bottom);
 }
 
 int main(int argc, char **argv) {

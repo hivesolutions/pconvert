@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 PyObject *extension_register(PyObject *self, PyObject *args) {
-	Py_RETURN_NONE;
+    Py_RETURN_NONE;
 };
 
 PyObject *extension_unregister(PyObject *self, PyObject *args) {
@@ -10,16 +10,16 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
 
 PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     char *bottom_path, *top_path, *target_path;
-	struct pcv_image bottom, top;
+    struct pcv_image bottom, top;
 
     if(PyArg_ParseTuple(args, "sss", &bottom_path, &top_path, &target_path) == 0) { return NULL; }
-	
-	read_png(bottom_path, &bottom);
-	read_png(top_path, &top);
-	blend_images(&bottom, &top);
-	write_png(&bottom, target_path);
-	release_image(&top);
-	release_image(&bottom);
+
+    read_png(bottom_path, &bottom);
+    read_png(top_path, &top);
+    blend_images(&bottom, &top);
+    write_png(&bottom, target_path);
+    release_image(&top);
+    release_image(&bottom);
 
     Py_RETURN_NONE;
 };
