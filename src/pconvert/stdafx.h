@@ -7,10 +7,11 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include <png.h>
+
 #define PYTHON_26
 #define PYTHON_THREADS
 
-#include <png.h>
 #include <Python.h>
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
