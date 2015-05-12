@@ -12,7 +12,7 @@ EXECUTABLE=pconvert
 all: $(SOURCES) $(EXECUTABLE)
 
 clean:
-	$(RM) $(RMFLAGS) $(OBJECTS) 
+	$(RM) $(RMFLAGS) $(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
