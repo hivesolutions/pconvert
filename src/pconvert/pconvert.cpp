@@ -55,7 +55,6 @@ void read_png_file(char* file_name) {
 
     png_init_io(png_ptr, fp);
     png_set_sig_bytes(png_ptr, 8);
-
     png_read_info(png_ptr, info_ptr);
 
     width = png_get_image_width(png_ptr, info_ptr);
@@ -167,10 +166,11 @@ void process_file(void) {
 
     for(y = 0; y < height; y++) {
         png_byte *row = row_pointers[y];
-        for (x = 0; x < width; x++) {
+        for(x = 0; x < width; x++) {
             png_byte *ptr = &(row[x * 4]);
-            printf(
-                "Pixel at position [ %d - %d ] has RGBA values: %d - %d - %d - %d\n",
+			int is_valid = x % 100 == 0;
+            is_valid && printf(
+                "Pixel at position [ %d - %d ] has RGBA values: (%d,%d,%d,%d)\n",
                 x,
                 y,
                 ptr[0],
