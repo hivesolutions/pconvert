@@ -1,7 +1,7 @@
 CC=gcc
 CP=cp
 RM=rm
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -I/usr/include/python$(PYTHON_VERSION)
 LDFLAGS=
 CPFLAGS=-rf
 RMFLAGS=-rf
@@ -11,6 +11,7 @@ SRC_DIR=src/pconvert
 SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/util.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
+PYTHON_VERSION=2.7
 
 all: $(SOURCES) $(EXECUTABLE)
 
