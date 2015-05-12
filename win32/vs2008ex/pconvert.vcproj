@@ -171,11 +171,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\stdafx.cpp"
+				RelativePath="..\..\src\pconvert\stdafx.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tobias.cpp"
+				RelativePath="..\..\src\pconvert\tobias.cpp"
 				>
 			</File>
 		</Filter>
@@ -185,11 +185,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath="..\..\src\pconvert\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\targetver.h"
+				RelativePath="..\..\src\pconvert\targetver.h"
 				>
 			</File>
 		</Filter>
@@ -200,7 +200,7 @@
 			>
 		</Filter>
 		<File
-			RelativePath=".\ReadMe.txt"
+			RelativePath="..\..\src\pconvert\ReadMe.txt"
 			>
 		</File>
 	</Files>
