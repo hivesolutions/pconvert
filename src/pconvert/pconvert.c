@@ -340,6 +340,7 @@ int ptest(int argc, char **argv) {
     read_png(join_path(base_path, "sole.png", path), TRUE, &bottom);
     read_png(join_path(base_path, "back.png", path), TRUE, &top);
     blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
+	write_png(&bottom, join_path(base_path, "log.png", path));
     release_image(&top);
     release_image(&bottom);
 	return 0;
@@ -376,7 +377,7 @@ int pconvert(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-	/*return ptest(argc, argv);*/
-    return pcompose(argc, argv);
+	return ptest(argc, argv);
+    /*return pcompose(argc, argv);*/
     /*return pconvert(arc, argv);*/
 }
