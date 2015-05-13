@@ -36,7 +36,7 @@ void blend_multiplicative(
     *(result + 3) = a;
 }
 
-void blend_disjoint_over(
+void blend_disjoint_under(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -61,7 +61,7 @@ void blend_disjoint_over(
     *(result + 3) = a;
 }
 
-void blend_disjoint_under(
+void blend_disjoint_over(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -71,9 +71,9 @@ void blend_disjoint_under(
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
 
-    r = (png_byte) ((atf + abf) < 1.0f ? rt + rb * (1.0f - atf) / abf : rt + rb);
-    g = (png_byte) ((atf + abf) < 1.0f ? gt + gb * (1.0f - atf) / abf : gt + gb);
-    b = (png_byte) ((atf + abf) < 1.0f ? bt + bb * (1.0f - atf) / abf : bt + bb);
+    r = (png_byte) ((atf + abf) < 1.0f ? (float) rt + rb * (1.0f - atf) / abf : rt + rb);
+    g = (png_byte) ((atf + abf) < 1.0f ? (float) gt + gb * (1.0f - atf) / abf : gt + gb);
+    b = (png_byte) ((atf + abf) < 1.0f ? (float) bt + bb * (1.0f - atf) / abf : bt + bb);
     a = MAX(0, MIN(255, at + ab));
 
     r = MAX(0, MIN(255, r));

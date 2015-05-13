@@ -286,6 +286,6 @@ int pconvert(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    pcompose(argc, argv);
+    return pcompose(argc, argv);
    // return pconvert(arc, argv);
 }
