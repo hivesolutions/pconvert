@@ -49,8 +49,9 @@ typedef void (blend_algorithm) (
 
 void abort_(const char *s, ...);
 void read_png(char *file_name, char demultiply, struct pcv_image *image);
-void write_png(struct pcv_image *image, char *file_name);
+void write_png(struct pcv_image *image, char multiply, char *file_name);
 void demultiply_image(struct pcv_image *image);
+void multiply_image(struct pcv_image *image);
 void process_image(struct pcv_image *image);
 void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
@@ -58,6 +59,7 @@ void release_image(struct pcv_image *image);
 void compose_images(char *base_path, char *algorithm, char *background);
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
+char is_multiplied(char *algorithm);
 void blend_multiplicative(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,

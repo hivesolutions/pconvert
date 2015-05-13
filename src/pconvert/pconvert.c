@@ -69,11 +69,11 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     }
 
     png_read_image(image->png_ptr, image->rows);
-	if(demultiply) { demultiply_image(image); }
+    if(demultiply) { demultiply_image(image); }
     fclose(fp);
 }
 
-void write_png(struct pcv_image *image, char *file_name) {
+void write_png(struct pcv_image *image, char multiply, char *file_name) {
     /* allocates space for temporary pointer values to both the global
     png file tables and the (meta-)information tables */
     png_structp png_ptr;
@@ -102,6 +102,8 @@ void write_png(struct pcv_image *image, char *file_name) {
     if(setjmp(png_jmpbuf(png_ptr))) {
         abort_("[write_png] Error during init_io");
     }
+
+    if(multiply) { multiply_image(image); }
 
     png_init_io(png_ptr, fp);
 
@@ -142,7 +144,7 @@ void write_png(struct pcv_image *image, char *file_name) {
 
 void demultiply_image(struct pcv_image *image) {
     int x, y;
-	float af;
+    float af;
     png_byte r, g, b, a;
 
     for(y = 0; y < image->height; y++) {
@@ -154,15 +156,42 @@ void demultiply_image(struct pcv_image *image) {
             g = *(pixel + 1);
             b = *(pixel + 2);
             a = *(pixel + 3);
-			af = 1.0f * (a / 255.0f);
+            af = 1.0f * (a / 255.0f);
 
-			r = (png_byte) ROUND(r * af);
-			g = (png_byte) ROUND(g * af);
-			b = (png_byte) ROUND(b * af);
+            r = (png_byte) ROUND(r * af);
+            g = (png_byte) ROUND(g * af);
+            b = (png_byte) ROUND(b * af);
 
-			*pixel = r;
-			*(pixel + 1) = g;
-			*(pixel + 2) = b;
+            *pixel = r;
+            *(pixel + 1) = g;
+            *(pixel + 2) = b;
+        }
+    }
+}
+
+void multiply_image(struct pcv_image *image) {
+    int x, y;
+    float af;
+    png_byte r, g, b, a;
+
+    for(y = 0; y < image->height; y++) {
+        png_byte *row = image->rows[y];
+        for(x = 0; x < image->width; x++) {
+            png_byte *pixel = &(row[x * 4]);
+
+            r = *pixel;
+            g = *(pixel + 1);
+            b = *(pixel + 2);
+            a = *(pixel + 3);
+            af = 1.0f * (a / 255.0f);
+
+            r = (png_byte) ROUND(r / af);
+            g = (png_byte) ROUND(g / af);
+            b = (png_byte) ROUND(b / af);
+
+            *pixel = r;
+            *(pixel + 1) = g;
+            *(pixel + 2) = b;
         }
     }
 }
@@ -274,8 +303,8 @@ void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *a
 
             fprintf(
                 file,
-				"%04dx%04d - #%02x%02x%02x%02x + #%02x%02x%02x%02x = ",
-				x, y,
+                "%04dx%04d - #%02x%02x%02x%02x + #%02x%02x%02x%02x = ",
+                x, y,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
             );
@@ -293,7 +322,7 @@ void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *a
 
             fprintf(
                 file,
-				"#%02x%02x%02x%02x\n",
+                "#%02x%02x%02x%02x\n",
                 rb, gb, bb, ab
             );
         }
@@ -317,18 +346,20 @@ void compose_images(char *base_path, char *algorithm, char *background) {
     char path[1024];
     char name[1024];
     struct pcv_image bottom, top, final;
-    read_png(join_path(base_path, "sole.png", path), TRUE, &bottom);
-    read_png(join_path(base_path, "back.png", path), TRUE, &top);
+    char demultiply = is_multiplied(algorithm);
+    read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
+    read_png(join_path(base_path, "back.png", path), demultiply, &top);
     blend_images(&bottom, &top, algorithm); release_image(&top);
-    read_png(join_path(base_path, "front.png", path), TRUE, &top);
+    read_png(join_path(base_path, "front.png", path), demultiply, &top);
     blend_images(&bottom, &top, algorithm); release_image(&top);
-    read_png(join_path(base_path, "shoelace.png", path), TRUE, &top);
+    read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
     blend_images(&bottom, &top, algorithm); release_image(&top);
+    multiply_image(&bottom);
     sprintf(name, "background_%s.png", background);
-    read_png(join_path(base_path, name, path), TRUE, &final);
+    read_png(join_path(base_path, name, path), FALSE, &final);
     blend_images(&final, &bottom, "multiplicative"); release_image(&bottom);
     sprintf(name, "result_%s_%s.png", algorithm, background);
-    write_png(&final, join_path(base_path, name, path));
+    write_png(&final, FALSE, join_path(base_path, name, path));
     release_image(&final);
 }
 
@@ -340,10 +371,22 @@ int ptest(int argc, char **argv) {
     read_png(join_path(base_path, "sole.png", path), TRUE, &bottom);
     read_png(join_path(base_path, "back.png", path), TRUE, &top);
     blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
-	write_png(&bottom, join_path(base_path, "log.png", path));
+    release_image(&top);
+    read_png(join_path(base_path, "front.png", path), TRUE, &top);
+    blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
+    write_png(&bottom, TRUE, join_path(base_path, "log.png", path));
     release_image(&top);
     release_image(&bottom);
-	return 0;
+    return 0;
+}
+
+int ptobias(int argc, char **argv) {
+    char path[1024];
+    struct pcv_image tobias;
+    char *base_path = "C:/repo.private/pconvert/assets/demo/";
+    read_png(join_path(base_path, "front.png", path), TRUE, &tobias);
+    write_png(&tobias, TRUE, join_path(base_path, "tobias.png", path));
+    return 0;
 }
 
 int pcompose(int argc, char **argv) {
@@ -368,16 +411,17 @@ int pconvert(int argc, char **argv) {
 
     if(argc != 3) { abort_("Usage: pconvert <file_in> <file_out>"); }
 
-    read_png(argv[1], TRUE, &image);
+    read_png(argv[1], FALSE, &image);
     process_image(&image);
-    write_png(&image, argv[2]);
+    write_png(&image, FALSE, argv[2]);
     release_image(&image);
 
     return 0;
 }
 
 int main(int argc, char **argv) {
-	return ptest(argc, argv);
-    /*return pcompose(argc, argv);*/
+    /*return ptobias(argc, argv);*/
+    /*return ptest(argc, argv);*/
+    return pcompose(argc, argv);
     /*return pconvert(arc, argv);*/
 }

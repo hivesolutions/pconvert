@@ -27,6 +27,21 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
     }
 }
 
+char is_multiplied(char *algorithm) {
+    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+        return FALSE;
+    } else if(strcmp(algorithm, "disjoint_over") == 0) {
+        return TRUE;
+    } else if(strcmp(algorithm, "disjoint_under") == 0) {
+        return TRUE;
+    } else if(strcmp(algorithm, "disjoint_debug") == 0) {
+        return TRUE;
+    } else {
+        abort_("[blend_images] Invalid algorithm value");
+        return FALSE;
+    }
+}
+
 void blend_multiplicative(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
