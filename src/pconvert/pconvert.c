@@ -406,5 +406,5 @@ int main(int argc, char **argv) {
     if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
     if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
     else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }
-    else { abort_("Usage: pconvert <command> [args...]"); }
+    else { abort_("Usage: pconvert <command> [args...]"); return 0; }
 }
