@@ -221,7 +221,7 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
             bt = *(ptrTop + 2);
             at = *(ptrTop + 3);
 
-            blend_multiplicative(
+            operation(
                 ptrBottom,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
