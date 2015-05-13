@@ -5,7 +5,7 @@ import os
 import setuptools
 
 setuptools.setup(
-    name = "pconvert",
+    name = "pngconvert",
     version = "0.1.0",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
@@ -15,7 +15,7 @@ setuptools.setup(
     url = "http://pconvert.hive.pt",
     ext_modules = [
         setuptools.Extension(
-            "main",
+            "pconvert",
             include_dirs = ["/usr/local/include"],
             libraries = ["m", "png"],
             library_dirs = ["/usr/local/lib"],
