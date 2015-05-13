@@ -13,7 +13,9 @@ char *join_path(char *base, char *extra, char *result) {
 }
 
 blend_algorithm *get_blend_algorithm(char *algorithm) {
-    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+    if(algorithm == NULL || strcmp(algorithm, "alpha") == 0) {
+        return blend_alpha;
+    } else if(strcmp(algorithm, "multiplicative") == 0) {
         return blend_multiplicative;
     } else if(strcmp(algorithm, "disjoint_over") == 0) {
         return blend_disjoint_over;
@@ -28,7 +30,9 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
 }
 
 char is_multiplied(char *algorithm) {
-    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+    if(algorithm == NULL || strcmp(algorithm, "alpha") == 0) {
+        return FALSE;
+    } else if(strcmp(algorithm, "multiplicative") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "disjoint_over") == 0) {
         return TRUE;
@@ -40,6 +44,32 @@ char is_multiplied(char *algorithm) {
         abort_("[blend_images] Invalid algorithm value");
         return FALSE;
     }
+}
+
+void blend_alpha(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float abf = 1.0f * (ab / 255.0f);
+    float atf = 1.0f * (at / 255.0f);
+    float af = atf + abf * (1 - atf);
+
+    r = af == 0.0f ? 0 : (png_byte) ((rb * abf * (1 - atf) + rt * atf) / af);
+    g = af == 0.0f ? 0 : (png_byte) ((gb * abf * (1 - atf) + gt * atf) / af);
+    b = af == 0.0f ? 0 : (png_byte) ((bb * abf * (1 - atf) + bt * atf) / af);
+    a = MAX(0, MIN(255, at + ab));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
 }
 
 void blend_multiplicative(

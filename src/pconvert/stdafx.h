@@ -60,6 +60,11 @@ void compose_images(char *base_path, char *algorithm, char *background);
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);
+void blend_alpha(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+);
 void blend_multiplicative(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,

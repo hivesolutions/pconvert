@@ -354,62 +354,45 @@ void compose_images(char *base_path, char *algorithm, char *background) {
     blend_images(&bottom, &top, algorithm); release_image(&top);
     read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
     blend_images(&bottom, &top, algorithm); release_image(&top);
-    multiply_image(&bottom);
+    if(demultiply) { multiply_image(&bottom); }
     sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images(&final, &bottom, "multiplicative"); release_image(&bottom);
+    blend_images(&final, &bottom, "alpha"); release_image(&bottom);
     sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png(&final, FALSE, join_path(base_path, name, path));
     release_image(&final);
 }
 
-int ptest(int argc, char **argv) {
-    char path[1024];
-    struct pcv_image bottom, top;
-    char *algorithm = "disjoint_under";
-    char *base_path = "C:/repo.private/pconvert/assets/demo/";
-    read_png(join_path(base_path, "sole.png", path), TRUE, &bottom);
-    read_png(join_path(base_path, "back.png", path), TRUE, &top);
-    blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
-    release_image(&top);
-    read_png(join_path(base_path, "front.png", path), TRUE, &top);
-    blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
-    write_png(&bottom, TRUE, join_path(base_path, "log.png", path));
-    release_image(&top);
-    release_image(&bottom);
-    return 0;
-}
-
-int ptobias(int argc, char **argv) {
-    char path[1024];
-    struct pcv_image tobias;
-    char *base_path = "C:/repo.private/pconvert/assets/demo/";
-    read_png(join_path(base_path, "front.png", path), TRUE, &tobias);
-    write_png(&tobias, TRUE, join_path(base_path, "tobias.png", path));
-    return 0;
-}
-
 int pcompose(int argc, char **argv) {
-   /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
-    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "white");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "white");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "alpha");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "white");
-    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "texture");
+    if(argc != 3) { abort_("Usage: pconvert compose <directory>"); }
+
+    compose_images(argv[2], "alpha", "alpha");
+    compose_images(argv[2], "alpha", "white");
+    compose_images(argv[2], "alpha", "blue");
+    compose_images(argv[2], "alpha", "texture");
+    compose_images(argv[2], "multiplicative", "alpha");
+    compose_images(argv[2], "multiplicative", "white");
+    compose_images(argv[2], "multiplicative", "blue");
+    compose_images(argv[2], "multiplicative", "texture");
+    compose_images(argv[2], "disjoint_over", "alpha");
+    compose_images(argv[2], "disjoint_over", "white");
+    compose_images(argv[2], "disjoint_over", "blue");
+    compose_images(argv[2], "disjoint_over", "texture");
+    compose_images(argv[2], "disjoint_under", "alpha");
+    compose_images(argv[2], "disjoint_under", "white");
+    compose_images(argv[2], "disjoint_under", "blue");
+    compose_images(argv[2], "disjoint_under", "texture");
+    compose_images(argv[2], "disjoint_debug", "alpha");
+    compose_images(argv[2], "disjoint_debug", "white");
+    compose_images(argv[2], "disjoint_debug", "blue");
+    compose_images(argv[2], "disjoint_debug", "texture");
     return 0;
 }
 
 int pconvert(int argc, char **argv) {
     struct pcv_image image;
 
-    if(argc != 3) { abort_("Usage: pconvert <file_in> <file_out>"); }
+    if(argc != 3) { abort_("Usage: pconvert convert <file_in> <file_out>"); }
 
     read_png(argv[1], FALSE, &image);
     process_image(&image);
@@ -420,8 +403,8 @@ int pconvert(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    /*return ptobias(argc, argv);*/
-    /*return ptest(argc, argv);*/
-    return pcompose(argc, argv);
-    /*return pconvert(arc, argv);*/
+    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
+    if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
+    else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }
+    else { abort_("Usage: pconvert <command> [args...]"); }
 }
