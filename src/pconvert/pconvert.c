@@ -246,7 +246,8 @@ void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *a
 
             fprintf(
                 file,
-                "%02x%02x%02x%02x %02x%02x%02x%02x ",
+				"%04dx%04d - #%02x%02x%02x%02x + #%02x%02x%02x%02x = ",
+				x, y,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
             );
@@ -264,7 +265,7 @@ void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *a
 
             fprintf(
                 file,
-                "%02x%02x%02x%02x\n",
+				"#%02x%02x%02x%02x\n",
                 rb, gb, bb, ab
             );
         }
