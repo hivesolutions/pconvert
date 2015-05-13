@@ -2,8 +2,9 @@
 
 #include "targetver.h"
 
-#include <stdlib.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
@@ -23,8 +24,12 @@
 #define RUN_ABORT exit(0)
 #endif
 
+#define TRUE 1
+#define FALSE 0
+
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define ROUND(x) floor(x + 0.5)
 
 typedef struct pcv_image {
     int width;
@@ -43,8 +48,9 @@ typedef void (blend_algorithm) (
 );
 
 void abort_(const char *s, ...);
-void read_png(char *file_name, struct pcv_image *image);
+void read_png(char *file_name, char demultiply, struct pcv_image *image);
 void write_png(struct pcv_image *image, char *file_name);
+void demultiply_image(struct pcv_image *image);
 void process_image(struct pcv_image *image);
 void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);

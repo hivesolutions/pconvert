@@ -14,8 +14,8 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
 
     if(PyArg_ParseTuple(args, "ssss", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
 
-    read_png(bottom_path, &bottom);
-    read_png(top_path, &top);
+    read_png(bottom_path, TRUE, &bottom);
+    read_png(top_path, TRUE, &top);
     blend_images(&bottom, &top, algorithm);
     write_png(&bottom, target_path);
     release_image(&top);
