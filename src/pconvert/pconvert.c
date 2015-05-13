@@ -247,13 +247,13 @@ void compose_images(char *base_path, char *algorithm, char *background) {
     struct pcv_image bottom, top;
 	sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), &bottom);
+    read_png(join_path(base_path, "sole.png", path), &top);
+    blend_images(&bottom, &top, algorithm);
+	read_png(join_path(base_path, "back.png", path), &top);
+    blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "front.png", path), &top);
     blend_images(&bottom, &top, algorithm);
-    read_png(join_path(base_path, "back.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "shoelace.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
-    read_png(join_path(base_path, "sole.png", path), &top);
     blend_images(&bottom, &top, algorithm);
 	sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png(&bottom, join_path(base_path, name, path));
