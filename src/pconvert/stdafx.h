@@ -53,3 +53,8 @@ void blend_disjoint_over(
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
+void blend_disjoint_under(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+);
