@@ -4,8 +4,8 @@
 import os
 import setuptools
 
-setuptools.setup(
-    name = "pconvert-py",
+setuptools.setuthonp(
+    name = "pconvert-python",
     version = "0.1.0",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
