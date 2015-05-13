@@ -200,6 +200,8 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
 		operation = blend_disjoint_over;
 	} else if(strcmp(algorithm, "disjoint_under") == 0) {
 		operation = blend_disjoint_under;
+	} else if(strcmp(algorithm, "disjoint_debug") == 0) {
+		operation = blend_disjoint_debug;
 	} else {
 		abort_("[blend_images] Invalid algorithm value");
 	}
@@ -263,10 +265,13 @@ void compose_images(char *base_path, char *algorithm, char *background) {
 
 int pcompose(int argc, char **argv) {
    /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
+	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
     compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
     return 0;
