@@ -106,9 +106,9 @@ void blend_disjoint_under(
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
 
-    r = (png_byte) ((atf * abf) > 0.0f ? (float) rt / atf * (1.0f - abf) + rb: rt * (1.0f - abf) + rb);
-    g = (png_byte) ((atf * abf) > 0.0f ? (float) gt / atf * (1.0f - abf) + gb: gt * (1.0f - abf) + gb);
-    b = (png_byte) ((atf * abf) > 0.0f ? (float) bt / atf * (1.0f - abf) + bb: bt * (1.0f - abf) + bb);
+    r = (png_byte) ((atf * abf) > 0.0f ? rt / atf * (1.0f - abf) + rb: rt * (1.0f - abf) + rb);
+    g = (png_byte) ((atf * abf) > 0.0f ? gt / atf * (1.0f - abf) + gb: gt * (1.0f - abf) + gb);
+    b = (png_byte) ((atf * abf) > 0.0f ? bt / atf * (1.0f - abf) + bb: bt * (1.0f - abf) + bb);
     a = MAX(0, MIN(255, at + ab));
 
     r = MAX(0, MIN(255, r));

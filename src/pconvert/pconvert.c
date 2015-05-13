@@ -386,6 +386,7 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "disjoint_debug", "white");
     compose_images(argv[2], "disjoint_debug", "blue");
     compose_images(argv[2], "disjoint_debug", "texture");
+
     return 0;
 }
 
