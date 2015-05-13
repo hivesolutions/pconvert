@@ -49,6 +49,7 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
 void release_image(struct pcv_image *image);
 void compose_images(char *base_path, char *algorithm, char *background);
 char *join_path(char *base, char *extra, char *result);
+blend_algorithm *get_blend_algorithm(char *algorithm);
 void blend_multiplicative(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,

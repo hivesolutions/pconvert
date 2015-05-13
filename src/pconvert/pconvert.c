@@ -192,19 +192,7 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
-    blend_algorithm *operation;
-
-    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
-        operation = blend_multiplicative;
-    } else if(strcmp(algorithm, "disjoint_over") == 0) {
-        operation = blend_disjoint_over;
-    } else if(strcmp(algorithm, "disjoint_under") == 0) {
-        operation = blend_disjoint_under;
-    } else if(strcmp(algorithm, "disjoint_debug") == 0) {
-        operation = blend_disjoint_debug;
-    } else {
-        abort_("[blend_images] Invalid algorithm value");
-    }
+    blend_algorithm *operation = get_blend_algorithm(algorithm);
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];

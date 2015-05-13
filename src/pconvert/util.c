@@ -12,6 +12,20 @@ char *join_path(char *base, char *extra, char *result) {
     return original;
 }
 
+blend_algorithm *get_blend_algorithm(char *algorithm) {
+    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+        return blend_multiplicative;
+    } else if(strcmp(algorithm, "disjoint_over") == 0) {
+        return blend_disjoint_over;
+    } else if(strcmp(algorithm, "disjoint_under") == 0) {
+        return blend_disjoint_under;
+    } else if(strcmp(algorithm, "disjoint_debug") == 0) {
+        return blend_disjoint_debug;
+    } else {
+        abort_("[blend_images] Invalid algorithm value");
+    }
+}
+
 void blend_multiplicative(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
