@@ -15,7 +15,7 @@ setuptools.setup(
     url = "http://pconvert.hive.pt",
     ext_modules = [
         setuptools.Extension(
-            "pconvert",
+            "main",
             include_dirs = ["/usr/local/include"],
             libraries = ["m", "png"],
             library_dirs = ["/usr/local/lib"],
