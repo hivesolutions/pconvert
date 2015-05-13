@@ -11,3 +11,52 @@ char *join_path(char *base, char *extra, char *result) {
     *result = '\0';
     return original;
 }
+
+void blend_multiplicative(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float atf = 1.0f * (at / 255.0f);
+
+    r = (png_byte) (rb * (1 - atf) + rt * atf);
+    g = (png_byte) (gb * (1 - atf) + gt * atf);
+    b = (png_byte) (bb * (1 - atf) + bt * atf);
+    a = MAX(0, MIN(255, at + ab));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}
+
+void blend_disjoint_over(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float abf = 1.0f * (ab / 255.0f);
+    float atf = 1.0f * (at / 255.0f);
+
+    r = (png_byte) ((atf + abf) < 1.0f ? rt + rb * (1.0f - atf) / abf : rt + rb);
+    g = (png_byte) ((atf + abf) < 1.0f ? gt + gb * (1.0f - atf) / abf : gt + gb);
+    b = (png_byte) ((atf + abf) < 1.0f ? bt + bb * (1.0f - atf) / abf : bt + bb);
+    a = MAX(0, MIN(255, at + ab));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}

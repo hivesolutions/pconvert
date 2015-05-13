@@ -190,8 +190,6 @@ void process_image(struct pcv_image *image) {
 
 void blend_images(struct pcv_image *bottom, struct pcv_image *top) {
     int x, y;
-    float atf;
-    png_byte r, g, b, a;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
 
@@ -212,21 +210,11 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top) {
             bt = *(ptrTop + 2);
             at = *(ptrTop + 3);
 
-            atf = 1.0f * (at / 255.0f);
-
-            r = (png_byte) (rb * (1 - atf) + rt * atf);
-            g = (png_byte) (gb * (1 - atf) + gt * atf);
-            b = (png_byte) (bb * (1 - atf) + bt * atf);
-            a = MAX(0, MIN(255, at + ab));
-
-            r = MAX(0, MIN(255, r));
-            g = MAX(0, MIN(255, g));
-            b = MAX(0, MIN(255, b));
-
-            *ptrBottom = r;
-            *(ptrBottom + 1) = g;
-            *(ptrBottom + 2) = b;
-            *(ptrBottom + 3) = a;
+            blend_multiplicative(
+                ptrBottom,
+                rb, gb, bb, ab,
+                rt, gt, bt, at
+            );
         }
     }
 }
@@ -248,7 +236,7 @@ void compose_images(char *base_path) {
     read_png(join_path(base_path, "background_alpha.png", path), &bottom);
     read_png(join_path(base_path, "front.png", path), &top);
     blend_images(&bottom, &top);
-    read_png(join_path(base_path, "top.png", path), &top);
+    read_png(join_path(base_path, "back.png", path), &top);
     blend_images(&bottom, &top);
     read_png(join_path(base_path, "shoelace.png", path), &top);
     blend_images(&bottom, &top);
@@ -259,7 +247,13 @@ void compose_images(char *base_path) {
     release_image(&bottom);
 }
 
-int main(int argc, char **argv) {
+int pcompose(int argc, char **argv) {
+   /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
+    compose_images("C:/repo.private/pconvert/assets/demo/");
+    return 0;
+}
+
+int pconvert(int argc, char **argv) {
     struct pcv_image image;
 
     if(argc != 3) { abort_("Usage: pconvert <file_in> <file_out>"); }
@@ -270,4 +264,9 @@ int main(int argc, char **argv) {
     release_image(&image);
 
     return 0;
+}
+
+int main(int argc, char **argv) {
+    pcompose(argc, argv);
+   // return pconvert(arc, argv);
 }
