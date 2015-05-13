@@ -274,6 +274,9 @@ int pcompose(int argc, char **argv) {
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "white");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "texture");
     return 0;
 }
 

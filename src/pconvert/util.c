@@ -96,9 +96,9 @@ void blend_disjoint_debug(
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
 
-    r = (png_byte) atf + abf < 1.0 ? 0 : 255;
-    g = (png_byte) atf + abf < 1.0 ? 255 : 0;
-    b = (png_byte) atf + abf < 1.0 ? 0 : 255;
+    r = (png_byte) (atf + abf < 1.0 ? 0 : 255);
+    g = (png_byte) (atf + abf < 1.0 ? 255 : 0);
+    b = (png_byte) (atf + abf < 1.0 ? 0 : 0);
     a = MAX(0, MIN(255, at + ab));
 
     r = MAX(0, MIN(255, r));
