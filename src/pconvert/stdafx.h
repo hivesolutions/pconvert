@@ -42,6 +42,7 @@ typedef void (blend_algorithm) (
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 
+void abort_(const char *s, ...);
 void read_png(char *file_name, struct pcv_image *image);
 void write_png(struct pcv_image *image, char *file_name);
 void process_image(struct pcv_image *image);
