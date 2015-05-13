@@ -9,14 +9,14 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
 };
 
 PyObject *extension_blend_images(PyObject *self, PyObject *args) {
-    char *bottom_path, *top_path, *target_path;
+    char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
 
-    if(PyArg_ParseTuple(args, "sss", &bottom_path, &top_path, &target_path) == 0) { return NULL; }
+    if(PyArg_ParseTuple(args, "ssss", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
 
     read_png(bottom_path, &bottom);
     read_png(top_path, &top);
-    blend_images(&bottom, &top);
+    blend_images(&bottom, &top, algorithm);
     write_png(&bottom, target_path);
     release_image(&top);
     release_image(&bottom);

@@ -22,27 +22,27 @@ void read_png(char *file_name, struct pcv_image *image) {
     to avoid possible problems while handling inproper files */
     FILE *fp = fopen(file_name, "rb");
     if(!fp) {
-        abort_("[read_png_file] File %s could not be opened for reading", file_name);
+        abort_("[read_png] File %s could not be opened for reading", file_name);
     }
     fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8)) {
-        abort_("[read_png_file] File %s is not recognized as a PNG file", file_name);
+        abort_("[read_png] File %s is not recognized as a PNG file", file_name);
     }
 
     /* initialize stuff, this is the structu that will be populated
     withe the complete stat of the png file reading */
     image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!image->png_ptr) {
-        abort_("[read_png_file] png_create_read_struct failed");
+        abort_("[read_png] png_create_read_struct failed");
     }
 
     image->info_ptr = png_create_info_struct(image->png_ptr);
     if(!image->info_ptr) {
-        abort_("[read_png_file] png_create_info_struct failed");
+        abort_("[read_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        abort_("[read_png_file] Error during init_io");
+        abort_("[read_png] Error during init_io");
     }
 
     png_init_io(image->png_ptr, fp);
@@ -60,7 +60,7 @@ void read_png(char *file_name, struct pcv_image *image) {
     /* reads the complete file value in file, meaning that
     from this point on only decompression is remaining */
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        abort_("[read_png_file] Error during read_image");
+        abort_("[read_png] Error during read_image");
     }
 
     image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
@@ -83,30 +83,30 @@ void write_png(struct pcv_image *image, char *file_name) {
     has been completed with the proper success */
     FILE *fp = fopen(file_name, "wb");
     if(!fp) {
-        abort_("[write_png_file] File %s could not be opened for writing", file_name);
+        abort_("[write_png] File %s could not be opened for writing", file_name);
     }
 
     /* initialize stuff of the main structure, so that it may be used
     latter for the write operation */
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png_ptr) {
-        abort_("[write_png_file] png_create_write_struct failed");
+        abort_("[write_png] png_create_write_struct failed");
     }
 
     info_ptr = png_create_info_struct(png_ptr);
     if(!info_ptr) {
-        abort_("[write_png_file] png_create_info_struct failed");
+        abort_("[write_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png_file] Error during init_io");
+        abort_("[write_png] Error during init_io");
     }
 
     png_init_io(png_ptr, fp);
 
     /* write header */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png_file] Error during writing header");
+        abort_("[write_png] Error during writing header");
     }
 
     png_set_IHDR(
@@ -125,14 +125,14 @@ void write_png(struct pcv_image *image, char *file_name) {
 
     /* write bytes */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png_file] Error during writing bytes");
+        abort_("[write_png] Error during writing bytes");
     }
 
     png_write_image(png_ptr, image->rows);
 
     /* end write */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png_file] Error during end of write");
+        abort_("[write_png] Error during end of write");
     }
 
     png_write_end(png_ptr, NULL);
@@ -145,14 +145,14 @@ void process_image(struct pcv_image *image) {
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) == PNG_COLOR_TYPE_RGB) {
         abort_(
-            "[process_file] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
+            "[process_image] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
             "(lacks the alpha channel)"
         );
     }
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) != PNG_COLOR_TYPE_RGBA) {
         abort_(
-            "[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
+            "[process_image] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
             PNG_COLOR_TYPE_RGBA,
             png_get_color_type(image->png_ptr, image->info_ptr)
         );
@@ -188,10 +188,21 @@ void process_image(struct pcv_image *image) {
     }
 }
 
-void blend_images(struct pcv_image *bottom, struct pcv_image *top) {
+void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
+	blend_algorithm *operation;
+
+	if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+		operation = blend_multiplicative;
+	} else if(strcmp(algorithm, "disjoint_over") == 0) {
+		operation = blend_disjoint_over;
+	} else if(strcmp(algorithm, "disjoint_under") == 0) {
+		operation = blend_disjoint_under;
+	} else {
+		abort_("[blend_images] Invalid algorithm value");
+	}
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];
@@ -230,26 +241,34 @@ void release_image(struct pcv_image *image) {
     free(image->rows);
 }
 
-void compose_images(char *base_path) {
+void compose_images(char *base_path, char *algorithm, char *background) {
     char path[1024];
+	char name[1024];
     struct pcv_image bottom, top;
-    read_png(join_path(base_path, "background_alpha.png", path), &bottom);
+	sprintf(name, "background_%s.png", background);
+    read_png(join_path(base_path, name, path), &bottom);
     read_png(join_path(base_path, "front.png", path), &top);
-    blend_images(&bottom, &top);
+    blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "back.png", path), &top);
-    blend_images(&bottom, &top);
+    blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "shoelace.png", path), &top);
-    blend_images(&bottom, &top);
+    blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "sole.png", path), &top);
-    blend_images(&bottom, &top);
-    write_png(&bottom, join_path(base_path, "result.png", path));
+    blend_images(&bottom, &top, algorithm);
+	sprintf(name, "result_%s_%s.png", algorithm, background);
+    write_png(&bottom, join_path(base_path, name, path));
     release_image(&top);
     release_image(&bottom);
 }
 
 int pcompose(int argc, char **argv) {
    /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
-    compose_images("C:/repo.private/pconvert/assets/demo/");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
     return 0;
 }
 
