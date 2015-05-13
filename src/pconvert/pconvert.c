@@ -263,11 +263,11 @@ void compose_images(char *base_path, char *algorithm, char *background) {
 
 int pcompose(int argc, char **argv) {
    /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
-    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
+	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
 	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
     return 0;
 }
