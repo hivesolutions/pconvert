@@ -192,19 +192,19 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
-	blend_algorithm *operation;
+    blend_algorithm *operation;
 
-	if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
-		operation = blend_multiplicative;
-	} else if(strcmp(algorithm, "disjoint_over") == 0) {
-		operation = blend_disjoint_over;
-	} else if(strcmp(algorithm, "disjoint_under") == 0) {
-		operation = blend_disjoint_under;
-	} else if(strcmp(algorithm, "disjoint_debug") == 0) {
-		operation = blend_disjoint_debug;
-	} else {
-		abort_("[blend_images] Invalid algorithm value");
-	}
+    if(algorithm == NULL || strcmp(algorithm, "multiplicative") == 0) {
+        operation = blend_multiplicative;
+    } else if(strcmp(algorithm, "disjoint_over") == 0) {
+        operation = blend_disjoint_over;
+    } else if(strcmp(algorithm, "disjoint_under") == 0) {
+        operation = blend_disjoint_under;
+    } else if(strcmp(algorithm, "disjoint_debug") == 0) {
+        operation = blend_disjoint_debug;
+    } else {
+        abort_("[blend_images] Invalid algorithm value");
+    }
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];
@@ -245,39 +245,37 @@ void release_image(struct pcv_image *image) {
 
 void compose_images(char *base_path, char *algorithm, char *background) {
     char path[1024];
-	char name[1024];
+    char name[1024];
     struct pcv_image bottom, top, final;
     read_png(join_path(base_path, "sole.png", path), &bottom);
-	read_png(join_path(base_path, "back.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
+    read_png(join_path(base_path, "back.png", path), &top);
+    blend_images(&bottom, &top, algorithm); release_image(&top);
     read_png(join_path(base_path, "front.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
+    blend_images(&bottom, &top, algorithm); release_image(&top);
     read_png(join_path(base_path, "shoelace.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
-	sprintf(name, "background_%s.png", background);
+    blend_images(&bottom, &top, algorithm); release_image(&top);
+    sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), &final);
-	blend_images(&final, &bottom, "multiplicative");
-	sprintf(name, "result_%s_%s.png", algorithm, background);
+    blend_images(&final, &bottom, "multiplicative"); release_image(&bottom);
+    sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png(&final, join_path(base_path, name, path));
-    release_image(&top);
-    release_image(&bottom);
-	release_image(&final);
+    release_image(&final);
 }
 
 int pcompose(int argc, char **argv) {
    /* if(argc != 1) { abort_("Usage: pconvert <file_in> <file_out>"); }*/
-	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "alpha");
     compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "white");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "white");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "alpha");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "white");
-	compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "texture");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "multiplicative", "texture");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "alpha");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "white");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_over", "texture");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "alpha");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "white");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_under", "texture");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "alpha");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "white");
+    compose_images("C:/repo.private/pconvert/assets/demo/", "disjoint_debug", "texture");
     return 0;
 }
 
