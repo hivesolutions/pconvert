@@ -246,21 +246,22 @@ void release_image(struct pcv_image *image) {
 void compose_images(char *base_path, char *algorithm, char *background) {
     char path[1024];
 	char name[1024];
-    struct pcv_image bottom, top;
-	sprintf(name, "background_%s.png", background);
-    read_png(join_path(base_path, name, path), &bottom);
-    read_png(join_path(base_path, "sole.png", path), &top);
-    blend_images(&bottom, &top, algorithm);
+    struct pcv_image bottom, top, final;
+    read_png(join_path(base_path, "sole.png", path), &bottom);
 	read_png(join_path(base_path, "back.png", path), &top);
     blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "front.png", path), &top);
     blend_images(&bottom, &top, algorithm);
     read_png(join_path(base_path, "shoelace.png", path), &top);
     blend_images(&bottom, &top, algorithm);
+	sprintf(name, "background_%s.png", background);
+    read_png(join_path(base_path, name, path), &final);
+	blend_images(&final, &bottom, "multiplicative");
 	sprintf(name, "result_%s_%s.png", algorithm, background);
-    write_png(&bottom, join_path(base_path, name, path));
+    write_png(&final, join_path(base_path, name, path));
     release_image(&top);
     release_image(&bottom);
+	release_image(&final);
 }
 
 int pcompose(int argc, char **argv) {
