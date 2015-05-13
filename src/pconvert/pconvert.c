@@ -220,6 +220,59 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
     }
 }
 
+void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path) {
+    int x, y;
+    png_byte rb, gb, bb, ab;
+    png_byte rt, gt, bt, at;
+    blend_algorithm *operation = get_blend_algorithm(algorithm);
+    FILE *file = fopen(file_path, "wb");
+
+    for(y = 0; y < bottom->height; y++) {
+        png_byte *rowBottom = bottom->rows[y];
+        png_byte *rowTop = top->rows[y];
+        for(x = 0; x < bottom->width; x++) {
+            png_byte *ptrBottom = &(rowBottom[x * 4]);
+            png_byte *ptrTop = &(rowTop[x * 4]);
+
+            rb = *ptrBottom;
+            gb = *(ptrBottom + 1);
+            bb = *(ptrBottom + 2);
+            ab = *(ptrBottom + 3);
+
+            rt = *ptrTop;
+            gt = *(ptrTop + 1);
+            bt = *(ptrTop + 2);
+            at = *(ptrTop + 3);
+
+            fprintf(
+                file,
+                "%02x%02x%02x%02x %02x%02x%02x%02x ",
+                rb, gb, bb, ab,
+                rt, gt, bt, at
+            );
+
+            operation(
+                ptrBottom,
+                rb, gb, bb, ab,
+                rt, gt, bt, at
+            );
+
+            rb = *ptrBottom;
+            gb = *(ptrBottom + 1);
+            bb = *(ptrBottom + 2);
+            ab = *(ptrBottom + 3);
+
+            fprintf(
+                file,
+                "%02x%02x%02x%02x\n",
+                rb, gb, bb, ab
+            );
+        }
+    }
+
+    fclose(file);
+}
+
 void release_image(struct pcv_image *image) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
@@ -248,6 +301,18 @@ void compose_images(char *base_path, char *algorithm, char *background) {
     sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png(&final, join_path(base_path, name, path));
     release_image(&final);
+}
+
+int ptest(int argc, char **argv) {
+    char path[1024];
+    struct pcv_image bottom, top;
+    char *algorithm = "disjoint_under";
+    char *base_path = "C:/repo.private/pconvert/assets/demo/";
+    read_png(join_path(base_path, "sole.png", path), &bottom);
+    read_png(join_path(base_path, "back.png", path), &top);
+    blend_images_debug(&bottom, &top, algorithm, join_path(base_path, "log.txt", path));
+    release_image(&top);
+    release_image(&bottom);
 }
 
 int pcompose(int argc, char **argv) {
@@ -281,6 +346,7 @@ int pconvert(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    return pcompose(argc, argv);
-   // return pconvert(arc, argv);
+    return ptest(argc, argv);
+    /*return pcompose(argc, argv);*/
+    /*return pconvert(arc, argv);*/
 }

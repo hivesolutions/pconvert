@@ -23,7 +23,7 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
         return blend_disjoint_debug;
     } else {
         abort_("[blend_images] Invalid algorithm value");
-		return NULL;
+        return NULL;
     }
 }
 
