@@ -4,7 +4,7 @@
 import os
 import setuptools
 
-setuptools.setuthonp(
+setuptools.setup(
     name = "pconvert-python",
     version = "0.1.0",
     author = "Hive Solutions Lda.",
