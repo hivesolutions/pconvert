@@ -19,6 +19,7 @@ setuptools.setup(
             include_dirs = ["/usr/local/include"],
             libraries = ["m", "png"],
             library_dirs = ["/usr/local/lib"],
+            include_dirs = ["src/pconvert"],
             sources = [
                 "src/pconvert/extension.c",
                 "src/pconvert/pconvert.c",
