@@ -20,8 +20,6 @@ setuptools.setup(
             libraries = ["m", "png"],
             library_dirs = ["/usr/local/lib"],
             sources = [
-                "src/pconvert/stdafx.h",
-                "src/pconvert/targetver.h",
                 "src/pconvert/extension.c",
                 "src/pconvert/pconvert.c",
                 "src/pconvert/stdafx.c",
