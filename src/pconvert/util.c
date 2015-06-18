@@ -37,7 +37,7 @@ char is_multiplied(char *algorithm) {
     } else if(strcmp(algorithm, "multiplicative") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "source_over") == 0) {
-        return TRUE;
+        return FALSE;
     } else if(strcmp(algorithm, "disjoint_over") == 0) {
         return TRUE;
     } else if(strcmp(algorithm, "disjoint_under") == 0) {
@@ -110,10 +110,10 @@ void blend_source_over(
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
 
-    r = (png_byte) ((atf + abf) < 1.0f ? rt + rb * (1.0f - atf) / abf : rt + rb);
-    g = (png_byte) ((atf + abf) < 1.0f ? gt + gb * (1.0f - atf) / abf : gt + gb);
-    b = (png_byte) ((atf + abf) < 1.0f ? bt + bb * (1.0f - atf) / abf : bt + bb);
-    a = MAX(0, MIN(255, at + ab));
+    r = (png_byte) (rb * abf + rt * atf * (1.0f - abf));
+    g = (png_byte) (gb * abf + gt * atf * (1.0f - abf));
+    b = (png_byte) (bb * abf + bt * atf * (1.0f - abf));
+    a = MAX(0, MIN(255, ab + at * (255 - ab)));
 
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
@@ -135,10 +135,10 @@ void blend_disjoint_under(
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
 
-	r = (png_byte) (rb * abf + rt * atf * (1.0f - abf));
-	g = (png_byte) (gb * abf + gt * atf * (1.0f - abf));
-	b = (png_byte) (bb * abf + bt * atf * (1.0f - abf));
-    a = MAX(0, MIN(255, ab + at * (255 - ab)));
+    r = (png_byte) ((atf * abf) > 0.0f ? rt / atf * (1.0f - abf) + rb: rt * (1.0f - abf) + rb);
+    g = (png_byte) ((atf * abf) > 0.0f ? gt / atf * (1.0f - abf) + gb: gt * (1.0f - abf) + gb);
+    b = (png_byte) ((atf * abf) > 0.0f ? bt / atf * (1.0f - abf) + bb: bt * (1.0f - abf) + bb);
+    a = MAX(0, MIN(255, at + ab));
 
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
