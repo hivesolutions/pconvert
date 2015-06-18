@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name = "pconvert-python",
-    version = "0.1.3",
+    version = "0.1.7",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "PNG Converter",
@@ -16,19 +16,16 @@ setuptools.setup(
     ext_modules = [
         setuptools.Extension(
             "pconvert",
-            include_dirs = ["/usr/local/include"],
+            include_dirs = ["src/pconvert", "/usr/local/include"],
             libraries = ["m", "png"],
             library_dirs = ["/usr/local/lib"],
-            include_dirs = ["src/pconvert"],
             sources = [
+                "src/pconvert/stdafx.h",
+                "src/pconvert/targetver.h",
                 "src/pconvert/extension.c",
                 "src/pconvert/pconvert.c",
                 "src/pconvert/stdafx.c",
                 "src/pconvert/util.c"
-            ],
-            headers = [
-                "src/pconvert/stdafx.h",
-                "src/pconvert/targetver.h"
             ]
         )
     ],
