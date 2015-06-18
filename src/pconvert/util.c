@@ -36,6 +36,8 @@ char is_multiplied(char *algorithm) {
         return FALSE;
     } else if(strcmp(algorithm, "multiplicative") == 0) {
         return FALSE;
+    } else if(strcmp(algorithm, "source_over") == 0) {
+        return TRUE;
     } else if(strcmp(algorithm, "disjoint_over") == 0) {
         return TRUE;
     } else if(strcmp(algorithm, "disjoint_under") == 0) {
