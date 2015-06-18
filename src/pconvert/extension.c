@@ -13,7 +13,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
 
-    if(PyArg_ParseTuple(args, "ssss", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
+    if(PyArg_ParseTuple(args, "sss|s", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     demultiply = is_multiplied(algorithm);
