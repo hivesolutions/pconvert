@@ -71,7 +71,6 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_read_image(image->png_ptr, image->rows);
     if(demultiply) { demultiply_image(image); }
 
-    png_destroy_write_struct(&image->png_ptr, &image->info_ptr);
     fclose(fp);
 }
 
@@ -141,6 +140,7 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
     }
 
     png_write_end(png_ptr, NULL);
+    png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
 }
 
