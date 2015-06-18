@@ -7,3 +7,4 @@
 /build
 /pconvert_python.egg-info
 /win32/vs2008ex/*/*
+/assets/demo/result*.png
