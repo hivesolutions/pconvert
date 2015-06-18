@@ -59,7 +59,7 @@ void blend_alpha(
 
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
-    float af = atf + abf * (1 - atf);
+    float af = atf + abf * (1.0f - atf);
 
     r = af == 0.0f ? 0 : (png_byte) ((rb * abf + rt * atf * (1.0f - abf)) / af);
     g = af == 0.0f ? 0 : (png_byte) ((gb * abf + gt * atf * (1.0f - abf)) / af);
@@ -109,12 +109,12 @@ void blend_source_over(
 
     float abf = 1.0f * (ab / 255.0f);
     float atf = 1.0f * (at / 255.0f);
-    float af = atf + abf * (1 - atf);
+    float af = abf + atf * (1.0f - abf);
 
     r = af == 0.0f ? 0 : (png_byte) ((rb * abf + rt * atf * (1.0f - abf)) / af);
     g = af == 0.0f ? 0 : (png_byte) ((gb * abf + gt * atf * (1.0f - abf)) / af);
     b = af == 0.0f ? 0 : (png_byte) ((bb * abf + bt * atf * (1.0f - abf)) / af);
-    a = MAX(0, MIN(255, (png_byte) ((abf + atf * (1.0f - abf)) * 255.0f)));
+    a = MAX(0, MIN(255, (png_byte) (af * 255.0f)));
 
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
