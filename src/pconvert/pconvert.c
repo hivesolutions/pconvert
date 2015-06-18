@@ -70,6 +70,8 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
 
     png_read_image(image->png_ptr, image->rows);
     if(demultiply) { demultiply_image(image); }
+
+    png_destroy_write_struct(&image->png_ptr, &image->info_ptr);
     fclose(fp);
 }
 
@@ -133,7 +135,7 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
 
     png_write_image(png_ptr, image->rows);
 
-    /* end write */
+    /* ends the writing process of the png file */
     if(setjmp(png_jmpbuf(png_ptr))) {
         abort_("[write_png] Error during end of write");
     }
@@ -340,6 +342,7 @@ void release_image(struct pcv_image *image) {
         free(image->rows[y]);
     }
     free(image->rows);
+    png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
 }
 
 void compose_images(char *base_path, char *algorithm, char *background) {
