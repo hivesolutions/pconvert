@@ -18,9 +18,19 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     it must be possible to check for the correct png header */
     char header[8];
 
+    /* allocates space for the pointer to the file that is going to
+    be used in the reading process of the file */
+    FILE *fp;
+
     /* opens the file and tests for it being a png, this is required
     to avoid possible problems while handling inproper files */
-    FILE *fp = fopen(file_name, "rb");
+#ifdef WIN32
+    wchar_t file_name_w[1024];
+    swprintf(file_name_w, 1024, L"%hs", file_name);
+    fp = _wfopen(file_name_w, L"wb");
+#else
+    fp = fopen(file_name, "wb");
+#endif
     if(!fp) {
         abort_("[read_png] File %s could not be opened for reading", file_name);
     }
@@ -75,6 +85,10 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
 }
 
 void write_png(struct pcv_image *image, char multiply, char *file_name) {
+    /* allocates space for the pointer to the file that is going to
+    be used in the writing process of the file */
+    FILE *fp;
+
     /* allocates space for temporary pointer values to both the global
     png file tables and the (meta-)information tables */
     png_structp png_ptr;
@@ -83,7 +97,13 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
     /* create file, that is going to be used as the target for the
     writting of the final file and the verifies it the open operation
     has been completed with the proper success */
-    FILE *fp = fopen(file_name, "wb");
+#ifdef WIN32
+    wchar_t file_name_w[1024];
+    swprintf(file_name_w, 1024, L"%hs", file_name);
+    fp = _wfopen(file_name_w, L"wb");
+#else
+    fp = fopen(file_name, "wb");
+#endif
     if(!fp) {
         abort_("[write_png] File %s could not be opened for writing", file_name);
     }
