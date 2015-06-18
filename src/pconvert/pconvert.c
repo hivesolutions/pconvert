@@ -27,9 +27,9 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
 #ifdef WIN32
     wchar_t file_name_w[1024];
     swprintf(file_name_w, 1024, L"%hs", file_name);
-    fp = _wfopen(file_name_w, L"wb");
+    fp = _wfopen(file_name_w, L"rb");
 #else
-    fp = fopen(file_name, "wb");
+    fp = fopen(file_name, "rb");
 #endif
     if(!fp) {
         abort_("[read_png] File %s could not be opened for reading", file_name);
