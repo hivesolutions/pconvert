@@ -44,6 +44,20 @@ PyMethodDef pconvert_functions[4] = {
 };
 
 #if PY_MAJOR_VERSION >= 3
+    struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "pconvert",
+        "PNG convertion module",
+        -1,
+        pconvert_functions,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit_pconvert(void) {
     // allocates space for the module object to hold the
     // module to be created
@@ -51,11 +65,7 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
 
     // creates the pconvert extension module with the
     // functions defined in the previous array
-    pconvert_module = Py_InitModule3(
-        "pconvert",
-		pconvert_functions,
-		"PNG convertion module"
-	);
+    pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return; }
 }
 #else
