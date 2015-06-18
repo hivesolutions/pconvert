@@ -53,3 +53,7 @@ PyMODINIT_FUNC initpconvert(void) {
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
 }
+
+PyMODINIT_FUNC PyInit_pconvert(void) {
+	return initpconvert();
+}
