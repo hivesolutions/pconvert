@@ -113,7 +113,7 @@ void blend_source_over(
     r = (png_byte) (rb * abf + rt * atf * (1.0f - abf));
     g = (png_byte) (gb * abf + gt * atf * (1.0f - abf));
     b = (png_byte) (bb * abf + bt * atf * (1.0f - abf));
-    a = MAX(0, MIN(255, ab + at * (255 - ab)));
+    a = MAX(0, MIN(255, (png_byte) ((abf + atf * (1.0f - abf)) * 255.0f)));
 
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
