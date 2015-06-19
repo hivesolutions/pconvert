@@ -24,9 +24,9 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
 
     /* opens the file and tests for it being a png, this is required
     to avoid possible problems while handling inproper files */
-#ifdef WIN32
+#ifdef _MSC_VER
     wchar_t file_name_w[1024];
-    swprintf(file_name_w, 1024, L"%hs", file_name);
+    swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
     fp = _wfopen(file_name_w, L"rb");
 #else
     fp = fopen(file_name, "rb");
@@ -97,9 +97,9 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
     /* create file, that is going to be used as the target for the
     writting of the final file and the verifies it the open operation
     has been completed with the proper success */
-#ifdef WIN32
+#ifdef _MSC_VER
     wchar_t file_name_w[1024];
-    swprintf(file_name_w, 1024, L"%hs", file_name);
+    swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
     fp = _wfopen(file_name_w, L"wb");
 #else
     fp = fopen(file_name, "wb");
