@@ -12,6 +12,26 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     char demultiply;
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
+
+    if(PyArg_ParseTuple(args, "sss|s", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
+
+    algorithm = algorithm == NULL ? "multiplicative" : algorithm;
+    demultiply = is_multiplied(algorithm);
+
+    read_png(bottom_path, demultiply, &bottom);
+    read_png(top_path, demultiply, &top);
+    blend_images(&bottom, &top, algorithm);
+    write_png(&bottom, demultiply, target_path);
+    release_image(&top);
+    release_image(&bottom);
+
+    Py_RETURN_NONE;
+};
+
+PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
+    char demultiply;
+    char *bottom_path, *top_path, *target_path, *algorithm;
+    struct pcv_image bottom, top;
     PyObject *paths, *iterator, *element, *first, *second;
     Py_ssize_t size;
 
@@ -39,7 +59,9 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     PyIter_Next(iterator);
     PyIter_Next(iterator);
 
-    while(element = PyIter_Next(iterator)) {
+    while(TRUE) {
+        element = PyIter_Next(iterator);
+        if(element == NULL) { break; }
         top_path = PyString_AsString(element);
         read_png(top_path, demultiply, &top);
         blend_images(&bottom, &top, algorithm);
@@ -50,26 +72,6 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     Py_DECREF(iterator);
 
     write_png(&bottom, demultiply, target_path);
-    release_image(&bottom);
-
-    Py_RETURN_NONE;
-};
-
-PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
-    char demultiply;
-    char *bottom_path, *top_path, *target_path, *algorithm;
-    struct pcv_image bottom, top;
-
-    if(PyArg_ParseTuple(args, "sss|s", &bottom_path, &top_path, &target_path, &algorithm) == 0) { return NULL; }
-
-    algorithm = algorithm == NULL ? "multiplicative" : algorithm;
-    demultiply = is_multiplied(algorithm);
-
-    read_png(bottom_path, demultiply, &bottom);
-    read_png(top_path, demultiply, &top);
-    blend_images(&bottom, &top, algorithm);
-    write_png(&bottom, demultiply, target_path);
-    release_image(&top);
     release_image(&bottom);
 
     Py_RETURN_NONE;
