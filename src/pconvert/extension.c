@@ -35,6 +35,10 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     PyObject *paths, *iterator, *element, *first, *second;
     Py_ssize_t size;
 
+#if PY_MAJOR_VERSION >= 3
+    PyObject *encoded;
+#endif
+
     if(PyArg_ParseTuple(args, "Os|s", &paths, &target_path, &algorithm) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
@@ -46,13 +50,25 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     first = PyList_GetItem(paths, 0);
     second = PyList_GetItem(paths, 1);
 
+#if PY_MAJOR_VERSION >= 3
+    first = PyUnicode_EncodeFSDefault(first);
+    second = PyUnicode_EncodeFSDefault(second);
+    bottom_path = PyBytes_AsString(first);
+    top_path = PyBytes_AsString(second);
+#else
     bottom_path = PyString_AsString(first);
     top_path = PyString_AsString(second);
+#endif
 
     read_png(bottom_path, demultiply, &bottom);
     read_png(top_path, demultiply, &top);
     blend_images(&bottom, &top, algorithm);
     release_image(&top);
+
+#if PY_MAJOR_VERSION >= 3
+    Py_DECREF(first);
+    Py_DECREF(second);
+#endif
 
     iterator = PyObject_GetIter(paths);
 
@@ -62,11 +78,19 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     while(TRUE) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }
+#if PY_MAJOR_VERSION >= 3
+        encoded = PyUnicode_EncodeFSDefault(element);
+        top_path = PyBytes_AsString(encoded);
+#else
         top_path = PyString_AsString(element);
+#endif
         read_png(top_path, demultiply, &top);
         blend_images(&bottom, &top, algorithm);
         release_image(&top);
         Py_DECREF(element);
+#if PY_MAJOR_VERSION >= 3
+        Py_DECREF(encoded);
+#endif
     }
 
     Py_DECREF(iterator);
