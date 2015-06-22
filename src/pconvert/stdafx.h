@@ -20,8 +20,14 @@
 #pragma comment(lib, "zlib.lib")
 #endif
 
+#ifdef PASS_ERROR
+#ifndef RUN_ABORT
+#define RUN_ABORT 0
+#endif
+#else
 #ifndef RUN_ABORT
 #define RUN_ABORT exit(0)
+#endif
 #endif
 
 #define TRUE 1

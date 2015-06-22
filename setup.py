@@ -24,6 +24,9 @@ setuptools.setup(
                 "src/pconvert/pconvert.c",
                 "src/pconvert/stdafx.c",
                 "src/pconvert/util.c"
+            ],
+            define_macros = [
+               ("PASS_ERROR", "1")
             ]
         )
     ],
