@@ -40,9 +40,9 @@
 #define ERROR_T int
 #define ERROR -1
 #define NO_ERROR 0
-#define RAISE return -1
-#define RAISE_S(...) abort_(__VA_ARGS__); return -1
-#define NORMAL return 0
+#define RAISE return ERROR
+#define RAISE_S(...) abort_(__VA_ARGS__); return ERROR
+#define NORMAL return NO_ERROR
 #define IS_ERROR(input) input != NO_ERROR
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } 0
 #define VALIDATE_R(input, return_v) if(IS_ERROR(input)) { return return_v; } 0
