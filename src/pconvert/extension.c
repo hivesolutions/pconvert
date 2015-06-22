@@ -60,7 +60,6 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     top_path = PyString_AsString(second);
 #endif
 
-    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
     VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
