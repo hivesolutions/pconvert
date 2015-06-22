@@ -43,9 +43,10 @@
 #define RAISE return -1
 #define RAISE_S(...) abort_(__VA_ARGS__); return -1
 #define NORMAL return 0
-#define VALIDATE(input) if(input != 0) { RAISE; } 0
-#define VALIDATE_R(input, return_v) if(input != 0) { return return_v; } 0
-#define VALIDATE_A(input, action) if(input != 0) { action; } 0
+#define IS_ERROR(input) input != NO_ERROR
+#define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } 0
+#define VALIDATE_R(input, return_v) if(IS_ERROR(input)) { return return_v; } 0
+#define VALIDATE_A(input, action) if(IS_ERROR(input)) { action; } 0
 
 typedef struct pcv_image {
     int width;
