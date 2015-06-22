@@ -357,6 +357,7 @@ ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char
     }
 
     fclose(file);
+    NORMAL;
 }
 
 ERROR_T release_image(struct pcv_image *image) {
