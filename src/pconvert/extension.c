@@ -18,12 +18,12 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     demultiply = is_multiplied(algorithm);
 
-    read_png(bottom_path, demultiply, &bottom);
-    read_png(top_path, demultiply, &top);
-    blend_images(&bottom, &top, algorithm);
-    write_png(&bottom, demultiply, target_path);
-    release_image(&top);
-    release_image(&bottom);
+    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
+    VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
+    VALIDATE_A(release_image(&top), Py_RETURN_NONE);
+    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
 
     Py_RETURN_NONE;
 };
@@ -60,10 +60,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     top_path = PyString_AsString(second);
 #endif
 
-    read_png(bottom_path, demultiply, &bottom);
-    read_png(top_path, demultiply, &top);
-    blend_images(&bottom, &top, algorithm);
-    release_image(&top);
+    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
+    VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+    VALIDATE_A(release_image(&top), Py_RETURN_NONE);
 
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
@@ -84,9 +85,9 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #else
         top_path = PyString_AsString(element);
 #endif
-        read_png(top_path, demultiply, &top);
-        blend_images(&bottom, &top, algorithm);
-        release_image(&top);
+        VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(release_image(&top), Py_RETURN_NONE);
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
@@ -95,8 +96,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     Py_DECREF(iterator);
 
-    write_png(&bottom, demultiply, target_path);
-    release_image(&bottom);
+    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
+    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
 
     Py_RETURN_NONE;
 };

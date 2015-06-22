@@ -31,6 +31,16 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define ROUND(x) floor(x + 0.5)
 
+#define ERROR_T int
+#define ERROR -1
+#define NO_ERROR 0
+#define RAISE return -1
+#define RAISE_S(...) abort_(__VA_ARGS__); return -1
+#define NORMAL return 0
+#define VALIDATE(input) if(input != 0) { RAISE; } 0
+#define VALIDATE_R(input, return_v) if(input != 0) { return return_v; } 0
+#define VALIDATE_A(input, action) if(input != 0) { action; } 0
+
 typedef struct pcv_image {
     int width;
     int height;
@@ -48,15 +58,15 @@ typedef void (blend_algorithm) (
 );
 
 void abort_(const char *s, ...);
-void read_png(char *file_name, char demultiply, struct pcv_image *image);
-void write_png(struct pcv_image *image, char multiply, char *file_name);
-void demultiply_image(struct pcv_image *image);
-void multiply_image(struct pcv_image *image);
-void process_image(struct pcv_image *image);
-void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
-void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
-void release_image(struct pcv_image *image);
-void compose_images(char *base_path, char *algorithm, char *background);
+ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image);
+ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name);
+ERROR_T demultiply_image(struct pcv_image *image);
+ERROR_T multiply_image(struct pcv_image *image);
+ERROR_T process_image(struct pcv_image *image);
+ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
+ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
+ERROR_T release_image(struct pcv_image *image);
+ERROR_T compose_images(char *base_path, char *algorithm, char *background);
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);

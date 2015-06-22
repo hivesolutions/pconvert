@@ -9,7 +9,7 @@ void abort_(const char *s, ...) {
     RUN_ABORT;
 }
 
-void read_png(char *file_name, char demultiply, struct pcv_image *image) {
+ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     /* allocates space for some of the simple values that are
     going to be used in the image processing */
     int y;
@@ -32,27 +32,27 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     fp = fopen(file_name, "rb");
 #endif
     if(!fp) {
-        abort_("[read_png] File %s could not be opened for reading", file_name);
+        RAISE_S("[read_png] File %s could not be opened for reading", file_name);
     }
     fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8)) {
-        abort_("[read_png] File %s is not recognized as a PNG file", file_name);
+        RAISE_S("[read_png] File %s is not recognized as a PNG file", file_name);
     }
 
     /* initialize stuff, this is the structu that will be populated
     withe the complete stat of the png file reading */
     image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!image->png_ptr) {
-        abort_("[read_png] png_create_read_struct failed");
+        RAISE_S("[read_png] png_create_read_struct failed");
     }
 
     image->info_ptr = png_create_info_struct(image->png_ptr);
     if(!image->info_ptr) {
-        abort_("[read_png] png_create_info_struct failed");
+        RAISE_S("[read_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        abort_("[read_png] Error during init_io");
+        RAISE_S("[read_png] Error during init_io");
     }
 
     png_init_io(image->png_ptr, fp);
@@ -70,7 +70,7 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     /* reads the complete file value in file, meaning that
     from this point on only decompression is remaining */
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        abort_("[read_png] Error during read_image");
+        RAISE_S("[read_png] Error during read_image");
     }
 
     image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
@@ -82,9 +82,10 @@ void read_png(char *file_name, char demultiply, struct pcv_image *image) {
     if(demultiply) { demultiply_image(image); }
 
     fclose(fp);
+    NORMAL;
 }
 
-void write_png(struct pcv_image *image, char multiply, char *file_name) {
+ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
     /* allocates space for the pointer to the file that is going to
     be used in the writing process of the file */
     FILE *fp;
@@ -105,23 +106,23 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
     fp = fopen(file_name, "wb");
 #endif
     if(!fp) {
-        abort_("[write_png] File %s could not be opened for writing", file_name);
+        RAISE_S("[write_png] File %s could not be opened for writing", file_name);
     }
 
     /* initialize stuff of the main structure, so that it may be used
     latter for the write operation */
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png_ptr) {
-        abort_("[write_png] png_create_write_struct failed");
+        RAISE_S("[write_png] png_create_write_struct failed");
     }
 
     info_ptr = png_create_info_struct(png_ptr);
     if(!info_ptr) {
-        abort_("[write_png] png_create_info_struct failed");
+        RAISE_S("[write_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png] Error during init_io");
+        RAISE_S("[write_png] Error during init_io");
     }
 
     if(multiply) { multiply_image(image); }
@@ -130,7 +131,7 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
 
     /* write header */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png] Error during writing header");
+        RAISE_S("[write_png] Error during writing header");
     }
 
     png_set_IHDR(
@@ -149,22 +150,23 @@ void write_png(struct pcv_image *image, char multiply, char *file_name) {
 
     /* write bytes */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png] Error during writing bytes");
+        RAISE_S("[write_png] Error during writing bytes");
     }
 
     png_write_image(png_ptr, image->rows);
 
     /* ends the writing process of the png file */
     if(setjmp(png_jmpbuf(png_ptr))) {
-        abort_("[write_png] Error during end of write");
+        RAISE_S("[write_png] Error during end of write");
     }
 
     png_write_end(png_ptr, NULL);
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
+    NORMAL;
 }
 
-void demultiply_image(struct pcv_image *image) {
+ERROR_T demultiply_image(struct pcv_image *image) {
     int x, y;
     float af;
     png_byte r, g, b, a;
@@ -189,9 +191,10 @@ void demultiply_image(struct pcv_image *image) {
             *(pixel + 2) = b;
         }
     }
+    NORMAL;
 }
 
-void multiply_image(struct pcv_image *image) {
+ERROR_T multiply_image(struct pcv_image *image) {
     int x, y;
     float af;
     png_byte r, g, b, a;
@@ -216,21 +219,22 @@ void multiply_image(struct pcv_image *image) {
             *(pixel + 2) = b;
         }
     }
+    NORMAL;
 }
 
-void process_image(struct pcv_image *image) {
+ERROR_T process_image(struct pcv_image *image) {
     int x;
     int y;
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) == PNG_COLOR_TYPE_RGB) {
-        abort_(
+        RAISE_S(
             "[process_image] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
             "(lacks the alpha channel)"
         );
     }
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) != PNG_COLOR_TYPE_RGBA) {
-        abort_(
+        RAISE_S(
             "[process_image] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
             PNG_COLOR_TYPE_RGBA,
             png_get_color_type(image->png_ptr, image->info_ptr)
@@ -265,9 +269,10 @@ void process_image(struct pcv_image *image) {
             ptr[1] = ptr[2];
         }
     }
+    NORMAL;
 }
 
-void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
@@ -297,9 +302,10 @@ void blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorit
             );
         }
     }
+    NORMAL;
 }
 
-void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path) {
+ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
@@ -353,7 +359,7 @@ void blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *a
     fclose(file);
 }
 
-void release_image(struct pcv_image *image) {
+ERROR_T release_image(struct pcv_image *image) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
     row pointer level (two level of allocation) */
@@ -363,9 +369,10 @@ void release_image(struct pcv_image *image) {
     }
     free(image->rows);
     png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
+    NORMAL;
 }
 
-void compose_images(char *base_path, char *algorithm, char *background) {
+ERROR_T compose_images(char *base_path, char *algorithm, char *background) {
     char path[1024];
     char name[1024];
     struct pcv_image bottom, top, final;
@@ -384,6 +391,7 @@ void compose_images(char *base_path, char *algorithm, char *background) {
     sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png(&final, FALSE, join_path(base_path, name, path));
     release_image(&final);
+    NORMAL;
 }
 
 int pcompose(int argc, char **argv) {
