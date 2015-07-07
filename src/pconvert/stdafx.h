@@ -16,8 +16,19 @@
 #include <Python.h>
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
+#define PWINDOWS 1
+#else
+#define PUNIX
+#endif
+
+#ifdef PWINDOWS
 #pragma comment(lib, "libpng.lib")
 #pragma comment(lib, "zlib.lib")
+#define FINLINE __inline
+#endif
+
+#ifdef PUNIX
+#define FINLINE inline
 #endif
 
 #ifdef PASS_ERROR
@@ -109,7 +120,7 @@ void blend_disjoint_debug(
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 
-static __inline void blend_source_over_i(
+static FINLINE void blend_source_over_i(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
