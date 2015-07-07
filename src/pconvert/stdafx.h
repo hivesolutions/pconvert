@@ -71,6 +71,7 @@ ERROR_T demultiply_image(struct pcv_image *image);
 ERROR_T multiply_image(struct pcv_image *image);
 ERROR_T process_image(struct pcv_image *image);
 ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
+ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
 ERROR_T release_image(struct pcv_image *image);
 ERROR_T compose_images(char *base_path, char *algorithm, char *background);
@@ -107,3 +108,29 @@ void blend_disjoint_debug(
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
+
+static __inline void blend_source_over_i(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float abf = 1.0f * (ab / 255.0f);
+    float atf = 1.0f * (at / 255.0f);
+    float af = abf + atf * (1.0f - abf);
+
+    r = af == 0.0f ? 0 : (png_byte) ((rb * abf + rt * atf * (1.0f - abf)) / af);
+    g = af == 0.0f ? 0 : (png_byte) ((gb * abf + gt * atf * (1.0f - abf)) / af);
+    b = af == 0.0f ? 0 : (png_byte) ((bb * abf + bt * atf * (1.0f - abf)) / af);
+    a = MAX(0, MIN(255, (png_byte) (af * 255.0f)));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}

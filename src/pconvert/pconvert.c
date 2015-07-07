@@ -309,6 +309,38 @@ ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algo
     NORMAL;
 }
 
+ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+    int x, y;
+    png_byte rb, gb, bb, ab;
+    png_byte rt, gt, bt, at;
+
+    for(y = 0; y < bottom->height; y++) {
+        png_byte *rowBottom = bottom->rows[y];
+        png_byte *rowTop = top->rows[y];
+        for(x = 0; x < bottom->width; x++) {
+            png_byte *ptrBottom = &(rowBottom[x * 4]);
+            png_byte *ptrTop = &(rowTop[x * 4]);
+
+            rb = *ptrBottom;
+            gb = *(ptrBottom + 1);
+            bb = *(ptrBottom + 2);
+            ab = *(ptrBottom + 3);
+
+            rt = *ptrTop;
+            gt = *(ptrTop + 1);
+            bt = *(ptrTop + 2);
+            at = *(ptrTop + 3);
+
+            blend_source_over_i(
+                ptrBottom,
+                rb, gb, bb, ab,
+                rt, gt, bt, at
+            );
+        }
+    }
+    NORMAL;
+}
+
 ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path) {
     int x, y;
     png_byte rb, gb, bb, ab;
