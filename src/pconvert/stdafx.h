@@ -22,7 +22,7 @@
 
 #ifdef PASS_ERROR
 #ifndef RUN_ABORT
-#define RUN_ABORT 0
+#define RUN_ABORT while(FALSE)
 #endif
 #else
 #ifndef RUN_ABORT

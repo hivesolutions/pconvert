@@ -22,6 +22,10 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     be used in the reading process of the file */
     FILE *fp;
 
+    /* allocates space for the counter that is going to be used for
+    some of the reading operation (required) */
+    size_t count;
+
     /* opens the file and tests for it being a png, this is required
     to avoid possible problems while handling inproper files */
 #ifdef _MSC_VER
@@ -34,8 +38,8 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     if(!fp) {
         RAISE_S("[read_png] File %s could not be opened for reading", file_name);
     }
-    fread(header, 1, 8, fp);
-    if(png_sig_cmp((void *) header, 0, 8)) {
+    count = fread(header, 1, 8, fp);
+    if(png_sig_cmp((void *) header, 0, 8) || count != 8) {
         RAISE_S("[read_png] File %s is not recognized as a PNG file", file_name);
     }
 
