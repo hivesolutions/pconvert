@@ -19,6 +19,7 @@ setuptools.setup(
             include_dirs = ["src/pconvert", "/usr/local/include"],
             libraries = [] if os.name in ("nt",) else ["m", "png"],
             library_dirs = ["/usr/local/lib"],
+            extra_compile_args = [] if os.name in ("nt",) else ["-O3", "-finline-functions"],
             sources = [
                 "src/pconvert/extension.c",
                 "src/pconvert/pconvert.c",
