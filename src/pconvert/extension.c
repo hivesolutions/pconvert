@@ -86,8 +86,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
-    if(run_inline == TRUE) { VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE); }
-    else { VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE); }
+    if(run_inline == TRUE) {
+        VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
+    } else {
+        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+    }
     VALIDATE_A(release_image(&top), Py_RETURN_NONE);
 
 #if PY_MAJOR_VERSION >= 3
@@ -110,8 +113,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         top_path = PyString_AsString(element);
 #endif
         VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
-        if(run_inline == TRUE) { VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE); }
-        else { VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE); }
+        if(run_inline == TRUE) {
+            VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
+        } else {
+            VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+        }
         VALIDATE_A(release_image(&top), Py_RETURN_NONE);
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
