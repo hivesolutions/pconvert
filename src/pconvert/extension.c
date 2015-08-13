@@ -177,7 +177,11 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     // creates the pconvert extension module with the
     // functions defined in the previous array
     pconvert_module = PyModule_Create(&moduledef);
-    if(pconvert_module == NULL) { return; }
+    if(pconvert_module == NULL) { return NULL; }
+
+    // returns the module that has just been created to
+    // the caller method/function (to be used)
+    return pconvert_module;
 }
 #else
 PyMODINIT_FUNC initpconvert(void) {
