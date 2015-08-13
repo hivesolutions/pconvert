@@ -13,7 +13,7 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls
   - pip install twine
-script: coverage run --source=pconvert setup.py test
+script: coverage run --source=pconvert setup.py install test
 after_success: coveralls
 deploy:
   provider: pypi
