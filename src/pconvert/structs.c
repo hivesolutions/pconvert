@@ -33,7 +33,7 @@ void *value_map(char *key) {
     np = get_map(key);
     if(np == NULL) { return NULL; }
     return np->value;
-} 
+}
 
 size_t hash_str(char *value) {
     size_t hashval;

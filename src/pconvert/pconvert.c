@@ -447,6 +447,10 @@ ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char
 }
 
 ERROR_T release_image(struct pcv_image *image) {
+    return release_image_s(image, TRUE);
+}
+
+ERROR_T release_image_s(struct pcv_image *image, char destroy_struct) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
     row pointer level (two level of allocation) */
@@ -455,7 +459,34 @@ ERROR_T release_image(struct pcv_image *image) {
         free(image->rows[y]);
     }
     free(image->rows);
-    png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
+    if(destroy_struct) {
+        png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
+    }
+    NORMAL;
+}
+
+ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target) {
+    target->width = origin->width;
+    target->height = origin->height;
+    target->color_type = origin->color_type;
+    target->bit_depth = origin->bit_depth;
+    target->png_ptr = origin->png_ptr;
+    target->info_ptr = origin->info_ptr;
+    target->rows = origin->rows;
+    NORMAL;
+}
+
+ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
+    int y;
+    size_t rows_size = sizeof(png_bytep) * origin->height;
+    size_t row_size = sizeof(png_byte) * 4 * origin->width;
+    copy_image(origin, target);
+    target->rows = (png_bytep *) malloc(rows_size);
+    memcpy(target->rows, origin->rows, rows_size);
+    for(y = 0; y < origin->height; y++) {
+        target->rows[y] = (png_bytep) malloc(row_size);
+        memcpy(target->rows[y], origin->rows[y], row_size);
+    }
     NORMAL;
 }
 

@@ -48,11 +48,12 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
 };
 
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
-    int run_inline;
+    int run_inline, cache;
     char demultiply, source_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
-    PyObject *paths, *iterator, *element, *first, *second, *is_inline;
+    struct pcv_image *bottom_cache, *top_cache;
+    PyObject *paths, *iterator, *element, *first, *second, *is_inline, *use_cache;
     Py_ssize_t size;
 
 #if PY_MAJOR_VERSION >= 3
@@ -61,15 +62,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     if(PyArg_ParseTuple(
         args,
-        "Os|sO",
+        "Os|sOO",
         &paths,
         &target_path,
         &algorithm,
-        &is_inline
+        &is_inline,
+        &use_cache
     ) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
+    cache = use_cache == NULL ? 0 : PyBool_Check(use_cache);
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
 
@@ -89,10 +92,30 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     top_path = PyString_AsString(second);
 #endif
 
-    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
-    VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    bottom_cache = (struct pcv_image *) value_map(bottom_path);
+    if(cache && bottom_cache != NULL) {
+        VALIDATE_A(duplicate_image(bottom_cache, &bottom), Py_RETURN_NONE);
+    } else {
+        VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
+    }
 
-    put_map(top_path, &top);
+    top_cache = (struct pcv_image *) value_map(top_path);
+    if(cache && top_cache != NULL ) {
+        VALIDATE_A(duplicate_image(top_cache, &top), Py_RETURN_NONE);
+    } else {
+        VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    }
+
+    if(cache && bottom_cache == NULL) {
+        bottom_cache = malloc(sizeof(struct pcv_image));
+        duplicate_image(&bottom, bottom_cache);
+        set_map(bottom_path, bottom_cache);
+    }
+    if(cache && top_cache == NULL) {
+        top_cache = malloc(sizeof(struct pcv_image));
+        duplicate_image(&top, top_cache);
+        set_map(top_path, top_cache);
+    }
 
     if(source_over == TRUE) {
         VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
@@ -101,7 +124,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
     }
-    VALIDATE_A(release_image(&top), Py_RETURN_NONE);
+    VALIDATE_A(release_image_s(&top, !cache), Py_RETURN_NONE);
 
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
@@ -122,7 +145,21 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #else
         top_path = PyString_AsString(element);
 #endif
+
+        top_cache = (struct pcv_image *) value_map(top_path);
+        if(cache && top_cache != NULL) {
+            VALIDATE_A(duplicate_image(top_cache, &top), Py_RETURN_NONE);
+        } else {
+            VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+        }
         VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+
+        if(cache && top_cache == NULL) {
+            top_cache = malloc(sizeof(struct pcv_image));
+            duplicate_image(&top, top_cache);
+            set_map(top_path, top_cache);
+        }
+
         if(source_over == TRUE) {
             VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
         } else if(run_inline == TRUE) {
@@ -130,7 +167,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         } else {
             VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
         }
-        VALIDATE_A(release_image(&top), Py_RETURN_NONE);
+        VALIDATE_A(release_image_s(&top, !cache), Py_RETURN_NONE);
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
@@ -140,7 +177,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     Py_DECREF(iterator);
 
     VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
-    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+    VALIDATE_A(release_image_s(&bottom, !cache), Py_RETURN_NONE);
 
     Py_RETURN_NONE;
 };

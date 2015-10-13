@@ -45,6 +45,9 @@ ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *al
 ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
 ERROR_T release_image(struct pcv_image *image);
+ERROR_T release_image_s(struct pcv_image *image, char destroy_struct);
+ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target);
+ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target);
 ERROR_T compose_images(char *base_path, char *algorithm, char *background);
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
