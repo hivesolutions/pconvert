@@ -39,6 +39,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
     }
+
     VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
     VALIDATE_A(release_image(&top), Py_RETURN_NONE);
     VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);

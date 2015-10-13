@@ -338,6 +338,10 @@
                 >
             </File>
             <File
+                RelativePath="..\..\src\pconvert\structs.c"
+                >
+            </File>
+            <File
                 RelativePath="..\..\src\pconvert\util.c"
                 >
             </File>
@@ -349,6 +353,10 @@
             >
             <File
                 RelativePath="..\..\src\pconvert\stdafx.h"
+                >
+            </File>
+            <File
+                RelativePath="..\..\src\pconvert\structs.h"
                 >
             </File>
             <File
