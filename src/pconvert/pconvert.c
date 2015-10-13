@@ -85,6 +85,8 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_read_image(image->png_ptr, image->rows);
     if(demultiply) { demultiply_image(image); }
 
+    /* closes the file pointer as no more reading is going
+    to take place (as expected) avoiding leaks */
     fclose(fp);
     NORMAL;
 }
