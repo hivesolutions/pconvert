@@ -83,6 +83,7 @@ ERROR_T multiply_image(struct pcv_image *image);
 ERROR_T process_image(struct pcv_image *image);
 ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
+ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
 ERROR_T release_image(struct pcv_image *image);
 ERROR_T compose_images(char *base_path, char *algorithm, char *background);

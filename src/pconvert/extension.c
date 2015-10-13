@@ -10,7 +10,7 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
 
 PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     int run_inline;
-    char demultiply;
+    char demultiply, source_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     PyObject *is_inline;
     struct pcv_image bottom, top;
@@ -28,10 +28,13 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
     demultiply = is_multiplied(algorithm);
+    source_over = strcmp(algorithm, "source_over") == 0;
 
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
-    if(run_inline == TRUE) {
+    if(source_over == TRUE) {
+        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+    } else if(run_inline == TRUE) {
         VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
@@ -45,7 +48,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
 
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     int run_inline;
-    char demultiply;
+    char demultiply, source_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *element, *first, *second, *is_inline;
@@ -67,6 +70,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
     demultiply = is_multiplied(algorithm);
+    source_over = strcmp(algorithm, "source_over") == 0;
 
     size = PyList_Size(paths);
     if(size < 2) { Py_RETURN_NONE; }
@@ -86,7 +90,9 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
-    if(run_inline == TRUE) {
+    if(source_over == TRUE) {
+        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+    } else if(run_inline == TRUE) {
         VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
@@ -113,7 +119,9 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         top_path = PyString_AsString(element);
 #endif
         VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
-        if(run_inline == TRUE) {
+        if(source_over == TRUE) {
+            VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+        } else if(run_inline == TRUE) {
             VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
         } else {
             VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
