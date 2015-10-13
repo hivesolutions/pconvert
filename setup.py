@@ -30,6 +30,7 @@ setuptools.setup(
                 "src/pconvert/extension.c",
                 "src/pconvert/pconvert.c",
                 "src/pconvert/stdafx.c",
+                "src/pconvert/structs.c",
                 "src/pconvert/util.c"
             ],
             define_macros = [

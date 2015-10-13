@@ -91,6 +91,9 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+
+    put_map(top_path, &top);
+
     if(source_over == TRUE) {
         VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
     } else if(run_inline == TRUE) {

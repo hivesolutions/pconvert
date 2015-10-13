@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "structs.h"
-
 static struct nlist_t *hashtab[HASHSIZE];
 
 struct nlist_t *get_map(char *key) {
@@ -19,7 +17,7 @@ struct nlist_t *put_map(char *key, void *value) {
     np = get_map(key);
     if(np == NULL) {
         np = (struct nlist_t *) malloc(sizeof(*np));
-        if(np == NULL || (np->key = strdup(key)) == NULL) {
+        if(np == NULL || (np->key = copy_str(key)) == NULL) {
             return NULL;
         }
         hashval = hash_str(key);
@@ -38,7 +36,7 @@ size_t hash_str(char *value) {
     return hashval % HASHSIZE;
 }
 
-char *strdup(char *value) {
+char *copy_str(char *value) {
     char *duplicate;
     duplicate = (char *) malloc(strlen(value) + 1);
     if(duplicate != NULL) { strcpy(duplicate, value); }
