@@ -8,7 +8,7 @@ RMFLAGS=-rf
 LIBS=-lm -lpng
 PREFIX=/usr
 SRC_DIR=src/pconvert
-SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/util.c
+SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/structs.c $(SRC_DIR)/util.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
