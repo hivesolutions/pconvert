@@ -22,6 +22,7 @@ setuptools.setup(
             extra_compile_args = [] if os.name in ("nt",) else [
                 "-O3",
                 "-finline-functions",
+                "-ffast-math",
                 "-Winline",
                 "-march=native"
             ],
