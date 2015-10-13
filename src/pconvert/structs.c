@@ -11,7 +11,7 @@ struct nlist_t *get_map(char *key) {
     return NULL;
 }
 
-struct nlist_t *put_map(char *key, void *value) {
+struct nlist_t *set_map(char *key, void *value) {
     struct nlist_t *np;
     unsigned hashval;
     np = get_map(key);
@@ -27,6 +27,13 @@ struct nlist_t *put_map(char *key, void *value) {
     np->value = value;
     return np;
 }
+
+void *value_map(char *key) {
+    struct nlist_t *np;
+    np = get_map(key);
+    if(np == NULL) { return NULL; }
+    return np->value;
+} 
 
 size_t hash_str(char *value) {
     size_t hashval;
