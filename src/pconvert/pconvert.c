@@ -129,11 +129,13 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
         RAISE_S("[write_png] Error during init_io");
     }
 
+    /* in case the multiply mode is defined the image structure
+    is changed for proper multiplication */
     if(multiply) { multiply_image(image); }
 
     png_init_io(png_ptr, fp);
 
-    /* write header */
+    /* writes the header information for the file */
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing header");
     }
