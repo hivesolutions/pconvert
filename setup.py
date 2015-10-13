@@ -20,11 +20,9 @@ setuptools.setup(
             libraries = [] if os.name in ("nt",) else ["m", "png"],
             library_dirs = ["/usr/local/lib"],
             extra_compile_args = [] if os.name in ("nt",) else [
-                "-O3",
+                "-O2",
                 "-finline-functions",
-                "-ffast-math",
-                "-Winline",
-                "-march=native"
+                "-Winline"
             ],
             sources = [
                 "src/pconvert/extension.c",
