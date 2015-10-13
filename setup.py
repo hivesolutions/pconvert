@@ -22,7 +22,8 @@ setuptools.setup(
             extra_compile_args = [] if os.name in ("nt",) else [
                 "-O3",
                 "-finline-functions",
-                "-Winline"
+                "-Winline",
+                "-march=native"
             ],
             sources = [
                 "src/pconvert/extension.c",
