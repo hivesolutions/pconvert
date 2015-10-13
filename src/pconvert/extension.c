@@ -48,7 +48,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
 };
 
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
-    int run_inline, cache;
+    int run_inline, cache, destroy_struct;
     char demultiply, source_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
@@ -71,10 +71,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     ) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
-    run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
-    cache = use_cache == NULL ? 0 : PyBool_Check(use_cache);
+    run_inline = is_inline != NULL && PyObject_IsTrue(is_inline) == TRUE ? TRUE : FALSE;
+    cache = use_cache != NULL && PyObject_IsTrue(use_cache) == TRUE ? TRUE : FALSE;
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
+    destroy_struct = cache == TRUE ? FALSE : TRUE;
 
     size = PyList_Size(paths);
     if(size < 2) { Py_RETURN_NONE; }
@@ -124,7 +125,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
     }
-    VALIDATE_A(release_image_s(&top, !cache), Py_RETURN_NONE);
+    VALIDATE_A(release_image_s(&top, destroy_struct), Py_RETURN_NONE);
 
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
@@ -167,7 +168,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         } else {
             VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
         }
-        VALIDATE_A(release_image_s(&top, !cache), Py_RETURN_NONE);
+        VALIDATE_A(release_image_s(&top, destroy_struct), Py_RETURN_NONE);
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
@@ -177,7 +178,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     Py_DECREF(iterator);
 
     VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
-    VALIDATE_A(release_image_s(&bottom, !cache), Py_RETURN_NONE);
+    VALIDATE_A(release_image_s(&bottom, destroy_struct), Py_RETURN_NONE);
 
     Py_RETURN_NONE;
 };
