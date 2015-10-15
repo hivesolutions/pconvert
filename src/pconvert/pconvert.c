@@ -495,7 +495,6 @@ ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     png_byte *buffer = (png_byte *) malloc(buffer_size);
     copy_image(origin, target);
     target->rows = (png_bytep *) malloc(rows_size);
-    memcpy(target->rows, origin->rows, rows_size);
     memcpy(buffer, *origin->rows, buffer_size);
     for(y = 0; y < origin->height; y++) {
         target->rows[y] = buffer;
