@@ -90,6 +90,8 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     buffer_size = row_size * image->height;
     buffer = (png_byte *) malloc(buffer_size);
 
+    /* allocates space for the buffer of row pointers and
+    iterates over the complete height to allocate sub-buffers */
     image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
     for(y = 0; y < image->height; y++) {
         image->rows[y] = buffer;

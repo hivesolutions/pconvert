@@ -178,29 +178,29 @@ PyMethodDef pconvert_functions[4] = {
 
 #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit_pconvert(void) {
-    // allocates space for the module object to hold the
-    // module to be created
+    /* allocates space for the module object to hold the
+    module to be created */
     PyObject *pconvert_module;
 
-    // creates the pconvert extension module with the
-    // functions defined in the previous array, in case
-    // no module is created the control flow is returned
-    // immediately to the caller function
+    /* creates the pconvert extension module with the
+    functions defined in the previous array, in case
+    no module is created the control flow is returned
+    immediately to the caller function */
     pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return NULL; }
 
-    // returns the module that has just been created to
-    // the caller method/function (to be used)
+    /* returns the module that has just been created to
+    the caller method/function (to be used) */
     return pconvert_module;
 }
 #else
 PyMODINIT_FUNC initpconvert(void) {
-    // allocates space for the module object to hold the
-    // module to be created
+    /* allocates space for the module object to hold the
+    module to be created */
     PyObject *pconvert_module;
 
-    // creates the pconvert extension module with the
-    // functions defined in the previous array
+    /* creates the pconvert extension module with the
+    functions defined in the previous array */
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
 }
