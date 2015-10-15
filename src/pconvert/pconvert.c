@@ -26,6 +26,13 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     some of the reading operation (required) */
     size_t count;
 
+    /* creates space for the buffer reference that is going to be used
+    for the complete buffer of allocated data and for the number value
+    of bytes that are going to be contained on that buffer */
+    png_byte *buffer;
+    png_uint_32 buffer_size;
+    png_uint_32 row_size;
+
     /* opens the file and tests for it being a png, this is required
     to avoid possible problems while handling inproper files */
 #ifdef _MSC_VER
@@ -77,9 +84,16 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
         RAISE_S("[read_png] Error during read_image");
     }
 
+    /* allocates space in memory for the buffer that will
+    be used for the "frame" buffer of the image data */
+    row_size = png_get_rowbytes(image->png_ptr, image->info_ptr);
+    buffer_size = row_size * image->height;
+    buffer = (png_byte *) malloc(buffer_size);
+
     image->rows = (png_bytep *) malloc(sizeof(png_bytep) * image->height);
     for(y = 0; y < image->height; y++) {
-        image->rows[y] = (png_byte *) malloc(png_get_rowbytes(image->png_ptr, image->info_ptr));
+        image->rows[y] = buffer;
+        buffer += row_size;
     }
 
     png_read_image(image->png_ptr, image->rows);
@@ -453,11 +467,8 @@ ERROR_T release_image(struct pcv_image *image) {
 ERROR_T release_image_s(struct pcv_image *image, char destroy_struct) {
     /* cleanup heap allocation, avoids memory leaks, note that
     the cleanup is performed first on row level and then at a
-    row pointer level (two level of allocation) */
-    int y;
-    for(y = 0; y < image->height; y++) {
-        free(image->rows[y]);
-    }
+    row pointer level (two levels of allocation) */
+    free(*image->rows);
     free(image->rows);
     if(destroy_struct) {
         png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
@@ -478,14 +489,17 @@ ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target) {
 
 ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     int y;
-    size_t rows_size = sizeof(png_bytep) * origin->height;
-    size_t row_size = sizeof(png_byte) * 4 * origin->width;
+    png_uint_32 rows_size = sizeof(png_bytep) * origin->height;
+    png_uint_32 row_size = png_get_rowbytes(origin->png_ptr, origin->info_ptr);
+    png_uint_32 buffer_size = row_size * origin->height;
+    png_byte *buffer = (png_byte *) malloc(buffer_size);
     copy_image(origin, target);
     target->rows = (png_bytep *) malloc(rows_size);
     memcpy(target->rows, origin->rows, rows_size);
+    memcpy(buffer, *origin->rows, buffer_size);
     for(y = 0; y < origin->height; y++) {
-        target->rows[y] = (png_bytep) malloc(row_size);
-        memcpy(target->rows[y], origin->rows[y], row_size);
+        target->rows[y] = buffer;
+        buffer += row_size;
     }
     NORMAL;
 }
