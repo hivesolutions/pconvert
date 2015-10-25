@@ -73,6 +73,21 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     source_over = strcmp(algorithm, "source_over") == 0;
 
     size = PyList_Size(paths);
+    if(size == 1) {
+        first = PyList_GetItem(paths, 0);
+
+#if PY_MAJOR_VERSION >= 3
+        first = PyUnicode_EncodeFSDefault(first);
+        bottom_path = PyBytes_AsString(first);
+#else
+        bottom_path = PyString_AsString(first);
+#endif
+
+        VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
+        VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
+        VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+        Py_RETURN_NONE;
+    }
     if(size < 2) { Py_RETURN_NONE; }
 
     first = PyList_GetItem(paths, 0);
