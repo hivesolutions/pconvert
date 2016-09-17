@@ -170,13 +170,16 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
         PNG_FILTER_TYPE_BASE
     );
 
+    /* writes the "header" information described by the
+    info pointer into the png structure */
     png_write_info(png_ptr, info_ptr);
 
-    /* write bytes */
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing bytes");
     }
 
+    /* write the complete set of bytes that are considered
+    to be part of the image into png structure definition */
     png_write_image(png_ptr, image->rows);
 
     /* ends the writing process of the png file */
