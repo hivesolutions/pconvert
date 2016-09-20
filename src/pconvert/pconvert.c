@@ -151,9 +151,9 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
     is changed for proper multiplication */
     if(multiply) { multiply_image(image); }
 
+    /* initializes the process of output of the file an runs
+    the error checking verification process */
     png_init_io(png_ptr, fp);
-
-    /* writes the header information for the file */
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing header");
     }
@@ -173,16 +173,23 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
     /* writes the "header" information described by the
     info pointer into the png structure */
     png_write_info(png_ptr, info_ptr);
-
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing bytes");
     }
 
-    /* write the complete set of bytes that are considered
+    png_set_compression_level(png_ptr, 1);
+    if(setjmp(png_jmpbuf(png_ptr))) {
+        RAISE_S("[write_png] Error during writing bytes");
+    }
+
+    png_set_filter(png_ptr, 0, PNG_FILTER_NONE);
+    if(setjmp(png_jmpbuf(png_ptr))) {
+        RAISE_S("[write_png] Error during writing bytes");
+    }
+
+    /* writes the complete set of bytes that are considered
     to be part of the image into png structure definition */
     png_write_image(png_ptr, image->rows);
-
-    /* ends the writing process of the png file */
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during end of write");
     }
@@ -291,7 +298,8 @@ ERROR_T process_image(struct pcv_image *image) {
             }
 
             /* sets red value to 0 and green value to the blue one,
-            this will create a special kind of effect */
+            this will create a special kind of effect making the image
+            with a "blueish" effect on every valid pixel (blue filter) */
             ptr[0] = 0;
             ptr[1] = ptr[2];
         }
@@ -564,11 +572,11 @@ int pcompose(int argc, char **argv) {
 int pconvert(int argc, char **argv) {
     struct pcv_image image;
 
-    if(argc != 3) { abort_("Usage: pconvert convert <file_in> <file_out>"); }
+    if(argc != 4) { abort_("Usage: pconvert convert <file_in> <file_out>"); }
 
-    read_png(argv[1], FALSE, &image);
+    read_png(argv[2], FALSE, &image);
     process_image(&image);
-    write_png(&image, FALSE, argv[2]);
+    write_png(&image, FALSE, argv[3]);
     release_image(&image);
 
     return 0;
