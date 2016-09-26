@@ -112,8 +112,8 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
 }
 
 ERROR_T write_png_extra(
-    struct pcv_image *image, 
-    char multiply, 
+    struct pcv_image *image,
+    char multiply,
     char *file_name,
     int compression,
     int filter
@@ -541,8 +541,8 @@ ERROR_T compose_images(char *base_path, char *algorithm, char *background) {
     return compose_images_extra(
         base_path,
         algorithm,
-        background, 
-        Z_BEST_SPEED, 
+        background,
+        Z_BEST_SPEED,
         PNG_FILTER_NONE,
         FALSE
     );
@@ -641,7 +641,7 @@ int pbenchmark(int argc, char **argv) {
 
     FILE *file = fopen("benchmark.txt", "w");
     float time;
-    
+
     time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_NO_COMPRESSION, 0);
     fprintf(file, "source_over Z_NO_COMPRESSION: %f\n", time);
 

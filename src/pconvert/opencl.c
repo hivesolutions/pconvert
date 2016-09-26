@@ -4,20 +4,20 @@ cl_program loadProgram(cl_context context, char *algorithm, int *err) {
     cl_program program;
     char path[1024];
     FILE *fp;
-	join_path("src/kernel/", algorithm, path);
+    join_path("src/kernel/", algorithm, path);
     join_path(path, ".cl", path);
-	char *source_str;
-	size_t source_size;
+    char *source_str;
+    size_t source_size;
 
-	fp = fopen(path, "r");
-	if (!fp) {
-		fprintf(stderr, "Failed to load kernel.\n %s\n", path);
+    fp = fopen(path, "r");
+    if (!fp) {
+        fprintf(stderr, "Failed to load kernel.\n %s\n", path);
         (*err) = ERROR;
         return NULL;
-	}
-	source_str = (char*) malloc(2048);
-	source_size = fread(source_str, 1, 2048, fp);
-	fclose(fp);
+    }
+    source_str = (char*) malloc(2048);
+    source_size = fread(source_str, 1, 2048, fp);
+    fclose(fp);
 
     program = clCreateProgramWithSource(
         context,
@@ -89,8 +89,8 @@ ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, cha
     bottom_p = &(bottom_array[0]);
     for (int y = 0; y < bottom->height; y++) {
         bottom->rows[y] = bottom_p;
-		bottom_p += row_size;
-	}
+        bottom_p += row_size;
+    }
 
     NORMAL;
 }
@@ -104,7 +104,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     cl_mem mem_bottom, mem_top;
 
     size_t global;
-    size_t local; 
+    size_t local;
 
     int err;
 
@@ -121,19 +121,19 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     if(err != CL_SUCCESS) { RAISE_S("Failed to create the program: %d", err); }
 
     err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-    if(err != CL_SUCCESS) { 
+    if(err != CL_SUCCESS) {
         size_t len;
         char buffer[2048];
         clGetProgramBuildInfo(
             program,
-            device_id, 
-            CL_PROGRAM_BUILD_LOG, 
-            sizeof(buffer), 
-            buffer, 
+            device_id,
+            CL_PROGRAM_BUILD_LOG,
+            sizeof(buffer),
+            buffer,
             &len
         );
         printf("%s\n", buffer);
-        RAISE_S("Failed to build the program: %d", err); 
+        RAISE_S("Failed to build the program: %d", err);
     }
 
     kernel = clCreateKernel(program, algorithm, &err);
@@ -144,7 +144,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
 
     err = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
-    if(err != CL_SUCCESS){ RAISE_S("Error: Failed to write to source array"); }  
+    if(err != CL_SUCCESS){ RAISE_S("Error: Failed to write to source array"); }
 
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
@@ -152,19 +152,19 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
 
     err = clGetKernelWorkGroupInfo(
         kernel,
-        device_id, 
-        CL_KERNEL_WORK_GROUP_SIZE, 
-        sizeof(local), 
-        &local, 
+        device_id,
+        CL_KERNEL_WORK_GROUP_SIZE,
+        sizeof(local),
+        &local,
         NULL
     );
-    
+
     int rem = size / local;
     if(local % rem != 0) { rem++; }
     global = local * rem;
 
     clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
-    clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL ); 
+    clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL );
 
     clFinish(commands);
 
