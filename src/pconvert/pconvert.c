@@ -639,7 +639,7 @@ float pbenchmark_algorithm(
 int pbenchmark(int argc, char **argv) {
     if(argc != 3) { abort_("Usage: pconvert benchmark <directory>"); }
 
-    FILE *file = fopen("benchmark.txt", "w");
+    FILE *file = fopen("benchmark.txt", "wb");
     float time;
 
     time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_NO_COMPRESSION, 0);

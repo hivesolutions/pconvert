@@ -1,30 +1,34 @@
 #include "stdafx.h"
 
-cl_program loadProgram(cl_context context, char *algorithm, int *err) {
+cl_program loadProgram(cl_context context, char *algorithm, int *error) {
     cl_program program;
     char path[1024];
-    FILE *fp;
+    FILE *file;
     join_path("src/kernel/", algorithm, path);
     join_path(path, ".cl", path);
-    char *source_str;
+    unsigned char *source_str;
     size_t source_size;
 
-    fp = fopen(path, "r");
-    if (!fp) {
+    file = fopen(path, "rb");
+    if (!file) {
         fprintf(stderr, "Failed to load kernel.\n %s\n", path);
-        (*err) = ERROR;
+        (*error) = ERROR;
         return NULL;
     }
-    source_str = (char*) malloc(2048);
-    source_size = fread(source_str, 1, 2048, fp);
-    fclose(fp);
+
+    fseek(file, 0 , SEEK_END);
+    source_size = ftell(file);
+    rewind(file);
+    source_str = (unsigned char *) malloc(source_size);
+    source_size = fread(source_str, 1, source_size, file);
+    fclose(file);
 
     program = clCreateProgramWithSource(
         context,
         1,
         (const char **) &source_str,
         (const size_t *) &source_size,
-        err
+        error
     );
     return program;
 }
@@ -106,22 +110,22 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     size_t global;
     size_t local;
 
-    int err;
+    int error;
 
-    err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
-    if(err != CL_SUCCESS) { RAISE_S("Failed to create a device group: %d", err); }
+    error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
+    if(error != CL_SUCCESS) { RAISE_S("Failed to create a device group: %d", error); }
 
-    context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
-    if(!context) { RAISE_S("Failed to create a compute context: %d", err); }
+    context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
+    if(!context) { RAISE_S("Failed to create a compute context: %d", error); }
 
-    commands = clCreateCommandQueue(context, device_id, 0, &err);
-    if(!commands) { RAISE_S("Failed to create a command queue: %d", err); }
+    commands = clCreateCommandQueue(context, device_id, 0, &error);
+    if(!commands) { RAISE_S("Failed to create a command queue: %d", error); }
 
-    program = loadProgram(context, algorithm, &err);
-    if(err != CL_SUCCESS) { RAISE_S("Failed to create the program: %d", err); }
+    program = loadProgram(context, algorithm, &error);
+    if(error != CL_SUCCESS) { RAISE_S("Failed to create the program: %d", error); }
 
-    err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-    if(err != CL_SUCCESS) {
+    error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    if(error != CL_SUCCESS) {
         size_t len;
         char buffer[2048];
         clGetProgramBuildInfo(
@@ -133,24 +137,24 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
             &len
         );
         printf("%s\n", buffer);
-        RAISE_S("Failed to build the program: %d", err);
+        RAISE_S("Failed to build the program: %d", error);
     }
 
-    kernel = clCreateKernel(program, algorithm, &err);
-    if(err != CL_SUCCESS) { RAISE_S("Failed to create kernel: %d", err); }
+    kernel = clCreateKernel(program, algorithm, &error);
+    if(error != CL_SUCCESS) { RAISE_S("Failed to create kernel: %d", error); }
 
     mem_bottom = clCreateBuffer(context, CL_MEM_READ_WRITE,  size, NULL, NULL);
     mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY,  size, NULL, NULL);
 
-    err = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
-    if(err != CL_SUCCESS){ RAISE_S("Error: Failed to write to source array"); }
+    error = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
+    error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
+    if(error != CL_SUCCESS){ RAISE_S("Error: Failed to write to source array"); }
 
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
     clSetKernelArg(kernel, 2, sizeof(int), &size);
 
-    err = clGetKernelWorkGroupInfo(
+    error = clGetKernelWorkGroupInfo(
         kernel,
         device_id,
         CL_KERNEL_WORK_GROUP_SIZE,
@@ -158,6 +162,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
         &local,
         NULL
     );
+    if(error != CL_SUCCESS){ RAISE_S("Error: Failed to retrieve work group info: %d", error); }
 
     int rem = size / local;
     if(local % rem != 0) { rem++; }

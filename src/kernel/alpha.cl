@@ -1,10 +1,10 @@
 __kernel void alpha(
-	__global unsigned char *bottom,
-	__global read_only unsigned char *top,
+    __global unsigned char *bottom,
+    __global read_only unsigned char *top,
     const int count
 ) {
-	int index = get_global_id(0) * 4;
-    if(index > count - 3) { return; }  
+    int index = get_global_id(0) * 4;
+    if(index > count - 3) { return; }
 
     unsigned char rb, gb, bb, ab;
     unsigned char rt, gt, bt, at;

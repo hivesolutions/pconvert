@@ -70,7 +70,6 @@ ERROR_T compose_images_extra(
     int filter,
     char use_opencl
 );
-
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);
