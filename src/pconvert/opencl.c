@@ -16,9 +16,10 @@ cl_program loadProgram(cl_context context, char *algorithm, int *error) {
         return NULL;
     }
 
-    fseek(file, 0 , SEEK_END);
+    fseek(file, 0, SEEK_END);
     source_size = ftell(file);
-    rewind(file);
+    fseek(file, 0, SEEK_SET);
+
     source_str = (unsigned char *) malloc(source_size);
     source_size = fread(source_str, 1, source_size, file);
     fclose(file);
@@ -31,36 +32,6 @@ cl_program loadProgram(cl_context context, char *algorithm, int *error) {
         error
     );
     return program;
-}
-
-ERROR_T compose_images_opencl(
-    char *base_path,
-    char *algorithm,
-    char *background,
-    int compression,
-    int filter
-) {
-    char path[1024];
-    char name[1024];
-    struct pcv_image bottom, top, final;
-    char demultiply = is_multiplied(algorithm);
-
-    read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
-    read_png(join_path(base_path, "back.png", path), demultiply, &top);
-    blend_images_opencl(&bottom, &top, algorithm); release_image(&top);
-    read_png(join_path(base_path, "front.png", path), demultiply, &top);
-    blend_images_opencl(&bottom, &top, algorithm); release_image(&top);
-    read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
-    blend_images_opencl(&bottom, &top, algorithm); release_image(&top);
-    if(demultiply) { multiply_image(&bottom); }
-    sprintf(name, "background_%s.png", background);
-    read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images_opencl(&final, &bottom, "alpha"); release_image(&bottom);
-    sprintf(name, "result_%s_%s.png", algorithm, background);
-    write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter);
-    release_image(&final);
-
-    NORMAL;
 }
 
 ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
