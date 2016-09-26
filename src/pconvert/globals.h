@@ -18,6 +18,11 @@
 #define VALIDATE_R(input, return_v) if(IS_ERROR(input)) { return return_v; } while(FALSE)
 #define VALIDATE_A(input, action) if(IS_ERROR(input)) { action; } while(FALSE)
 
+#define Z_NO_COMPRESSION 0
+#define Z_BEST_SPEED 1
+#define Z_BEST_COMPRESSION 9
+#define Z_DEFAULT_COMPRESSION  (-1)
+
 typedef struct pcv_image {
     int width;
     int height;
@@ -37,6 +42,13 @@ typedef void (blend_algorithm) (
 void abort_(const char *s, ...);
 ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image);
 ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name);
+ERROR_T write_png_extra(
+    struct pcv_image *image, 
+    char multiply, 
+    char *file_name, 
+    int compression,
+    int filter
+);
 ERROR_T demultiply_image(struct pcv_image *image);
 ERROR_T multiply_image(struct pcv_image *image);
 ERROR_T process_image(struct pcv_image *image);
@@ -44,11 +56,21 @@ ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algo
 ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
 ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
+ERROR_T blend_images_extra(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char use_opencl);
 ERROR_T release_image(struct pcv_image *image);
 ERROR_T release_image_s(struct pcv_image *image, char destroy_struct);
 ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target);
 ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target);
 ERROR_T compose_images(char *base_path, char *algorithm, char *background);
+ERROR_T compose_images_extra(
+    char *base_path,
+    char *algorithm,
+    char *background,
+    int compression,
+    int filter,
+    char use_opencl
+);
+
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);

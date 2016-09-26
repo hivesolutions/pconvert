@@ -108,6 +108,17 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
 }
 
 ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
+    return write_png_extra(image, multiply, file_name, Z_BEST_SPEED, PNG_FILTER_NONE);
+}
+
+ERROR_T write_png_extra(
+    struct pcv_image *image, 
+    char multiply, 
+    char *file_name,
+    int compression,
+    int filter
+) {
+
     /* allocates space for the pointer to the file that is going to
     be used in the writing process of the file */
     FILE *fp;
@@ -177,7 +188,7 @@ ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name) {
         RAISE_S("[write_png] Error during writing bytes");
     }
 
-    png_set_compression_level(png_ptr, 1);
+    png_set_compression_level(png_ptr, compression);
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing bytes");
     }
@@ -305,6 +316,16 @@ ERROR_T process_image(struct pcv_image *image) {
         }
     }
     NORMAL;
+}
+
+ERROR_T blend_images_extra(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char use_opencl) {
+    ERROR_T err;
+    if(use_opencl == TRUE) {
+        err = blend_images_opencl(bottom, top, algorithm);
+    } else {
+        err = blend_images(bottom, top, algorithm);
+    }
+    return err;
 }
 
 ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
@@ -517,24 +538,43 @@ ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
 }
 
 ERROR_T compose_images(char *base_path, char *algorithm, char *background) {
+    return compose_images_extra(
+        base_path,
+        algorithm,
+        background, 
+        Z_BEST_SPEED, 
+        PNG_FILTER_NONE,
+        FALSE
+    );
+}
+
+ERROR_T compose_images_extra(
+    char *base_path,
+    char *algorithm,
+    char *background,
+    int compression,
+    int filter,
+    char use_opencl
+) {
     char path[1024];
     char name[1024];
     struct pcv_image bottom, top, final;
     char demultiply = is_multiplied(algorithm);
     read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
     read_png(join_path(base_path, "back.png", path), demultiply, &top);
-    blend_images(&bottom, &top, algorithm); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);    
     read_png(join_path(base_path, "front.png", path), demultiply, &top);
-    blend_images(&bottom, &top, algorithm); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
     read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
-    blend_images(&bottom, &top, algorithm); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);    
     if(demultiply) { multiply_image(&bottom); }
     sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images(&final, &bottom, "alpha"); release_image(&bottom);
+    blend_images_extra(&final, &bottom, "alpha", use_opencl); release_image(&bottom);
     sprintf(name, "result_%s_%s.png", algorithm, background);
-    write_png(&final, FALSE, join_path(base_path, name, path));
+    write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter);
     release_image(&final);
+
     NORMAL;
 }
 
@@ -582,9 +622,82 @@ int pconvert(int argc, char **argv) {
     return 0;
 }
 
+float pbenchmark_algorithm(
+    char *base_path,
+    char *algorithm,
+    char *background,
+    int compression,
+    int filter
+) {
+    float start_time = (float) clock() / CLOCKS_PER_SEC;
+    compose_images_extra(base_path, algorithm, background, compression, filter, FALSE);
+    float end_time = (float) clock() / CLOCKS_PER_SEC;
+    float time_elapsed = end_time - start_time;
+    return time_elapsed;
+}
+
+int pbenchmark(int argc, char **argv) {
+    if(argc != 3) { abort_("Usage: pconvert benchmark <directory>"); }
+
+    FILE *file = fopen("benchmark.txt", "w");
+    float time;
+    
+    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_NO_COMPRESSION, 0);
+    fprintf(file, "source_over Z_NO_COMPRESSION: %f\n", time);
+
+    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_BEST_SPEED, 0);
+    fprintf(file, "source_over Z_BEST_SPEED: %f\n", time);
+
+    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_BEST_COMPRESSION, 0);
+    fprintf(file, "source_over Z_BEST_COMPRESSION: %f\n", time);
+
+    fprintf(file, "\n");
+
+    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_NO_COMPRESSION, 0);
+    fprintf(file, "multiplicative Z_NO_COMPRESSION: %f\n", time);
+
+    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, 0);
+    fprintf(file, "multiplicative Z_BEST_SPEED: %f\n", time);
+
+    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_BEST_COMPRESSION, 0);
+    fprintf(file, "multiplicative Z_BEST_COMPRESSION: %f\n", time);
+
+    fclose(file);
+
+    return 0;
+}
+
+int popencl(int argc, char **argv) {
+    if(argc != 3) { abort_("Usage: pconvert opencl <directory>"); }
+
+    float start_time, end_time, time_elapsed_cpu, time_elapsed_gpu;
+
+    time_elapsed_cpu = 0;
+    start_time = (float) clock() / CLOCKS_PER_SEC;
+    time_elapsed_cpu += compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    time_elapsed_cpu += compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    time_elapsed_cpu += compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    end_time = (float) clock() / CLOCKS_PER_SEC;
+    time_elapsed_cpu = end_time - start_time;
+
+    time_elapsed_gpu = 0;
+    start_time = (float) clock() / CLOCKS_PER_SEC;
+    time_elapsed_gpu += compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    time_elapsed_gpu += compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    time_elapsed_gpu += compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    end_time = (float) clock() / CLOCKS_PER_SEC;
+    time_elapsed_gpu = end_time - start_time;
+
+    printf("CPU: %f GPU: %f\n", time_elapsed_cpu, time_elapsed_gpu);
+
+    NORMAL;
+}
+
 int main(int argc, char **argv) {
-    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
+    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); } 
     if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
     else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }
+    else if(strcmp(argv[1], "benchmark") == 0) { return pbenchmark(argc, argv); }
+    else if(strcmp(argv[1], "opencl") == 0) { return popencl(argc, argv); }
     else { abort_("Usage: pconvert <command> [args...]"); return 0; }
 }
