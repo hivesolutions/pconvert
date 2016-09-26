@@ -4,10 +4,11 @@
 
 .DS_Store
 
+benchmark.txt
+
 /bin
 /dist
 /build
 /pconvert_python.egg-info
 /win32/vs2008ex/*/*
 /assets/demo/result*.png
-benchmark.txt
