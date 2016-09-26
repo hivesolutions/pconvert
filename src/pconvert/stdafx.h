@@ -44,3 +44,4 @@
 
 #include "globals.h"
 #include "structs.h"
+#include "opencl.h"

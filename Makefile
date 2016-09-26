@@ -2,13 +2,13 @@ CC=gcc
 CP=cp
 RM=rm
 CFLAGS=-c -Wall -I/usr/include/python$(PYTHON_VERSION)
-LDFLAGS=
+LDFLAGS=-framework OpenCL
 CPFLAGS=-rf
 RMFLAGS=-rf
 LIBS=-lm -lpng
 PREFIX=/usr
 SRC_DIR=src/pconvert
-SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/structs.c $(SRC_DIR)/util.c
+SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/structs.c $(SRC_DIR)/util.c $(SRC_DIR)/opencl.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 PYTHON_VERSION=2.7

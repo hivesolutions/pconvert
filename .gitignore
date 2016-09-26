@@ -4,6 +4,8 @@
 
 .DS_Store
 
+benchmark.txt
+
 /bin
 /dist
 /build
