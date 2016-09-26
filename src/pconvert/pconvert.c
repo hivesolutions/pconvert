@@ -562,11 +562,11 @@ ERROR_T compose_images_extra(
     char demultiply = is_multiplied(algorithm);
     read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
     read_png(join_path(base_path, "back.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);    
+    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
     read_png(join_path(base_path, "front.png", path), demultiply, &top);
     blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
     read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);    
+    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
     if(demultiply) { multiply_image(&bottom); }
     sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), FALSE, &final);
@@ -694,7 +694,7 @@ int popencl(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); } 
+    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
     if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
     else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }
     else if(strcmp(argv[1], "benchmark") == 0) { return pbenchmark(argc, argv); }

@@ -19,7 +19,13 @@ cl_program loadProgram(cl_context context, char *algorithm, int *err) {
 	source_size = fread(source_str, 1, 2048, fp);
 	fclose(fp);
 
-    program = clCreateProgramWithSource(context, 1, (const char **) &source_str, (const size_t *) &source_size, err);
+    program = clCreateProgramWithSource(
+        context,
+        1,
+        (const char **) &source_str,
+        (const size_t *) &source_size,
+        err
+    );
     return program;
 }
 
@@ -118,7 +124,14 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     if(err != CL_SUCCESS) { 
         size_t len;
         char buffer[2048];
-        clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+        clGetProgramBuildInfo(
+            program,
+            device_id, 
+            CL_PROGRAM_BUILD_LOG, 
+            sizeof(buffer), 
+            buffer, 
+            &len
+        );
         printf("%s\n", buffer);
         RAISE_S("Failed to build the program: %d", err); 
     }
@@ -137,7 +150,14 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
     clSetKernelArg(kernel, 2, sizeof(int), &size);
 
-    err = clGetKernelWorkGroupInfo(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+    err = clGetKernelWorkGroupInfo(
+        kernel,
+        device_id, 
+        CL_KERNEL_WORK_GROUP_SIZE, 
+        sizeof(local), 
+        &local, 
+        NULL
+    );
     
     int rem = size / local;
     if(local % rem != 0) { rem++; }
