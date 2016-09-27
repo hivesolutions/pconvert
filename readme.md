@@ -29,6 +29,6 @@ PConvert is currently licensed under the [Apache License, Version 2.0](http://ww
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/joamag/pconvert.svg?branch=master)](https://travis-ci.org/joamag/pconvert)
-[![Coverage Status](https://coveralls.io/repos/joamag/pconvert/badge.svg?branch=master)](https://coveralls.io/r/joamag/pconvert?branch=master)
+[![Build Status](https://travis-ci.org/hivesolutions/pconvert.svg?branch=master)](https://travis-ci.org/hivesolutions/pconvert)
+[![Coverage Status](https://coveralls.io/repos/hivesolutions/pconvert/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/pconvert?branch=master)
 [![PyPi Status](https://img.shields.io/pypi/v/pconvert-python.svg)](https://pypi.python.org/pypi/pconvert-python)
