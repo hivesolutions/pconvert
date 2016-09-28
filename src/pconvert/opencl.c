@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-cl_program loadProgram(cl_context context, char *algorithm, int *error) {
+cl_program load_program(cl_context context, char *algorithm, int *error) {
     cl_program program;
     FILE *file;
     char path[1024];
@@ -95,7 +95,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     commands = clCreateCommandQueue(context, device_id, 0, &error);
     if(!commands) { RAISE_S("[blend_kernel] Failed to create a command queue: %d", error); }
 
-    program = loadProgram(context, algorithm, &error);
+    program = load_program(context, algorithm, &error);
     if(error != CL_SUCCESS) { RAISE_S("[blend_kernel] Failed to create the program: %d", error); }
 
     error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
