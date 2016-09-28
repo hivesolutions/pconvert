@@ -87,16 +87,16 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     int error;
 
     error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
-    if(error != CL_SUCCESS) { RAISE_S("Failed to create a device group: %d", error); }
+    if(error != CL_SUCCESS) { RAISE_S("[blend_kernel] Failed to create a device group: %d", error); }
 
     context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
-    if(!context) { RAISE_S("Failed to create a compute context: %d", error); }
+    if(!context) { RAISE_S("[blend_kernel] Failed to create a compute context: %d", error); }
 
     commands = clCreateCommandQueue(context, device_id, 0, &error);
-    if(!commands) { RAISE_S("Failed to create a command queue: %d", error); }
+    if(!commands) { RAISE_S("[blend_kernel] Failed to create a command queue: %d", error); }
 
     program = loadProgram(context, algorithm, &error);
-    if(error != CL_SUCCESS) { RAISE_S("Failed to create the program: %d", error); }
+    if(error != CL_SUCCESS) { RAISE_S("[blend_kernel] Failed to create the program: %d", error); }
 
     error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
     if(error != CL_SUCCESS) {
@@ -111,18 +111,18 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
             &len
         );
         printf("%s\n", buffer);
-        RAISE_S("Failed to build the program: %d", error);
+        RAISE_S("[blend_kernel] Failed to build the program: %d", error);
     }
 
     kernel = clCreateKernel(program, algorithm, &error);
-    if(error != CL_SUCCESS) { RAISE_S("Failed to create kernel: %d", error); }
+    if(error != CL_SUCCESS) { RAISE_S("[blend_kernel] Failed to create kernel: %d", error); }
 
     mem_bottom = clCreateBuffer(context, CL_MEM_READ_WRITE,  size, NULL, NULL);
     mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY,  size, NULL, NULL);
 
     error = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
     error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
-    if(error != CL_SUCCESS){ RAISE_S("Error: Failed to write to source array"); }
+    if(error != CL_SUCCESS){ RAISE_S("[blend_kernel] Failed to write to source array"); }
 
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
@@ -136,7 +136,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
         &local,
         NULL
     );
-    if(error != CL_SUCCESS){ RAISE_S("Error: Failed to retrieve work group info: %d", error); }
+    if(error != CL_SUCCESS){ RAISE_S("[blend_kernel] Failed to retrieve work group info: %d", error); }
 
     rem = size / local;
     if(local % rem != 0) { rem++; }
