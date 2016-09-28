@@ -674,17 +674,21 @@ int popencl(int argc, char **argv) {
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    time_elapsed_cpu += compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    time_elapsed_cpu += compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    time_elapsed_cpu += compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "disjoint_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "disjoint_under", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_cpu = end_time - start_time;
 
     time_elapsed_gpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    time_elapsed_gpu += compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    time_elapsed_gpu += compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    time_elapsed_gpu += compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "disjoint_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "disjoint_under", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_gpu = end_time - start_time;
 
