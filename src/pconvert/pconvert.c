@@ -629,18 +629,23 @@ float pbenchmark_algorithm(
     int compression,
     int filter
 ) {
-    float start_time = (float) clock() / CLOCKS_PER_SEC;
+    float start_time;
+    float end_time;
+    float time_elapsed;
+    start_time = (float) clock() / CLOCKS_PER_SEC;
     compose_images_extra(base_path, algorithm, background, compression, filter, FALSE);
-    float end_time = (float) clock() / CLOCKS_PER_SEC;
-    float time_elapsed = end_time - start_time;
+    end_time = (float) clock() / CLOCKS_PER_SEC;
+    time_elapsed = end_time - start_time;
     return time_elapsed;
 }
 
 int pbenchmark(int argc, char **argv) {
+    float time;
+    FILE *file;
+
     if(argc != 3) { abort_("Usage: pconvert benchmark <directory>"); }
 
-    float time;
-    FILE *file = fopen("benchmark.txt", "wb");
+    file = fopen("benchmark.txt", "wb");
 
     time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_NO_COMPRESSION, 0);
     fprintf(file, "source_over Z_NO_COMPRESSION: %f\n", time);
@@ -668,9 +673,12 @@ int pbenchmark(int argc, char **argv) {
 }
 
 int popencl(int argc, char **argv) {
-    if(argc != 3) { abort_("Usage: pconvert opencl <directory>"); }
+    float start_time;
+    float end_time;
+    float time_elapsed_cpu;
+    float time_elapsed_gpu;
 
-    float start_time, end_time, time_elapsed_cpu, time_elapsed_gpu;
+    if(argc != 3) { abort_("Usage: pconvert opencl <directory>"); }
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;

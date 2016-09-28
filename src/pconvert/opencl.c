@@ -2,12 +2,13 @@
 
 cl_program loadProgram(cl_context context, char *algorithm, int *error) {
     cl_program program;
-    char path[1024];
     FILE *file;
-    join_path("src/kernel/", algorithm, path);
-    join_path(path, ".cl", path);
+    char path[1024];
     unsigned char *source_str;
     size_t source_size;
+
+    join_path("src/kernel/", algorithm, path);
+    join_path(path, ".cl", path);
 
     file = fopen(path, "rb");
     if (!file) {
@@ -36,7 +37,8 @@ cl_program loadProgram(cl_context context, char *algorithm, int *error) {
 
 ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
     int y;
-
+    unsigned char *bottom_p;
+    unsigned char *top_p;
     unsigned char *bottom_array;
     unsigned char *top_array;
 
@@ -45,8 +47,8 @@ ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, cha
     bottom_array = malloc(buffer_size);
     top_array = malloc(buffer_size);
 
-    unsigned char *bottom_p = &(bottom_array[0]);
-    unsigned char *top_p = &(top_array[0]);
+    bottom_p = &(bottom_array[0]);
+    top_p = &(top_array[0]);
 
     for(y = 0; y < bottom->height; y++) {
         unsigned char *row_bottom = bottom->rows[y];
@@ -62,7 +64,7 @@ ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, cha
     blend_kernel(bottom_array, top_array, buffer_size, algorithm);
 
     bottom_p = &(bottom_array[0]);
-    for (int y = 0; y < bottom->height; y++) {
+    for (y = 0; y < bottom->height; y++) {
         bottom->rows[y] = bottom_p;
         bottom_p += row_size;
     }
@@ -81,6 +83,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     size_t global;
     size_t local;
 
+    int rem;
     int error;
 
     error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
@@ -135,7 +138,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     );
     if(error != CL_SUCCESS){ RAISE_S("Error: Failed to retrieve work group info: %d", error); }
 
-    int rem = size / local;
+    rem = size / local;
     if(local % rem != 0) { rem++; }
     global = local * rem;
 

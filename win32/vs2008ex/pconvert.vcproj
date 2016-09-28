@@ -330,6 +330,10 @@
                 >
             </File>
             <File
+                RelativePath="..\..\src\pconvert\opencl.c"
+                >
+            </File>
+            <File
                 RelativePath="..\..\src\pconvert\pconvert.c"
                 >
             </File>
@@ -353,6 +357,10 @@
             >
             <File
                 RelativePath="..\..\src\pconvert\globals.h"
+                >
+            </File>
+            <File
+                RelativePath="..\..\src\pconvert\opencl.h"
                 >
             </File>
             <File
