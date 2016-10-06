@@ -28,6 +28,7 @@ clean:
 
 $(EXECUTABLE): $(OBJECTS)
 	echo $(LDFLAGS)
+	echo $(SYS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
 .cpp.o:
