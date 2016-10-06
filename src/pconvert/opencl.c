@@ -161,10 +161,6 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
 
 #else
 
-cl_program load_program(cl_context context, char *algorithm, int *error) {
-    return NULL;
-}
-
 ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
     RAISE_S("[blend_kernel] No OpenCL support available");
 }
