@@ -156,7 +156,7 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     clReleaseCommandQueue(commands);
     clReleaseContext(context);
 
-    NO_ERROR;
+    NORMAL;
 }
 
 #else
