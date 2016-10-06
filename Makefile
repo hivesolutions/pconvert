@@ -1,8 +1,9 @@
 CC=gcc
 CP=cp
 RM=rm
+SYS=posix
 CFLAGS=-c -Wall -I/usr/include/python$(PYTHON_VERSION)
-LDFLAGS=-framework OpenCL
+LDFLAGS=
 CPFLAGS=-rf
 RMFLAGS=-rf
 LIBS=-lm -lpng
@@ -12,6 +13,10 @@ SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/structs.c $(SRC_DIR
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
+
+ifeq ($(SYS),darwin)
+  LDFLAGS=-framework OpenCL
+endif
 
 all: $(SOURCES) $(EXECUTABLE)
 
