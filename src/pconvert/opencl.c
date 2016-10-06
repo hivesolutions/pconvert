@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifdef PCONVERT_OPENCL
+
 cl_program load_program(cl_context context, char *algorithm, int *error) {
     cl_program program;
     FILE *file;
@@ -154,5 +156,21 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
     clReleaseCommandQueue(commands);
     clReleaseContext(context);
 
-    return 0;
+    NO_ERROR;
 }
+
+#else
+
+cl_program load_program(cl_context context, char *algorithm, int *error) {
+    return NULL;
+}
+
+ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+    RAISE_S("[blend_kernel] No OpenCL support available");
+}
+
+ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *algorithm) {
+    RAISE_S("[blend_kernel] No OpenCL support available");
+}
+
+#endif
