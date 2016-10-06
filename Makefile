@@ -27,7 +27,7 @@ clean:
 	$(RM) $(RMFLAGS) $(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-    echo $(LDFLAGS)
+	echo $(LDFLAGS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
 .cpp.o:
