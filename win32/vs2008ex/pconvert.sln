@@ -7,7 +7,7 @@ Global
         Debug (OpenCL)|Win32 = Debug (OpenCL)|Win32
         Debug (Python)|Win32 = Debug (Python)|Win32
         Debug|Win32 = Debug|Win32
-        Release (OpenCL)|Win32 = Release (OpenCL)|Win32
+        Release (OpenCL|Win32 = Release (OpenCL|Win32
         Release (Python)|Win32 = Release (Python)|Win32
         Release|Win32 = Release|Win32
     EndGlobalSection
@@ -18,8 +18,8 @@ Global
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Debug (Python)|Win32.Build.0 = Debug (Python)|Win32
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Debug|Win32.ActiveCfg = Debug|Win32
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Debug|Win32.Build.0 = Debug|Win32
-        {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (OpenCL)|Win32.ActiveCfg = Release (OpenCL|Win32
-        {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (OpenCL)|Win32.Build.0 = Release (OpenCL|Win32
+        {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (OpenCL|Win32.ActiveCfg = Release (OpenCL|Win32
+        {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (OpenCL|Win32.Build.0 = Release (OpenCL|Win32
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (Python)|Win32.ActiveCfg = Release (Python)|Win32
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release (Python)|Win32.Build.0 = Release (Python)|Win32
         {57B5F101-C280-4A5E-95CF-E304D514B3B0}.Release|Win32.ActiveCfg = Release|Win32

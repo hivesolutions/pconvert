@@ -3,9 +3,9 @@
 #ifdef PCONVERT_OPENCL
 
 #ifdef __APPLE__
-	#include "OpenCL/opencl.h"
+    #include "OpenCL/opencl.h"
 #else
-	#include "CL/cl.h"
+    #include "CL/cl.h"
 #endif
 
 cl_program load_program(cl_context context, char *algorithm, int *err);

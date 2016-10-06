@@ -11,6 +11,12 @@ make
 make install
 ```
 
+To build pconvert for a specific system use the `SYS` Makefile variable:
+
+```bash
+make SYS=darwin
+```
+
 It's also possible to build the python extension and install in a local machine.
 
 ```bash
