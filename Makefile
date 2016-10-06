@@ -26,7 +26,8 @@ install: all
 clean:
 	$(RM) $(RMFLAGS) $(OBJECTS) $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS) 
+$(EXECUTABLE): $(OBJECTS)
+    echo $(LDFLAGS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
 .cpp.o:
