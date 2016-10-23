@@ -2,8 +2,8 @@ CC=gcc
 CP=cp
 RM=rm
 SYS=posix
-CFLAGS=-c -Wall -I/usr/include/python$(PYTHON_VERSION)
-LDFLAGS=
+CFLAGS=-c -Wall -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION)
+LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
 RMFLAGS=-rf
 LIBS=-lm -lpng
@@ -15,7 +15,8 @@ EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
 
 ifeq ($(SYS),darwin)
-  LDFLAGS=-framework OpenCL
+  CFLAGS+=$(shell python-config --includes)
+  LDFLAGS+=-framework OpenCL
 endif
 
 all: $(SOURCES) $(EXECUTABLE)
