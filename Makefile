@@ -15,6 +15,7 @@ EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
 
 ifeq ($(SYS),darwin)
+  CC=clang
   CFLAGS+=$(shell python-config --includes)
   LDFLAGS+=-framework OpenCL
 endif
