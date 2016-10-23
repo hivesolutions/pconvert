@@ -2,6 +2,6 @@
     "version": "0.1.0",
     "command": "make",
     "isShellCommand": true,
-    "args": ["SYS=darwin", "DEBUG=1"],
+    "args": ["DEBUG=1"],
     "showOutput": "always"
 }
