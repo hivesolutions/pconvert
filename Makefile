@@ -19,6 +19,11 @@ ifeq ($(SYS),darwin)
   LDFLAGS+=-framework OpenCL
 endif
 
+ifeq ($(DEBUG),1)
+  CFLAGS+=-g
+  LDFLAGS+=-g
+endif
+
 all: $(SOURCES) $(EXECUTABLE)
 
 install: all
