@@ -26,6 +26,7 @@ setuptools.setup(
             ],
             sources = [
                 "src/pconvert/extension.c",
+				"src/pconvert/opencl.c",
                 "src/pconvert/pconvert.c",
                 "src/pconvert/stdafx.c",
                 "src/pconvert/structs.c",
