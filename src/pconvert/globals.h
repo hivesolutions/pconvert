@@ -15,8 +15,8 @@
 #define NORMAL return NO_ERROR
 #define IS_ERROR(input) input != NO_ERROR
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } while(FALSE)
-#define VALIDATE_R(input, return_v) if(IS_ERROR(input)) { return return_v; } while(FALSE)
-#define VALIDATE_A(input, action) if(IS_ERROR(input)) { action; } while(FALSE)
+#define VALIDATE_R(input, ...) if(IS_ERROR(input)) { return __VA_ARGS__; } while(FALSE)
+#define VALIDATE_A(input, ...) if(IS_ERROR(input)) { __VA_ARGS__; } while(FALSE)
 
 #define Z_NO_COMPRESSION 0
 #define Z_BEST_SPEED 1

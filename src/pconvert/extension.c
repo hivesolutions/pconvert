@@ -30,18 +30,20 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
 
-    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
-    VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    Py_BEGIN_ALLOW_THREADS;
+    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(read_png(top_path, demultiply, &top), Py_BLOCK_THREADS Py_RETURN_NONE);
     if(source_over == TRUE) {
-        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
     } else if(run_inline == TRUE) {
-        VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
     } else {
-        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
     }
-    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
-    VALIDATE_A(release_image(&top), Py_RETURN_NONE);
-    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(release_image(&bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
+    Py_END_ALLOW_THREADS;
 
     Py_RETURN_NONE;
 };
@@ -82,10 +84,20 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #else
         bottom_path = PyString_AsString(first);
 #endif
-
-        VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
-        VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
-        VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+        Py_BEGIN_ALLOW_THREADS;
+        VALIDATE_A(
+            read_png(bottom_path, demultiply, &bottom),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
+        VALIDATE_A(
+            write_png(&bottom, demultiply, target_path),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
+        VALIDATE_A(
+            release_image(&bottom),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
+        Py_END_ALLOW_THREADS;
         Py_RETURN_NONE;
     }
     if(size < 2) { Py_RETURN_NONE; }
@@ -103,16 +115,33 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     top_path = PyString_AsString(second);
 #endif
 
-    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_RETURN_NONE);
-    VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+    Py_BEGIN_ALLOW_THREADS;
+    VALIDATE_A(
+        read_png(bottom_path, demultiply, &bottom),
+        Py_BLOCK_THREADS Py_RETURN_NONE
+    );
+    VALIDATE_A(
+        read_png(top_path, demultiply, &top),
+        Py_BLOCK_THREADS Py_RETURN_NONE
+    );
     if(source_over == TRUE) {
-        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(
+            blend_images_fast(&bottom, &top, algorithm),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
     } else if(run_inline == TRUE) {
-        VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(
+            blend_images_i(&bottom, &top, algorithm),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
     } else {
-        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+        VALIDATE_A(
+            blend_images(&bottom, &top, algorithm),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
     }
-    VALIDATE_A(release_image(&top), Py_RETURN_NONE);
+    VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
+    Py_END_ALLOW_THREADS;
 
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
@@ -133,15 +162,29 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #else
         top_path = PyString_AsString(element);
 #endif
-        VALIDATE_A(read_png(top_path, demultiply, &top), Py_RETURN_NONE);
+        Py_BEGIN_ALLOW_THREADS;
+        VALIDATE_A(
+            read_png(top_path, demultiply, &top),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
         if(source_over == TRUE) {
-            VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_RETURN_NONE);
+            VALIDATE_A(
+                blend_images_fast(&bottom, &top, algorithm),
+                Py_BLOCK_THREADS Py_RETURN_NONE
+            );
         } else if(run_inline == TRUE) {
-            VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_RETURN_NONE);
+            VALIDATE_A(
+                blend_images_i(&bottom, &top, algorithm),
+                Py_BLOCK_THREADS Py_RETURN_NONE
+            );
         } else {
-            VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_RETURN_NONE);
+            VALIDATE_A(
+                blend_images(&bottom, &top, algorithm),
+                Py_BLOCK_THREADS Py_RETURN_NONE
+            );
         }
-        VALIDATE_A(release_image(&top), Py_RETURN_NONE);
+        VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
+        Py_END_ALLOW_THREADS;
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
@@ -150,8 +193,16 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     Py_DECREF(iterator);
 
-    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_RETURN_NONE);
-    VALIDATE_A(release_image(&bottom), Py_RETURN_NONE);
+    Py_BEGIN_ALLOW_THREADS;
+    VALIDATE_A(
+        write_png(&bottom, demultiply, target_path),
+        Py_BLOCK_THREADS Py_RETURN_NONE
+    );
+    VALIDATE_A(
+        release_image(&bottom),
+        Py_BLOCK_THREADS Py_RETURN_NONE
+    );
+    Py_END_ALLOW_THREADS;
 
     Py_RETURN_NONE;
 };
