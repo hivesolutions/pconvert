@@ -4,7 +4,7 @@ Simple PNG conversion tool using libpng.
 
 ## Build
 
-It should be simple to build the project using `make`. Please note that the project requires both python and libpng.
+It should be simple to build the project using `make`. Please note that the project requires both Python and libpng.
 
 ```bash
 make
@@ -17,7 +17,7 @@ To build pconvert for a specific system use the `SYS` Makefile variable:
 make SYS=darwin
 ```
 
-It's also possible to build the python extension and install in a local machine.
+It's also possible to build the Python extension and install in a local machine.
 
 ```bash
 python setup.py install
