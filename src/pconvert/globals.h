@@ -21,7 +21,7 @@
 #define Z_NO_COMPRESSION 0
 #define Z_BEST_SPEED 1
 #define Z_BEST_COMPRESSION 9
-#define Z_DEFAULT_COMPRESSION  (-1)
+#define Z_DEFAULT_COMPRESSION (-1)
 
 typedef struct pcv_image {
     int width;
