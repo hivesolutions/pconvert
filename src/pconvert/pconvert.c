@@ -318,7 +318,12 @@ ERROR_T process_image(struct pcv_image *image) {
     NORMAL;
 }
 
-ERROR_T blend_images_extra(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char use_opencl) {
+ERROR_T blend_images_extra(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    char use_opencl
+) {
     ERROR_T err;
     if(use_opencl == TRUE) {
         err = blend_images_opencl(bottom, top, algorithm);
@@ -328,7 +333,11 @@ ERROR_T blend_images_extra(struct pcv_image *bottom, struct pcv_image *top, char
     return err;
 }
 
-ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
@@ -361,7 +370,11 @@ ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algo
     NORMAL;
 }
 
-ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images_i(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
@@ -393,7 +406,11 @@ ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *al
     NORMAL;
 }
 
-ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images_fast(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+) {
     int x, y;
     float abf, atf, af;
     png_byte r, g, b, a;
@@ -439,7 +456,12 @@ ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char 
     NORMAL;
 }
 
-ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path) {
+ERROR_T blend_images_debug(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    char *file_path
+) {
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
@@ -570,7 +592,7 @@ ERROR_T compose_images_extra(
     if(demultiply) { multiply_image(&bottom); }
     sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images_extra(&final, &bottom, "alpha", use_opencl); release_image(&bottom);
+    blend_images_extra(&final, &bottom, algorithm, use_opencl); release_image(&bottom);
     sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter);
     release_image(&final);
@@ -585,6 +607,10 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "alpha", "white");
     compose_images(argv[2], "alpha", "blue");
     compose_images(argv[2], "alpha", "texture");
+    compose_images(argv[2], "top", "alpha");
+    compose_images(argv[2], "top", "white");
+    compose_images(argv[2], "top", "blue");
+    compose_images(argv[2], "top", "texture");
     compose_images(argv[2], "multiplicative", "alpha");
     compose_images(argv[2], "multiplicative", "white");
     compose_images(argv[2], "multiplicative", "blue");

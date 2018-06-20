@@ -116,6 +116,10 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #endif
 
     Py_BEGIN_ALLOW_THREADS;
+
+    /* validates that both the bottom and the top path are correctly
+    read from the current file system, in case an error occurs return
+    an invalid (none) value to the caller python code */
     VALIDATE_A(
         read_png(bottom_path, demultiply, &bottom),
         Py_BLOCK_THREADS Py_RETURN_NONE
@@ -124,6 +128,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         read_png(top_path, demultiply, &top),
         Py_BLOCK_THREADS Py_RETURN_NONE
     );
+
     if(source_over == TRUE) {
         VALIDATE_A(
             blend_images_fast(&bottom, &top, algorithm),
@@ -150,9 +155,13 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 
     iterator = PyObject_GetIter(paths);
 
+    /* increments the iterator by both the top and the bottom
+    paths, as they have already been processed */
     PyIter_Next(iterator);
     PyIter_Next(iterator);
 
+    /* iterates continuously until the iterator is exhausted and
+    there's no more images remaining for the blending */
     while(TRUE) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }

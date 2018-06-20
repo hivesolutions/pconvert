@@ -52,11 +52,33 @@ ERROR_T write_png_extra(
 ERROR_T demultiply_image(struct pcv_image *image);
 ERROR_T multiply_image(struct pcv_image *image);
 ERROR_T process_image(struct pcv_image *image);
-ERROR_T blend_images(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
-ERROR_T blend_images_i(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
-ERROR_T blend_images_fast(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
-ERROR_T blend_images_debug(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char *file_path);
-ERROR_T blend_images_extra(struct pcv_image *bottom, struct pcv_image *top, char *algorithm, char use_opencl);
+ERROR_T blend_images(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+);
+ERROR_T blend_images_i(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+);
+ERROR_T blend_images_fast(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm
+);
+ERROR_T blend_images_debug(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    char *file_path
+);
+ERROR_T blend_images_extra(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    char use_opencl
+);
 ERROR_T release_image(struct pcv_image *image);
 ERROR_T release_image_s(struct pcv_image *image, char destroy_struct);
 ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target);
@@ -75,6 +97,11 @@ blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);
 
 void blend_alpha(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+);
+void blend_top(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at

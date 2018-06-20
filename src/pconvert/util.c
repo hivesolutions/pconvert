@@ -15,6 +15,8 @@ char *join_path(char *base, char *extra, char *result) {
 blend_algorithm *get_blend_algorithm(char *algorithm) {
     if(algorithm == NULL || strcmp(algorithm, "alpha") == 0) {
         return blend_alpha;
+    } else if(strcmp(algorithm, "top") == 0) {
+        return blend_top;
     } else if(strcmp(algorithm, "multiplicative") == 0) {
         return blend_multiplicative;
     } else if(strcmp(algorithm, "source_over") == 0) {
@@ -33,6 +35,8 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
 
 char is_multiplied(char *algorithm) {
     if(algorithm == NULL || strcmp(algorithm, "alpha") == 0) {
+        return FALSE;
+    } else if(strcmp(algorithm, "top") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "multiplicative") == 0) {
         return FALSE;
@@ -65,6 +69,28 @@ void blend_alpha(
     g = af == 0.0f ? 0 : (png_byte) ((gb * abf + gt * atf * (1.0f - abf)) / af);
     b = af == 0.0f ? 0 : (png_byte) ((bb * abf + bt * atf * (1.0f - abf)) / af);
     a = MAX(0, MIN(255, (png_byte) ((abf + atf * (1.0f - abf)) * 255.0f)));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}
+
+void blend_top(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    r = at == 0 ? rb : rt;
+    g = at == 0 ? gb : gt;
+    b = at == 0 ? bb : bt;
+    a = at == 0 ? ab : at;
 
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
