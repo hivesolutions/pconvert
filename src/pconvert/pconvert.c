@@ -607,10 +607,6 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "alpha", "white");
     compose_images(argv[2], "alpha", "blue");
     compose_images(argv[2], "alpha", "texture");
-    compose_images(argv[2], "top", "alpha");
-    compose_images(argv[2], "top", "white");
-    compose_images(argv[2], "top", "blue");
-    compose_images(argv[2], "top", "texture");
     compose_images(argv[2], "multiplicative", "alpha");
     compose_images(argv[2], "multiplicative", "white");
     compose_images(argv[2], "multiplicative", "blue");
@@ -619,6 +615,14 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "source_over", "white");
     compose_images(argv[2], "source_over", "blue");
     compose_images(argv[2], "source_over", "texture");
+    compose_images(argv[2], "first_top", "alpha");
+    compose_images(argv[2], "first_top", "white");
+    compose_images(argv[2], "first_top", "blue");
+    compose_images(argv[2], "first_top", "texture");
+    compose_images(argv[2], "first_bottom", "alpha");
+    compose_images(argv[2], "first_bottom", "white");
+    compose_images(argv[2], "first_bottom", "blue");
+    compose_images(argv[2], "first_bottom", "texture");
     compose_images(argv[2], "disjoint_over", "alpha");
     compose_images(argv[2], "disjoint_over", "white");
     compose_images(argv[2], "disjoint_over", "blue");
