@@ -8,15 +8,24 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 };
 
-PyObject *extension_blend_images(PyObject *self, PyObject *args) {
+PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
     char demultiply, source_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     PyObject *is_inline;
     struct pcv_image bottom, top;
+	char *kwlist[] = {
+        "bottom_path",
+        "top_path",
+        "target_path",
+        "algorithm",
+        "is_inline",
+        NULL
+    };
 
-    if(PyArg_ParseTuple(
+    if(PyArg_ParseTupleAndKeywords(
         args,
+		kwargs,
         "sss|sO",
         &bottom_path,
         &top_path,
@@ -284,7 +293,7 @@ PyMethodDef pconvert_functions[3] = {
     {
         "blend_images",
         (PyCFunction) extension_blend_images,
-        METH_VARARGS,
+        METH_VARARGS | METH_KEYWORDS,
         NULL
     },
     {
