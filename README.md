@@ -26,6 +26,10 @@ python setup.py install
 ## Example
 
 ```bash
+pconvert compose assets/demo/
+```
+
+```bash
 pconvert convert assets/demo/tux.png tux.out.png
 ```
 
