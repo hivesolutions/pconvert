@@ -26,7 +26,7 @@ python setup.py install
 ## Example
 
 ```bash
-pconvert assets/demo/tux.png tux.out.png
+pconvert compose assets/demo/background_texture.png assets/demo/tux.png tux.out.png
 ```
 
 ## License
