@@ -11,7 +11,7 @@
 
 #include <png.h>
 
-#define PYTHON_26
+#define PYTHON_27
 #define PYTHON_THREADS
 
 #include <Python.h>

@@ -19,6 +19,8 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
         return blend_multiplicative;
     } else if(strcmp(algorithm, "source_over") == 0) {
         return blend_source_over;
+    } else if(strcmp(algorithm, "destination_over") == 0) {
+        return blend_destination_over;
     } else if(strcmp(algorithm, "first_top") == 0) {
         return blend_first_top;
     } else if(strcmp(algorithm, "first_bottom") == 0) {
@@ -41,6 +43,8 @@ char is_multiplied(char *algorithm) {
     } else if(strcmp(algorithm, "multiplicative") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "source_over") == 0) {
+        return FALSE;
+    } else if(strcmp(algorithm, "destination_over") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "first_top") == 0) {
         return FALSE;
@@ -134,6 +138,32 @@ void blend_source_over(
     *(result + 3) = a;
 }
 
+void blend_destination_over(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float abf = 1.0f * (ab / 255.0f);
+    float atf = 1.0f * (at / 255.0f);
+    float af = atf + abf * (1.0f - atf);
+
+    r = af == 0.0f ? 0 : (png_byte) ((rt * atf + rb * abf * (1.0f - atf)) / af);
+    g = af == 0.0f ? 0 : (png_byte) ((gt * atf + gb * abf * (1.0f - atf)) / af);
+    b = af == 0.0f ? 0 : (png_byte) ((bt * atf + bb * abf * (1.0f - atf)) / af);
+    a = MAX(0, MIN(255, (png_byte) (af * 255.0f)));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}
+
 void blend_first_top(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
@@ -149,6 +179,7 @@ void blend_first_top(
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
     b = MAX(0, MIN(255, b));
+    a = MAX(0, MIN(255, a));
 
     *result = r;
     *(result + 1) = g;
@@ -171,6 +202,7 @@ void blend_first_bottom(
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
     b = MAX(0, MIN(255, b));
+    a = MAX(0, MIN(255, a));
 
     *result = r;
     *(result + 1) = g;

@@ -48,33 +48,59 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 };
 
-PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
+PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
-    char demultiply, source_over;
+    char demultiply, source_over, use_algorithms;
     char *bottom_path, *top_path, *target_path, *algorithm;
     struct pcv_image bottom, top;
-    PyObject *paths, *iterator, *element, *first, *second, *is_inline;
+    PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
+        *is_inline, *algorithms, *algorithm_o;
     Py_ssize_t size;
+    char *kwlist[] = {
+        "paths",
+        "target_path",
+        "algorithm",
+        "algorithms",
+        "is_inline",
+        NULL
+    };
 
 #if PY_MAJOR_VERSION >= 3
     PyObject *encoded;
 #endif
 
-    if(PyArg_ParseTuple(
+    if(PyArg_ParseTupleAndKeywords(
         args,
-        "Os|sO",
+        kwargs,
+        "Os|sOO",
+        kwlist,
         &paths,
         &target_path,
         &algorithm,
+        &algorithms,
         &is_inline
     ) == 0) { return NULL; }
 
+    /* tries to determine the target values for the optional parameters
+    of the current function (fallback operations) */
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
+
+    /* determines the boolean/flag values for both the multiplied entitlement,
+    if the algorithm is a source over one and if the algorithms sequence should
+    be used to determine the kind of blend algorithm to use */
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
+    use_algorithms = algorithms == NULL ? FALSE : TRUE;
+    run_inline = use_algorithms == TRUE ? FALSE : run_inline;
 
+    /* retrieves the size of the paths sequence that has been provided
+    this is relevant to determine the kind of operation to be performed */
     size = PyList_Size(paths);
+
+    /* in case the size of the provided sequence of paths
+    is just one then a simple re-write operation should be
+    performed, read from provided path and write to target path */
     if(size == 1) {
         first = PyList_GetItem(paths, 0);
 
@@ -100,8 +126,28 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
         Py_END_ALLOW_THREADS;
         Py_RETURN_NONE;
     }
+
+    /* in case there's not enough length in the list to allow
+    a proper composition, returns the control flow immediately
+    as there's nothing remaining to be done */
     if(size < 2) { Py_RETURN_NONE; }
 
+    /* in case the algorithms sequence should be used then the
+    target algorithm for the current composition is retrieved
+    from the algorithms list*/
+    if(use_algorithms) {
+        algorithm_o = PyList_GetItem(algorithms, 0);
+#if PY_MAJOR_VERSION >= 3
+        algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
+        algorithm = PyBytes_AsString(algorithm_o);
+#else
+        algorithm = PyString_AsString(algorithm_o);
+#endif
+        source_over = strcmp(algorithm, "source_over") == 0;
+    }
+
+    /* retrieves the first two elements from the list to serve
+    as the initial two images to be used in the first composition */
     first = PyList_GetItem(paths, 0);
     second = PyList_GetItem(paths, 1);
 
@@ -160,6 +206,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     PyIter_Next(iterator);
     PyIter_Next(iterator);
 
+    if(use_algorithms) {
+        iteratorAlgorithms = PyObject_GetIter(algorithms);
+        PyIter_Next(iteratorAlgorithms);
+    }
+
     /* iterates continuously until the iterator is exhausted and
     there's no more images remaining for the blending */
     while(TRUE) {
@@ -171,7 +222,20 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
 #else
         top_path = PyString_AsString(element);
 #endif
+
+        if(use_algorithms) {
+            algorithm_o = PyIter_Next(iteratorAlgorithms);
+#if PY_MAJOR_VERSION >= 3
+            algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
+            algorithm = PyBytes_AsString(algorithm_o);
+#else
+            algorithm = PyString_AsString(algorithm_o);
+#endif
+            source_over = strcmp(algorithm, "source_over") == 0;
+        }
+
         Py_BEGIN_ALLOW_THREADS;
+
         VALIDATE_A(
             read_png(top_path, demultiply, &top),
             Py_BLOCK_THREADS Py_RETURN_NONE
@@ -216,17 +280,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 };
 
-PyMethodDef pconvert_functions[4] = {
+PyMethodDef pconvert_functions[3] = {
     {
         "blend_images",
-        extension_blend_images,
+        (PyCFunction) extension_blend_images,
         METH_VARARGS,
         NULL
     },
     {
         "blend_multiple",
-        extension_blend_multiple,
-        METH_VARARGS,
+        (PyCFunction) extension_blend_multiple,
+        METH_VARARGS | METH_KEYWORDS,
         NULL
     },
     {

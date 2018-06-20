@@ -615,6 +615,10 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "source_over", "white");
     compose_images(argv[2], "source_over", "blue");
     compose_images(argv[2], "source_over", "texture");
+    compose_images(argv[2], "destination_over", "alpha");
+    compose_images(argv[2], "destination_over", "white");
+    compose_images(argv[2], "destination_over", "blue");
+    compose_images(argv[2], "destination_over", "texture");
     compose_images(argv[2], "first_top", "alpha");
     compose_images(argv[2], "first_top", "white");
     compose_images(argv[2], "first_top", "blue");
