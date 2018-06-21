@@ -70,7 +70,13 @@ ERROR_T blend_images_i(
     char *algorithm,
     params *params
 );
-ERROR_T blend_images_fast(
+ERROR_T blend_images_source_over_fast(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    params *params
+);
+ERROR_T blend_images_destination_over_fast(
     struct pcv_image *bottom,
     struct pcv_image *top,
     char *algorithm,

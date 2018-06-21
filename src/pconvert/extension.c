@@ -62,7 +62,7 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
 
 PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
-    char demultiply, source_over;
+    char demultiply, source_over, destination_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     PyObject *is_inline, *params_py;
     struct pcv_image bottom, top;
@@ -100,6 +100,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
+    destination_over = strcmp(algorithm, "destination_over") == 0;
 
     if(params_py != NULL) {
         extension_build_params(params_py, &params);
@@ -109,8 +110,10 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_BLOCK_THREADS Py_RETURN_NONE);
     if(source_over == TRUE) {
-        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
-    } else if(run_inline == TRUE) {
+        VALIDATE_A(blend_images_source_over_fast(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
+    } else if(destination_over == TRUE) {
+        VALIDATE_A(blend_images_destination_over_fast(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
+    } else if(run_inline == TRUE && source_over == TRUE) {
         VALIDATE_A(blend_images_i(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
     } else {
         VALIDATE_A(blend_images(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
@@ -125,7 +128,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
-    char demultiply, source_over, use_algorithms;
+    char demultiply, source_over, destination_over, use_algorithms;
     char *bottom_path, *top_path, *target_path, *algorithm = NULL;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
@@ -177,8 +180,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     be used to determine the kind of blend algorithm to use */
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
+    destination_over = strcmp(algorithm, "destination_over") == 0;
     use_algorithms = algorithms == NULL ? FALSE : TRUE;
-    run_inline = use_algorithms == TRUE ? FALSE : run_inline;
 
     /* in case the parameters value has been provided, then it must be parsed
     as a list of dictionaries containing the parameters */
@@ -255,6 +258,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         algorithm = PyString_AsString(algorithm_o);
 #endif
         source_over = strcmp(algorithm, "source_over") == 0;
+        destination_over = strcmp(algorithm, "destination_over") == 0;
     }
 
     /* retrieves the first two elements from the list to serve
@@ -288,10 +292,15 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     if(source_over == TRUE) {
         VALIDATE_A(
-            blend_images_fast(&bottom, &top, algorithm, &params),
+            blend_images_source_over_fast(&bottom, &top, algorithm, &params),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
-    } else if(run_inline == TRUE) {
+    } else if(destination_over == TRUE) {
+        VALIDATE_A(
+            blend_images_destination_over_fast(&bottom, &top, algorithm, &params),
+            Py_BLOCK_THREADS Py_RETURN_NONE
+        );
+    } else if(run_inline == TRUE && source_over == TRUE) {
         VALIDATE_A(
             blend_images_i(&bottom, &top, algorithm, &params),
             Py_BLOCK_THREADS Py_RETURN_NONE
@@ -353,6 +362,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
             algorithm = PyString_AsString(algorithm_o);
 #endif
             source_over = strcmp(algorithm, "source_over") == 0;
+            destination_over = strcmp(algorithm, "destination_over") == 0;
         }
 
         Py_BEGIN_ALLOW_THREADS;
@@ -363,10 +373,15 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         );
         if(source_over == TRUE) {
             VALIDATE_A(
-                blend_images_fast(&bottom, &top, algorithm, &params),
+                blend_images_source_over_fast(&bottom, &top, algorithm, &params),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
-        } else if(run_inline == TRUE) {
+        } else if(destination_over == TRUE) {
+            VALIDATE_A(
+                blend_images_destination_over_fast(&bottom, &top, algorithm, &params),
+                Py_BLOCK_THREADS Py_RETURN_NONE
+            );
+        } else if(run_inline == TRUE && source_over == TRUE) {
             VALIDATE_A(
                 blend_images_i(&bottom, &top, algorithm, &params),
                 Py_BLOCK_THREADS Py_RETURN_NONE
