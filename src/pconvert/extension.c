@@ -41,7 +41,14 @@ void extension_build_params(PyObject *params_py, params *params) {
         if(PyBool_Check(value)) {
             value_b = PyBool_Check(value);
             params->params[index].value.boolean = value_b;
-		} else if(PyLong_Check(value)) {
+		}
+#if PY_MAJOR_VERSION < 3
+		else if(PyInt_Check(value)) {
+            value_i = PyInt_AsLong(value);
+            params->params[index].value.integer = value_i;
+        }
+#endif
+		else if(PyLong_Check(value)) {
             value_i = PyLong_AsLong(value);
             params->params[index].value.integer = value_i;
         } else if(PyFloat_Check(value)) {
