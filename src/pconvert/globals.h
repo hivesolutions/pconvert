@@ -1,5 +1,7 @@
 #pragma once
 
+#include "structs.h"
+
 #define PCONVERT_VERSION "0.3.2"
 
 #define TRUE 1
@@ -36,6 +38,7 @@ typedef struct pcv_image {
 } pcv_image_t;
 
 typedef void (blend_algorithm) (
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -58,38 +61,44 @@ ERROR_T process_image(struct pcv_image *image);
 ERROR_T blend_images(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 );
 ERROR_T blend_images_i(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 );
 ERROR_T blend_images_fast(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 );
 ERROR_T blend_images_debug(
     struct pcv_image *bottom,
     struct pcv_image *top,
     char *algorithm,
+    params *params,
     char *file_path
 );
 ERROR_T blend_images_extra(
     struct pcv_image *bottom,
     struct pcv_image *top,
     char *algorithm,
+    params *params,
     char use_opencl
 );
 ERROR_T release_image(struct pcv_image *image);
 ERROR_T release_image_s(struct pcv_image *image, char destroy_struct);
 ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target);
 ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target);
-ERROR_T compose_images(char *base_path, char *algorithm, char *background);
+ERROR_T compose_images(char *base_path, char *algorithm, params *params, char *background);
 ERROR_T compose_images_extra(
     char *base_path,
     char *algorithm,
+    params *params,
     char *background,
     int compression,
     int filter,
@@ -100,51 +109,61 @@ blend_algorithm *get_blend_algorithm(char *algorithm);
 char is_multiplied(char *algorithm);
 
 void blend_alpha(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_multiplicative(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_source_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_destination_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_mask_top(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_first_top(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_first_bottom(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_disjoint_under(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_disjoint_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_disjoint_debug(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at

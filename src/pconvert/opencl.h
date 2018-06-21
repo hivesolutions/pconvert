@@ -1,5 +1,7 @@
 #pragma once
 
+#include "structs.h"
+
 #ifdef PCONVERT_OPENCL
 
 #ifdef __APPLE__
@@ -12,5 +14,16 @@ cl_program load_program(cl_context context, char *algorithm, int *err);
 
 #endif
 
-ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm);
-ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *algorithm);
+ERROR_T blend_images_opencl(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    params *params
+);
+ERROR_T blend_kernel(
+    unsigned char *bottom,
+    unsigned char *top,
+    int size,
+    char *algorithm,
+    params *params
+);

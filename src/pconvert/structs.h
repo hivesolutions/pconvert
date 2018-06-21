@@ -2,6 +2,21 @@
 
 #define HASHSIZE 100
 
+typedef union typem_t {
+    int integer;
+    float decimal;
+} typem;
+
+typedef struct param_t {
+    char *key;
+    union typem_t value;
+} param;
+
+typedef struct params_t {
+    size_t length;
+    struct params_t *params;
+} params;
+
 typedef struct nlist_t {
     struct nlist_t *next;
     char *key;

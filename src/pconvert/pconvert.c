@@ -330,13 +330,14 @@ ERROR_T blend_images_extra(
     struct pcv_image *bottom,
     struct pcv_image *top,
     char *algorithm,
+    params *params,
     char use_opencl
 ) {
     ERROR_T err;
     if(use_opencl == TRUE) {
-        err = blend_images_opencl(bottom, top, algorithm);
+        err = blend_images_opencl(bottom, top, algorithm, params);
     } else {
-        err = blend_images(bottom, top, algorithm);
+        err = blend_images(bottom, top, algorithm, params);
     }
     return err;
 }
@@ -344,7 +345,8 @@ ERROR_T blend_images_extra(
 ERROR_T blend_images(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 ) {
     int x, y;
     png_byte rb, gb, bb, ab;
@@ -369,6 +371,7 @@ ERROR_T blend_images(
             at = *(ptrTop + 3);
 
             operation(
+                NULL,
                 ptrBottom,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
@@ -381,7 +384,8 @@ ERROR_T blend_images(
 ERROR_T blend_images_i(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 ) {
     int x, y;
     png_byte rb, gb, bb, ab;
@@ -417,7 +421,8 @@ ERROR_T blend_images_i(
 ERROR_T blend_images_fast(
     struct pcv_image *bottom,
     struct pcv_image *top,
-    char *algorithm
+    char *algorithm,
+    params *params
 ) {
     int x, y;
     float abf, atf, af;
@@ -468,6 +473,7 @@ ERROR_T blend_images_debug(
     struct pcv_image *bottom,
     struct pcv_image *top,
     char *algorithm,
+    params *params,
     char *file_path
 ) {
     int x, y;
@@ -502,6 +508,7 @@ ERROR_T blend_images_debug(
             );
 
             operation(
+                NULL,
                 ptrBottom,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
@@ -567,10 +574,11 @@ ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     NORMAL;
 }
 
-ERROR_T compose_images(char *base_path, char *algorithm, char *background) {
+ERROR_T compose_images(char *base_path, char *algorithm, params *params, char *background) {
     return compose_images_extra(
         base_path,
         algorithm,
+        params,
         background,
         Z_BEST_SPEED,
         PNG_FILTER_NONE,
@@ -581,6 +589,7 @@ ERROR_T compose_images(char *base_path, char *algorithm, char *background) {
 ERROR_T compose_images_extra(
     char *base_path,
     char *algorithm,
+    params *params,
     char *background,
     int compression,
     int filter,
@@ -592,15 +601,15 @@ ERROR_T compose_images_extra(
     char demultiply = is_multiplied(algorithm);
     read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
     read_png(join_path(base_path, "back.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
     read_png(join_path(base_path, "front.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
     read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, use_opencl); release_image(&top);
+    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
     if(demultiply) { multiply_image(&bottom); }
     sprintf(name, "background_%s.png", background);
     read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images_extra(&final, &bottom, algorithm, use_opencl); release_image(&bottom);
+    blend_images_extra(&final, &bottom, algorithm, params, use_opencl); release_image(&bottom);
     sprintf(name, "result_%s_%s.png", algorithm, background);
     write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter);
     release_image(&final);
@@ -611,42 +620,42 @@ ERROR_T compose_images_extra(
 int pcompose(int argc, char **argv) {
     if(argc != 3) { abort_("Usage: pconvert compose <directory>"); }
 
-    compose_images(argv[2], "alpha", "alpha");
-    compose_images(argv[2], "alpha", "white");
-    compose_images(argv[2], "alpha", "blue");
-    compose_images(argv[2], "alpha", "texture");
-    compose_images(argv[2], "multiplicative", "alpha");
-    compose_images(argv[2], "multiplicative", "white");
-    compose_images(argv[2], "multiplicative", "blue");
-    compose_images(argv[2], "multiplicative", "texture");
-    compose_images(argv[2], "source_over", "alpha");
-    compose_images(argv[2], "source_over", "white");
-    compose_images(argv[2], "source_over", "blue");
-    compose_images(argv[2], "source_over", "texture");
-    compose_images(argv[2], "destination_over", "alpha");
-    compose_images(argv[2], "destination_over", "white");
-    compose_images(argv[2], "destination_over", "blue");
-    compose_images(argv[2], "destination_over", "texture");
-    compose_images(argv[2], "first_top", "alpha");
-    compose_images(argv[2], "first_top", "white");
-    compose_images(argv[2], "first_top", "blue");
-    compose_images(argv[2], "first_top", "texture");
-    compose_images(argv[2], "first_bottom", "alpha");
-    compose_images(argv[2], "first_bottom", "white");
-    compose_images(argv[2], "first_bottom", "blue");
-    compose_images(argv[2], "first_bottom", "texture");
-    compose_images(argv[2], "disjoint_over", "alpha");
-    compose_images(argv[2], "disjoint_over", "white");
-    compose_images(argv[2], "disjoint_over", "blue");
-    compose_images(argv[2], "disjoint_over", "texture");
-    compose_images(argv[2], "disjoint_under", "alpha");
-    compose_images(argv[2], "disjoint_under", "white");
-    compose_images(argv[2], "disjoint_under", "blue");
-    compose_images(argv[2], "disjoint_under", "texture");
-    compose_images(argv[2], "disjoint_debug", "alpha");
-    compose_images(argv[2], "disjoint_debug", "white");
-    compose_images(argv[2], "disjoint_debug", "blue");
-    compose_images(argv[2], "disjoint_debug", "texture");
+    compose_images(argv[2], "alpha", NULL, "alpha");
+    compose_images(argv[2], "alpha", NULL, "white");
+    compose_images(argv[2], "alpha", NULL, "blue");
+    compose_images(argv[2], "alpha", NULL, "texture");
+    compose_images(argv[2], "multiplicative", NULL, "alpha");
+    compose_images(argv[2], "multiplicative", NULL, "white");
+    compose_images(argv[2], "multiplicative", NULL, "blue");
+    compose_images(argv[2], "multiplicative", NULL, "texture");
+    compose_images(argv[2], "source_over", NULL, "alpha");
+    compose_images(argv[2], "source_over", NULL, "white");
+    compose_images(argv[2], "source_over", NULL, "blue");
+    compose_images(argv[2], "source_over", NULL, "texture");
+    compose_images(argv[2], "destination_over", NULL, "alpha");
+    compose_images(argv[2], "destination_over", NULL, "white");
+    compose_images(argv[2], "destination_over", NULL, "blue");
+    compose_images(argv[2], "destination_over", NULL, "texture");
+    compose_images(argv[2], "first_top", NULL, "alpha");
+    compose_images(argv[2], "first_top", NULL, "white");
+    compose_images(argv[2], "first_top", NULL, "blue");
+    compose_images(argv[2], "first_top", NULL, "texture");
+    compose_images(argv[2], "first_bottom", NULL, "alpha");
+    compose_images(argv[2], "first_bottom", NULL, "white");
+    compose_images(argv[2], "first_bottom", NULL, "blue");
+    compose_images(argv[2], "first_bottom", NULL, "texture");
+    compose_images(argv[2], "disjoint_over", NULL, "alpha");
+    compose_images(argv[2], "disjoint_over", NULL, "white");
+    compose_images(argv[2], "disjoint_over", NULL, "blue");
+    compose_images(argv[2], "disjoint_over", NULL, "texture");
+    compose_images(argv[2], "disjoint_under", NULL, "alpha");
+    compose_images(argv[2], "disjoint_under", NULL, "white");
+    compose_images(argv[2], "disjoint_under", NULL, "blue");
+    compose_images(argv[2], "disjoint_under", NULL, "texture");
+    compose_images(argv[2], "disjoint_debug", NULL, "alpha");
+    compose_images(argv[2], "disjoint_debug", NULL, "white");
+    compose_images(argv[2], "disjoint_debug", NULL, "blue");
+    compose_images(argv[2], "disjoint_debug", NULL, "texture");
 
     return 0;
 }
@@ -667,6 +676,7 @@ int pconvert(int argc, char **argv) {
 float pbenchmark_algorithm(
     char *base_path,
     char *algorithm,
+    params *params,
     char *background,
     int compression,
     int filter
@@ -675,7 +685,7 @@ float pbenchmark_algorithm(
     float end_time;
     float time_elapsed;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(base_path, algorithm, background, compression, filter, FALSE);
+    compose_images_extra(base_path, algorithm, params, background, compression, filter, FALSE);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed = end_time - start_time;
     return time_elapsed;
@@ -689,24 +699,24 @@ int pbenchmark(int argc, char **argv) {
 
     file = fopen("benchmark.txt", "wb");
 
-    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_NO_COMPRESSION, 0);
+    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_NO_COMPRESSION, 0);
     fprintf(file, "source_over Z_NO_COMPRESSION: %f\n", time);
 
-    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_BEST_SPEED, 0);
+    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, 0);
     fprintf(file, "source_over Z_BEST_SPEED: %f\n", time);
 
-    time = pbenchmark_algorithm(argv[2], "source_over", "alpha", Z_BEST_COMPRESSION, 0);
+    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_BEST_COMPRESSION, 0);
     fprintf(file, "source_over Z_BEST_COMPRESSION: %f\n", time);
 
     fprintf(file, "\n");
 
-    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_NO_COMPRESSION, 0);
+    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_NO_COMPRESSION, 0);
     fprintf(file, "multiplicative Z_NO_COMPRESSION: %f\n", time);
 
-    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, 0);
+    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, 0);
     fprintf(file, "multiplicative Z_BEST_SPEED: %f\n", time);
 
-    time = pbenchmark_algorithm(argv[2], "multiplicative", "alpha", Z_BEST_COMPRESSION, 0);
+    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_BEST_COMPRESSION, 0);
     fprintf(file, "multiplicative Z_BEST_COMPRESSION: %f\n", time);
 
     fclose(file);
@@ -724,21 +734,21 @@ int popencl(int argc, char **argv) {
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "disjoint_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "disjoint_under", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_cpu = end_time - start_time;
 
     time_elapsed_gpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(argv[2], "multiplicative", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "source_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "alpha", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "disjoint_over", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "disjoint_under", "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_gpu = end_time - start_time;
 

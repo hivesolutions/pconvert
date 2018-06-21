@@ -37,7 +37,12 @@ cl_program load_program(cl_context context, char *algorithm, int *error) {
     return program;
 }
 
-ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images_opencl(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    params *params
+) {
     int y;
     unsigned char *bottom_p;
     unsigned char *top_p;
@@ -74,7 +79,13 @@ ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, cha
     NORMAL;
 }
 
-ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *algorithm) {
+ERROR_T blend_kernel(
+    unsigned char *bottom,
+    unsigned char *top,
+    int size,
+    char *algorithm,
+    params *params
+) {
     cl_device_id device_id;
     cl_context context;
     cl_command_queue commands;
@@ -161,11 +172,22 @@ ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *
 
 #else
 
-ERROR_T blend_images_opencl(struct pcv_image *bottom, struct pcv_image *top, char *algorithm) {
+ERROR_T blend_images_opencl(
+    struct pcv_image *bottom,
+    struct pcv_image *top,
+    char *algorithm,
+    params *params
+) {
     RAISE_S("[blend_kernel] No OpenCL support available");
 }
 
-ERROR_T blend_kernel(unsigned char *bottom, unsigned char *top, int size, char *algorithm) {
+ERROR_T blend_kernel(
+    unsigned char *bottom,
+    unsigned char *top,
+    int size,
+    char *algorithm,
+    params *params
+) {
     RAISE_S("[blend_kernel] No OpenCL support available");
 }
 

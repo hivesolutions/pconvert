@@ -49,11 +49,11 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
     VALIDATE_A(read_png(top_path, demultiply, &top), Py_BLOCK_THREADS Py_RETURN_NONE);
     if(source_over == TRUE) {
-        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
+        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
     } else if(run_inline == TRUE) {
-        VALIDATE_A(blend_images_i(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
+        VALIDATE_A(blend_images_i(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
     } else {
-        VALIDATE_A(blend_images(&bottom, &top, algorithm), Py_BLOCK_THREADS Py_RETURN_NONE);
+        VALIDATE_A(blend_images(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
     }
     VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_BLOCK_THREADS Py_RETURN_NONE);
     VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
@@ -207,17 +207,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     if(source_over == TRUE) {
         VALIDATE_A(
-            blend_images_fast(&bottom, &top, algorithm),
+            blend_images_fast(&bottom, &top, algorithm, NULL),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     } else if(run_inline == TRUE) {
         VALIDATE_A(
-            blend_images_i(&bottom, &top, algorithm),
+            blend_images_i(&bottom, &top, algorithm, NULL),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     } else {
         VALIDATE_A(
-            blend_images(&bottom, &top, algorithm),
+            blend_images(&bottom, &top, algorithm, NULL),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     }
@@ -272,17 +272,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         );
         if(source_over == TRUE) {
             VALIDATE_A(
-                blend_images_fast(&bottom, &top, algorithm),
+                blend_images_fast(&bottom, &top, algorithm, NULL),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         } else if(run_inline == TRUE) {
             VALIDATE_A(
-                blend_images_i(&bottom, &top, algorithm),
+                blend_images_i(&bottom, &top, algorithm, NULL),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         } else {
             VALIDATE_A(
-                blend_images(&bottom, &top, algorithm),
+                blend_images(&bottom, &top, algorithm, NULL),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         }

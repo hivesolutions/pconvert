@@ -67,6 +67,7 @@ char is_multiplied(char *algorithm) {
 }
 
 void blend_alpha(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -93,6 +94,7 @@ void blend_alpha(
 }
 
 void blend_multiplicative(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -117,6 +119,7 @@ void blend_multiplicative(
 }
 
 void blend_source_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -143,6 +146,7 @@ void blend_source_over(
 }
 
 void blend_destination_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -169,6 +173,7 @@ void blend_destination_over(
 }
 
 void blend_mask_top(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -195,6 +200,7 @@ void blend_mask_top(
 }
 
 void blend_first_top(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -218,6 +224,7 @@ void blend_first_top(
 }
 
 void blend_first_bottom(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -241,6 +248,7 @@ void blend_first_bottom(
 }
 
 void blend_disjoint_under(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -266,6 +274,7 @@ void blend_disjoint_under(
 }
 
 void blend_disjoint_over(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
@@ -291,6 +300,7 @@ void blend_disjoint_over(
 }
 
 void blend_disjoint_debug(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
