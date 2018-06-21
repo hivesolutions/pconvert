@@ -2,7 +2,7 @@
 
 #include "structs.h"
 
-#define PCONVERT_VERSION "0.3.3"
+#define PCONVERT_VERSION "0.3.4"
 
 #define TRUE 1
 #define FALSE 0
