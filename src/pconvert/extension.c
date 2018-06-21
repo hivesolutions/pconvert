@@ -1,69 +1,6 @@
 #include "stdafx.h"
 
-PyObject *extension_register(PyObject *self, PyObject *args) {
-    Py_RETURN_NONE;
-};
-
-PyObject *extension_unregister(PyObject *self, PyObject *args) {
-    Py_RETURN_NONE;
-};
-
-PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwargs) {
-    int run_inline;
-    char demultiply, source_over;
-    char *bottom_path, *top_path, *target_path, *algorithm;
-    PyObject *is_inline;
-    struct pcv_image bottom, top;
-    char *kwlist[] = {
-        "bottom_path",
-        "top_path",
-        "target_path",
-        "algorithm",
-        "is_inline",
-        NULL
-    };
-
-    bottom_path = NULL;
-    top_path = NULL;
-    target_path = NULL;
-    algorithm = NULL;
-    is_inline = NULL;
-
-    if(PyArg_ParseTupleAndKeywords(
-        args,
-        kwargs,
-        "sss|sO",
-        &bottom_path,
-        &top_path,
-        &target_path,
-        &algorithm,
-        &is_inline
-    ) == 0) { return NULL; }
-
-    algorithm = algorithm == NULL ? "multiplicative" : algorithm;
-    run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
-    demultiply = is_multiplied(algorithm);
-    source_over = strcmp(algorithm, "source_over") == 0;
-
-    Py_BEGIN_ALLOW_THREADS;
-    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
-    VALIDATE_A(read_png(top_path, demultiply, &top), Py_BLOCK_THREADS Py_RETURN_NONE);
-    if(source_over == TRUE) {
-        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
-    } else if(run_inline == TRUE) {
-        VALIDATE_A(blend_images_i(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
-    } else {
-        VALIDATE_A(blend_images(&bottom, &top, algorithm, NULL), Py_BLOCK_THREADS Py_RETURN_NONE);
-    }
-    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_BLOCK_THREADS Py_RETURN_NONE);
-    VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
-    VALIDATE_A(release_image(&bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
-    Py_END_ALLOW_THREADS;
-
-    Py_RETURN_NONE;
-};
-
-void build_params(PyObject *params_py, params *params) {
+void extension_build_params(PyObject *params_py, params *params) {
     size_t index;
     char *key_s, *value_s, value_b;
     long value_i;
@@ -113,6 +50,77 @@ void build_params(PyObject *params_py, params *params) {
 
         index++;
     }
+};
+
+PyObject *extension_register(PyObject *self, PyObject *args) {
+    Py_RETURN_NONE;
+};
+
+PyObject *extension_unregister(PyObject *self, PyObject *args) {
+    Py_RETURN_NONE;
+};
+
+PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwargs) {
+    int run_inline;
+    char demultiply, source_over;
+    char *bottom_path, *top_path, *target_path, *algorithm;
+    PyObject *is_inline, *params_py;
+    struct pcv_image bottom, top;
+    param values[32];
+    params params = { 0, values };
+    char *kwlist[] = {
+        "bottom_path",
+        "top_path",
+        "target_path",
+        "algorithm",
+        "is_inline",
+        "params",
+        NULL
+    };
+
+    bottom_path = NULL;
+    top_path = NULL;
+    target_path = NULL;
+    algorithm = NULL;
+    is_inline = NULL;
+    params_py = NULL;
+
+    if(PyArg_ParseTupleAndKeywords(
+        args,
+        kwargs,
+        "sss|sO",
+        &bottom_path,
+        &top_path,
+        &target_path,
+        &algorithm,
+        &is_inline
+    ) == 0) { return NULL; }
+
+    algorithm = algorithm == NULL ? "multiplicative" : algorithm;
+    run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
+    demultiply = is_multiplied(algorithm);
+    source_over = strcmp(algorithm, "source_over") == 0;
+
+    if(params_py != NULL) {
+        extension_build_params(params_py, &params);
+    }
+
+    Py_BEGIN_ALLOW_THREADS;
+    VALIDATE_A(read_png(bottom_path, demultiply, &bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(read_png(top_path, demultiply, &top), Py_BLOCK_THREADS Py_RETURN_NONE);
+    if(source_over == TRUE) {
+        VALIDATE_A(blend_images_fast(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
+    } else if(run_inline == TRUE) {
+        VALIDATE_A(blend_images_i(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
+    } else {
+        VALIDATE_A(blend_images(&bottom, &top, algorithm, &params), Py_BLOCK_THREADS Py_RETURN_NONE);
+    }
+    VALIDATE_A(write_png(&bottom, demultiply, target_path), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
+    VALIDATE_A(release_image(&bottom), Py_BLOCK_THREADS Py_RETURN_NONE);
+    Py_END_ALLOW_THREADS;
+
+    Py_RETURN_NONE;
 };
 
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
@@ -175,7 +183,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     /* in case the parameters value has been provided, then it must be parsed
     as a list of dictionaries containing the parameters */
     if(params_py != NULL) {
-        build_params(params_py, &params);
+        extension_build_params(params_py, &params);
     }
 
     /* retrieves the size of the paths sequence that has been provided
@@ -237,7 +245,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         if(PyTuple_Check(algorithm_o)) {
             params_py = PyTuple_GetItem(algorithm_o, 1);
             algorithm_o = PyTuple_GetItem(algorithm_o, 0);
-            build_params(params_py, &params);
+            extension_build_params(params_py, &params);
         }
 
 #if PY_MAJOR_VERSION >= 3
@@ -335,7 +343,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
             if(PyTuple_Check(algorithm_o)) {
                 params_py = PyTuple_GetItem(algorithm_o, 1);
                 algorithm_o = PyTuple_GetItem(algorithm_o, 0);
-                build_params(params_py, &params);
+                extension_build_params(params_py, &params);
             }
 
 #if PY_MAJOR_VERSION >= 3
