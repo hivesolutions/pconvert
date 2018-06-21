@@ -230,6 +230,16 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     from the algorithms list*/
     if(use_algorithms) {
         algorithm_o = PyList_GetItem(algorithms, 0);
+
+        /* verifies if the provided algorithm value is a tuple
+        and if that's the case (parameters are provided for its
+        execution) then loads them properly */
+        if(PyTuple_Check(algorithm_o)) {
+            params_py = PyTuple_GetItem(algorithm_o, 1);
+            algorithm_o = PyTuple_GetItem(algorithm_o, 0);
+            build_params(params_py, &params);
+        }
+
 #if PY_MAJOR_VERSION >= 3
         algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
         algorithm = PyBytes_AsString(algorithm_o);
@@ -318,6 +328,16 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
         if(use_algorithms) {
             algorithm_o = PyIter_Next(iteratorAlgorithms);
+
+            /* verifies if the provided algorithm value is a tuple
+            and if that's the case (parameters are provided for its
+            execution) then loads them properly */
+            if(PyTuple_Check(algorithm_o)) {
+                params_py = PyTuple_GetItem(algorithm_o, 1);
+                algorithm_o = PyTuple_GetItem(algorithm_o, 0);
+                build_params(params_py, &params);
+            }
+
 #if PY_MAJOR_VERSION >= 3
             algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
             algorithm = PyBytes_AsString(algorithm_o);
