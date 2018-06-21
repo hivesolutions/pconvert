@@ -296,7 +296,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
         source_over = strcmp(algorithm, "source_over") == 0;
         destination_over = strcmp(algorithm, "destination_over") == 0;
-    }
+	} else {
+		algorithm_o = NULL;
+#if PY_MAJOR_VERSION >= 3
+		algorithm_e = NULL;
+#endif
+	}
 
     /* retrieves the first two elements from the list to serve
     as the initial two images to be used in the first composition */
@@ -406,7 +411,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
             source_over = strcmp(algorithm, "source_over") == 0;
             destination_over = strcmp(algorithm, "destination_over") == 0;
-        }
+        } else {
+			algorithm_o = NULL;
+#if PY_MAJOR_VERSION >= 3
+			algorithm_e = NULL;
+#endif
+		}
 
         Py_BEGIN_ALLOW_THREADS;
 
