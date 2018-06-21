@@ -110,6 +110,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
         args,
         kwargs,
         "sss|sO",
+		kwlist,
         &bottom_path,
         &top_path,
         &target_path,
