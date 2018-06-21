@@ -358,6 +358,10 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return NULL; }
 
+    /* adds a series of constants to the module that are
+    going to be exposed to the developer */
+    PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
+
     /* returns the module that has just been created to
     the caller method/function (to be used) */
     return pconvert_module;
@@ -372,5 +376,9 @@ PyMODINIT_FUNC initpconvert(void) {
     functions defined in the previous array */
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
+
+    /* adds a series of constants to the module that are
+    going to be exposed to the developer */
+    PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
 }
 #endif

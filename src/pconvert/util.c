@@ -21,6 +21,8 @@ blend_algorithm *get_blend_algorithm(char *algorithm) {
         return blend_source_over;
     } else if(strcmp(algorithm, "destination_over") == 0) {
         return blend_destination_over;
+    } else if(strcmp(algorithm, "mask_top") == 0) {
+        return blend_mask_top;
     } else if(strcmp(algorithm, "first_top") == 0) {
         return blend_first_top;
     } else if(strcmp(algorithm, "first_bottom") == 0) {
@@ -45,6 +47,8 @@ char is_multiplied(char *algorithm) {
     } else if(strcmp(algorithm, "source_over") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "destination_over") == 0) {
+        return FALSE;
+    } else if(strcmp(algorithm, "mask_top") == 0) {
         return FALSE;
     } else if(strcmp(algorithm, "first_top") == 0) {
         return FALSE;
@@ -157,6 +161,32 @@ void blend_destination_over(
     r = MAX(0, MIN(255, r));
     g = MAX(0, MIN(255, g));
     b = MAX(0, MIN(255, b));
+
+    *result = r;
+    *(result + 1) = g;
+    *(result + 2) = b;
+    *(result + 3) = a;
+}
+
+void blend_mask_top(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+) {
+    png_byte r, g, b, a;
+
+    float atf = 1.0f * (at / 255.0f);
+    float abf = 1.0f - atf;
+
+    r = (png_byte) ((rb * abf) + (rt * atf));
+    g = (png_byte) ((gb * abf) + (gt * atf));
+    b = (png_byte) ((bb * abf) + (bt * atf));
+    a = (png_byte) ((ab * abf) + (at * atf));
+
+    r = MAX(0, MIN(255, r));
+    g = MAX(0, MIN(255, g));
+    b = MAX(0, MIN(255, b));
+    a = MAX(0, MIN(255, a));
 
     *result = r;
     *(result + 1) = g;

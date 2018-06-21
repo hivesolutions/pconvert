@@ -1,5 +1,7 @@
 #pragma once
 
+#define PCONVERT_VERSION "0.3.1"
+
 #define TRUE 1
 #define FALSE 0
 
@@ -113,6 +115,11 @@ void blend_source_over(
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 );
 void blend_destination_over(
+    png_byte *result,
+    png_byte rb, png_byte gb, png_byte bb, png_byte ab,
+    png_byte rt, png_byte gt, png_byte bt, png_byte at
+);
+void blend_mask_top(
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at
