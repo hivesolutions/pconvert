@@ -16,6 +16,8 @@ void extension_build_params(PyObject *params_py, params *params) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }
 
+		params->length++;
+
         key = PySequence_Fast_GET_ITEM(element, 0);
         value = PySequence_Fast_GET_ITEM(element, 1);
 
