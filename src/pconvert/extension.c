@@ -14,7 +14,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     char *bottom_path, *top_path, *target_path, *algorithm;
     PyObject *is_inline;
     struct pcv_image bottom, top;
-	char *kwlist[] = {
+    char *kwlist[] = {
         "bottom_path",
         "top_path",
         "target_path",
@@ -25,7 +25,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 
     if(PyArg_ParseTupleAndKeywords(
         args,
-		kwargs,
+        kwargs,
         "sss|sO",
         &bottom_path,
         &top_path,
@@ -60,11 +60,11 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
     char demultiply, source_over, use_algorithms;
-    char *bottom_path, *top_path, *target_path, *algorithm;
+    char *bottom_path, *top_path, *target_path, *algorithm = NULL;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
         *is_inline, *algorithms, *algorithm_o;
-    Py_ssize_t size;
+    Py_ssize_t size, algorithms_size;
     char *kwlist[] = {
         "paths",
         "target_path",
@@ -77,6 +77,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 #if PY_MAJOR_VERSION >= 3
     PyObject *encoded;
 #endif
+
+    paths = NULL;
+    target_path = NULL;
+    algorithm = NULL;
+    algorithms = NULL;
+    is_inline = NULL;
 
     if(PyArg_ParseTupleAndKeywords(
         args,
@@ -106,6 +112,15 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     /* retrieves the size of the paths sequence that has been provided
     this is relevant to determine the kind of operation to be performed */
     size = PyList_Size(paths);
+
+    /* in case the use algorithms list strategy is used a small set of
+    verifications must be performed */
+    if(use_algorithms) {
+        algorithms_size = PyList_Size(algorithms);
+        if(algorithms_size != size - 1) {
+            abort_("[extension_blend_multiple] Invalid algorithms list size");
+        }
+    }
 
     /* in case the size of the provided sequence of paths
     is just one then a simple re-write operation should be
