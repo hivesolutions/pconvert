@@ -10,7 +10,7 @@ typedef union typem_t {
 } typem;
 
 typedef struct param_t {
-    char *key;
+    char key[32];
     union typem_t value;
 } param;
 

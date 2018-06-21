@@ -26,8 +26,15 @@ void extension_build_params(PyObject *params_py, params *params) {
         key_s = PyString_AsString(key);
 #endif
 
-        params->length++;
-        params->params[index].key = key_s;
+        memcpy(
+            params->params[index].key,
+            key_s,
+            strlen(key_s) + 1
+        );
+
+#if PY_MAJOR_VERSION >= 3
+        Py_DECREF(key);
+#endif
 
         if(PyBool_Check(value)) {
             value_b = PyBool_Check(value);
@@ -221,8 +228,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         first = PyList_GetItem(paths, 0);
 
 #if PY_MAJOR_VERSION >= 3
-        encoded = PyUnicode_EncodeFSDefault(first);
-        bottom_path = PyBytes_AsString(encoded);
+        first = PyUnicode_EncodeFSDefault(first);
+        bottom_path = PyBytes_AsString(first);
 #else
         bottom_path = PyString_AsString(first);
 #endif
@@ -241,7 +248,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         );
         Py_END_ALLOW_THREADS;
 #if PY_MAJOR_VERSION >= 3
-        Py_DECREF(encoded);
+        Py_DECREF(first);
 #endif
         Py_RETURN_NONE;
     }
@@ -332,6 +339,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
     Py_DECREF(second);
+    if(use_algorithms) { Py_DECREF(algorithm_o); }
 #endif
 
     iterator = PyObject_GetIter(paths);
@@ -412,6 +420,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         Py_DECREF(element);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
+        if(use_algorithms) { Py_DECREF(algorithm_o); }
 #endif
     }
 
