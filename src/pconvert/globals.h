@@ -1,6 +1,6 @@
 #pragma once
 
-#define PCONVERT_VERSION "0.3.1"
+#define PCONVERT_VERSION "0.3.2"
 
 #define TRUE 1
 #define FALSE 0
