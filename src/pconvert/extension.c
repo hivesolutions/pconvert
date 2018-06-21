@@ -23,6 +23,12 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
         NULL
     };
 
+    bottom_path = NULL;
+    top_path = NULL;
+    target_path = NULL;
+    algorithm = NULL;
+    is_inline = NULL;
+
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
