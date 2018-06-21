@@ -448,7 +448,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
         Py_END_ALLOW_THREADS;
         Py_DECREF(element);
-        Py_DECREF(algorithm_o);
+		if(use_algorithms) { Py_DECREF(algorithm_o); }
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
         if(use_algorithms) { Py_DECREF(algorithm_e); }
