@@ -16,7 +16,7 @@ void extension_build_params(PyObject *params_py, params *params) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }
 
-		params->length++;
+        params->length++;
 
         key = PySequence_Fast_GET_ITEM(element, 0);
         value = PySequence_Fast_GET_ITEM(element, 1);
@@ -281,6 +281,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 #else
         algorithm = PyString_AsString(algorithm_o);
 #endif
+
         source_over = strcmp(algorithm, "source_over") == 0;
         destination_over = strcmp(algorithm, "destination_over") == 0;
     }
@@ -361,6 +362,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     while(TRUE) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }
+
 #if PY_MAJOR_VERSION >= 3
         encoded = PyUnicode_EncodeFSDefault(element);
         top_path = PyBytes_AsString(encoded);
@@ -386,6 +388,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 #else
             algorithm = PyString_AsString(algorithm_o);
 #endif
+
             source_over = strcmp(algorithm, "source_over") == 0;
             destination_over = strcmp(algorithm, "destination_over") == 0;
         }
