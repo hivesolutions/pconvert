@@ -71,6 +71,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
         *is_inline, *algorithms, *algorithm_o;
     Py_ssize_t size, algorithms_size;
+    param values[] = {
+        {
+            "offset",
+            {
+                0.7f
+            }
+        }
+    };
+    params params = {
+        1, values
+    };
     char *kwlist[] = {
         "paths",
         "target_path",
@@ -207,17 +218,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     if(source_over == TRUE) {
         VALIDATE_A(
-            blend_images_fast(&bottom, &top, algorithm, NULL),
+            blend_images_fast(&bottom, &top, algorithm, &params),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     } else if(run_inline == TRUE) {
         VALIDATE_A(
-            blend_images_i(&bottom, &top, algorithm, NULL),
+            blend_images_i(&bottom, &top, algorithm, &params),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     } else {
         VALIDATE_A(
-            blend_images(&bottom, &top, algorithm, NULL),
+            blend_images(&bottom, &top, algorithm, &params),
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
     }
@@ -272,17 +283,17 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         );
         if(source_over == TRUE) {
             VALIDATE_A(
-                blend_images_fast(&bottom, &top, algorithm, NULL),
+                blend_images_fast(&bottom, &top, algorithm, &params),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         } else if(run_inline == TRUE) {
             VALIDATE_A(
-                blend_images_i(&bottom, &top, algorithm, NULL),
+                blend_images_i(&bottom, &top, algorithm, &params),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         } else {
             VALIDATE_A(
-                blend_images(&bottom, &top, algorithm, NULL),
+                blend_images(&bottom, &top, algorithm, &params),
                 Py_BLOCK_THREADS Py_RETURN_NONE
             );
         }

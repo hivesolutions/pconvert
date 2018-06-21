@@ -3,8 +3,8 @@
 #define HASHSIZE 100
 
 typedef union typem_t {
-    int integer;
     float decimal;
+    int integer;
 } typem;
 
 typedef struct param_t {
@@ -14,7 +14,7 @@ typedef struct param_t {
 
 typedef struct params_t {
     size_t length;
-    struct params_t *params;
+    struct param_t *params;
 } params;
 
 typedef struct nlist_t {

@@ -179,9 +179,16 @@ void blend_mask_top(
     png_byte rt, png_byte gt, png_byte bt, png_byte at
 ) {
     png_byte r, g, b, a;
+    float atf, abf, factor;
 
-    float atf = 1.0f * (at / 255.0f);
-    float abf = 1.0f - atf;
+    if(params != NULL && params->length > 0) {
+        factor = params->params[0].value.decimal;
+    } else {
+        factor = 1.0f;
+    }
+
+    atf = factor * (at / 255.0f);
+    abf = 1.0f - atf;
 
     r = (png_byte) ((rb * abf) + (rt * atf));
     g = (png_byte) ((gb * abf) + (gt * atf));

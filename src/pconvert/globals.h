@@ -170,6 +170,7 @@ void blend_disjoint_debug(
 );
 
 static FINLINE void blend_source_over_i(
+    params *params,
     png_byte *result,
     png_byte rb, png_byte gb, png_byte bb, png_byte ab,
     png_byte rt, png_byte gt, png_byte bt, png_byte at

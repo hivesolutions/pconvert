@@ -371,7 +371,7 @@ ERROR_T blend_images(
             at = *(ptrTop + 3);
 
             operation(
-                NULL,
+                params,
                 ptrBottom,
                 rb, gb, bb, ab,
                 rt, gt, bt, at
@@ -409,6 +409,7 @@ ERROR_T blend_images_i(
             at = *(ptrTop + 3);
 
             blend_source_over_i(
+                params,
                 ptrBottom,
                 rb, gb, bb, ab,
                 rt, gt, bt, at

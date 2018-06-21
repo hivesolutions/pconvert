@@ -68,7 +68,7 @@ ERROR_T blend_images_opencl(
         top_p += row_size;
     }
 
-    blend_kernel(bottom_array, top_array, buffer_size, algorithm);
+    blend_kernel(bottom_array, top_array, buffer_size, algorithm, params);
 
     bottom_p = &(bottom_array[0]);
     for (y = 0; y < bottom->height; y++) {
