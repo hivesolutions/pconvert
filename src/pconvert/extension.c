@@ -63,31 +63,56 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     Py_RETURN_NONE;
 };
 
+void build_params(PyObject *params_py, params *params) {
+    char *key_s;
+    float value_f;
+    PyObject *element, *key, *value;
+
+    size_t index = 0;
+    PyObject *iterator = PyObject_GetIter(params_py);
+
+
+    while(TRUE) {
+        element = PyIter_Next(iterator);
+        if(element == NULL) { break; }
+
+        key = PyDict_GetItemString(element, "key");
+        value = PyDict_GetItemString(element, "value");
+
+#if PY_MAJOR_VERSION >= 3
+        key = PyUnicode_EncodeFSDefault(key);
+        key_s = PyBytes_AsString(key);
+#else
+        key_s = PyString_AsString(key);
+#endif
+
+        value_f = (float) PyFloat_AsDouble(value);
+
+        params->length++;
+        params->params[index].key = key_s;
+        params->params[index].value.decimal = value_f;
+
+        index++;
+    }
+};
+
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
     char demultiply, source_over, use_algorithms;
     char *bottom_path, *top_path, *target_path, *algorithm = NULL;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
-        *is_inline, *algorithms, *algorithm_o;
+        *is_inline, *algorithms, *algorithm_o, *params_py;
     Py_ssize_t size, algorithms_size;
-    param values[] = {
-        {
-            "offset",
-            {
-                0.7f
-            }
-        }
-    };
-    params params = {
-        1, values
-    };
+    param values[32];
+    params params = { 0, values };
     char *kwlist[] = {
         "paths",
         "target_path",
         "algorithm",
         "algorithms",
         "is_inline",
+        "params",
         NULL
     };
 
@@ -100,17 +125,19 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     algorithm = NULL;
     algorithms = NULL;
     is_inline = NULL;
+    params_py = NULL;
 
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
-        "Os|sOO",
+        "Os|sOOO",
         kwlist,
         &paths,
         &target_path,
         &algorithm,
         &algorithms,
-        &is_inline
+        &is_inline,
+        &params_py
     ) == 0) { return NULL; }
 
     /* tries to determine the target values for the optional parameters
@@ -125,6 +152,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     source_over = strcmp(algorithm, "source_over") == 0;
     use_algorithms = algorithms == NULL ? FALSE : TRUE;
     run_inline = use_algorithms == TRUE ? FALSE : run_inline;
+
+    /* in case the parameters value has been provided, then it must be parsed
+    as a list of dictionaries containing the parameters */
+    if(params_py != NULL) {
+        build_params(params_py, &params);
+    }
 
     /* retrieves the size of the paths sequence that has been provided
     this is relevant to determine the kind of operation to be performed */
