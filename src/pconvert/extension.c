@@ -153,7 +153,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     char *bottom_path, *top_path, *target_path, *algorithm = NULL;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
-        *is_inline, *algorithms, *algorithm_o, *params_py;
+        *is_inline, *algorithms, *algorithm_o, *algorithm_so, *params_py;
     Py_ssize_t size, algorithms_size;
     param values[32];
     params params = { 0, values };
@@ -168,7 +168,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     };
 
 #if PY_MAJOR_VERSION >= 3
-    PyObject *encoded;
+    PyObject *encoded, *algorithm_e;
 #endif
 
     paths = NULL;
@@ -212,12 +212,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     /* retrieves the size of the paths sequence that has been provided
     this is relevant to determine the kind of operation to be performed */
-    size = PyList_Size(paths);
+    size = PySequence_Size(paths);
 
     /* in case the use algorithms list strategy is used a small set of
     verifications must be performed */
     if(use_algorithms) {
-        algorithms_size = PyList_Size(algorithms);
+        algorithms_size = PySequence_Size(algorithms);
         if(algorithms_size != size - 1) {
             abort_("[extension_blend_multiple] Invalid algorithms list size");
         }
@@ -227,7 +227,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     is just one then a simple re-write operation should be
     performed, read from provided path and write to target path */
     if(size == 1) {
-        first = PyList_GetItem(paths, 0);
+        first = PySequence_Fast_GET_ITEM(paths, 0);
 
 #if PY_MAJOR_VERSION >= 3
         first = PyUnicode_EncodeFSDefault(first);
@@ -264,20 +264,20 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     target algorithm for the current composition is retrieved
     from the algorithms list*/
     if(use_algorithms) {
-        algorithm_o = PyList_GetItem(algorithms, 0);
+        algorithm_o = PySequence_Fast_GET_ITEM(algorithms, 0);
 
-        /* verifies if the provided algorithm value is a tuple
+        /* verifies if the provided algorithm value is a sequence
         and if that's the case (parameters are provided for its
         execution) then loads them properly */
-        if(PyTuple_Check(algorithm_o)) {
-            params_py = PyTuple_GetItem(algorithm_o, 1);
-            algorithm_o = PyTuple_GetItem(algorithm_o, 0);
+        if(PyList_Check(algorithm_o) || PyTuple_Check(algorithm_o)) {
+            params_py = PySequence_Fast_GET_ITEM(algorithm_o, 1);
+            algorithm_o = PySequence_Fast_GET_ITEM(algorithm_o, 0);
             extension_build_params(params_py, &params);
         }
 
 #if PY_MAJOR_VERSION >= 3
-        algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
-        algorithm = PyBytes_AsString(algorithm_o);
+        algorithm_e = PyUnicode_EncodeFSDefault(algorithm_o);
+        algorithm = PyBytes_AsString(algorithm_e);
 #else
         algorithm = PyString_AsString(algorithm_o);
 #endif
@@ -288,8 +288,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     /* retrieves the first two elements from the list to serve
     as the initial two images to be used in the first composition */
-    first = PyList_GetItem(paths, 0);
-    second = PyList_GetItem(paths, 1);
+    first = PySequence_Fast_GET_ITEM(paths, 0);
+    second = PySequence_Fast_GET_ITEM(paths, 1);
 
 #if PY_MAJOR_VERSION >= 3
     first = PyUnicode_EncodeFSDefault(first);
@@ -342,7 +342,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 #if PY_MAJOR_VERSION >= 3
     Py_DECREF(first);
     Py_DECREF(second);
-    if(use_algorithms) { Py_DECREF(algorithm_o); }
+    if(use_algorithms) { Py_DECREF(algorithm_e); }
 #endif
 
     iterator = PyObject_GetIter(paths);
@@ -373,20 +373,23 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         if(use_algorithms) {
             algorithm_o = PyIter_Next(iteratorAlgorithms);
 
-            /* verifies if the provided algorithm value is a tuple
+            /* verifies if the provided algorithm value is a sequence
             and if that's the case (parameters are provided for its
             execution) then loads them properly */
-            if(PyTuple_Check(algorithm_o)) {
-                params_py = PyTuple_GetItem(algorithm_o, 1);
-                algorithm_o = PyTuple_GetItem(algorithm_o, 0);
+            if(PyList_Check(algorithm_o) || PyTuple_Check(algorithm_o)) {
+                algorithm_so = PySequence_Fast_GET_ITEM(algorithm_o, 0);
+                params_py = PySequence_Fast_GET_ITEM(algorithm_o, 1);
+
                 extension_build_params(params_py, &params);
+            } else {
+                algorithm_so = algorithm_o;
             }
 
 #if PY_MAJOR_VERSION >= 3
-            algorithm_o = PyUnicode_EncodeFSDefault(algorithm_o);
-            algorithm = PyBytes_AsString(algorithm_o);
+            algorithm_e = PyUnicode_EncodeFSDefault(algorithm_so);
+            algorithm = PyBytes_AsString(algorithm_e);
 #else
-            algorithm = PyString_AsString(algorithm_o);
+            algorithm = PyString_AsString(algorithm_so);
 #endif
 
             source_over = strcmp(algorithm, "source_over") == 0;
@@ -423,9 +426,10 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         VALIDATE_A(release_image(&top), Py_BLOCK_THREADS Py_RETURN_NONE);
         Py_END_ALLOW_THREADS;
         Py_DECREF(element);
+        Py_DECREF(algorithm_o);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(encoded);
-        if(use_algorithms) { Py_DECREF(algorithm_o); }
+        if(use_algorithms) { Py_DECREF(algorithm_e); }
 #endif
     }
 
