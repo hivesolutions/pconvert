@@ -41,13 +41,17 @@ void extension_build_params(PyObject *params_py, params *params) {
         if(PyBool_Check(value)) {
             value_b = PyBool_Check(value);
             params->params[index].value.boolean = value_b;
-        } else if(PyInt_Check(value)) {
+		} else if(PyInt_Check(value)) {
             value_i = PyInt_AsLong(value);
             params->params[index].value.integer = value_i;
         } else if(PyFloat_Check(value)) {
             value_f = (float) PyFloat_AsDouble(value);
             params->params[index].value.decimal = value_f;
-        } else if(PyString_Check(value)) {
+#if PY_MAJOR_VERSION >= 3
+        } else if(PyUnicode_Check(value)) {
+#else
+		} else if(PyString_Check(value)) {
+#endif
 #if PY_MAJOR_VERSION >= 3
             value = PyUnicode_EncodeFSDefault(value);
             value_s = PyBytes_AsString(value);
