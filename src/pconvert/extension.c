@@ -16,8 +16,8 @@ void extension_build_params(PyObject *params_py, params *params) {
         element = PyIter_Next(iterator);
         if(element == NULL) { break; }
 
-        key = PyDict_GetItemString(element, "key");
-        value = PyDict_GetItemString(element, "value");
+        key = PySequence_Fast_GET_ITEM(element, 0);
+        value = PySequence_Fast_GET_ITEM(element, 1);
 
 #if PY_MAJOR_VERSION >= 3
         key = PyUnicode_EncodeFSDefault(key);
@@ -45,11 +45,23 @@ void extension_build_params(PyObject *params_py, params *params) {
 #else
             value_s = PyString_AsString(value);
 #endif
-            params->params[index].value.string = value_s;
+            memcpy(
+                params->params[index].value.string,
+                value_s,
+                strlen(value_s) + 1
+            );
+
+#if PY_MAJOR_VERSION >= 3
+            Py_DECREF(value);
+#endif
         }
+
+        Py_DECREF(element);
 
         index++;
     }
+
+    Py_DECREF(iterator);
 };
 
 PyObject *extension_register(PyObject *self, PyObject *args) {
@@ -209,8 +221,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         first = PyList_GetItem(paths, 0);
 
 #if PY_MAJOR_VERSION >= 3
-        first = PyUnicode_EncodeFSDefault(first);
-        bottom_path = PyBytes_AsString(first);
+        encoded = PyUnicode_EncodeFSDefault(first);
+        bottom_path = PyBytes_AsString(encoded);
 #else
         bottom_path = PyString_AsString(first);
 #endif
@@ -228,6 +240,9 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
             Py_BLOCK_THREADS Py_RETURN_NONE
         );
         Py_END_ALLOW_THREADS;
+#if PY_MAJOR_VERSION >= 3
+        Py_DECREF(encoded);
+#endif
         Py_RETURN_NONE;
     }
 
@@ -323,12 +338,12 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
 
     /* increments the iterator by both the top and the bottom
     paths, as they have already been processed */
-    PyIter_Next(iterator);
-    PyIter_Next(iterator);
+    Py_DECREF(PyIter_Next(iterator));
+    Py_DECREF(PyIter_Next(iterator));
 
     if(use_algorithms) {
         iteratorAlgorithms = PyObject_GetIter(algorithms);
-        PyIter_Next(iteratorAlgorithms);
+        Py_DECREF(PyIter_Next(iteratorAlgorithms));
     }
 
     /* iterates continuously until the iterator is exhausted and

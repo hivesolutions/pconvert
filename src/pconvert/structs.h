@@ -6,7 +6,7 @@ typedef union typem_t {
     char boolean;
     long integer;
     float decimal;
-    char *string;
+    char string[64];
 } typem;
 
 typedef struct param_t {
