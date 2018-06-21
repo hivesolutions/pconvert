@@ -64,13 +64,16 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 };
 
 void build_params(PyObject *params_py, params *params) {
-    char *key_s;
+    size_t index;
+    char *key_s, *value_s, value_b;
+    long value_i;
     float value_f;
-    PyObject *element, *key, *value;
+    PyObject *iterator, *element, *key, *value;
 
-    size_t index = 0;
-    PyObject *iterator = PyObject_GetIter(params_py);
+    params->length = 0;
 
+    index = 0;
+    iterator = PyObject_GetIter(params_py);
 
     while(TRUE) {
         element = PyIter_Next(iterator);
@@ -86,11 +89,27 @@ void build_params(PyObject *params_py, params *params) {
         key_s = PyString_AsString(key);
 #endif
 
-        value_f = (float) PyFloat_AsDouble(value);
-
         params->length++;
         params->params[index].key = key_s;
-        params->params[index].value.decimal = value_f;
+
+        if(PyBool_Check(value)) {
+            value_b = PyBool_Check(value);
+            params->params[index].value.boolean = value_b;
+        } else if(PyInt_Check(value)) {
+            value_i = PyInt_AsLong(value);
+            params->params[index].value.integer = value_i;
+        } else if(PyFloat_Check(value)) {
+            value_f = (float) PyFloat_AsDouble(value);
+            params->params[index].value.decimal = value_f;
+        } else if(PyString_Check(value)) {
+#if PY_MAJOR_VERSION >= 3
+            value = PyUnicode_EncodeFSDefault(value);
+            value_s = PyBytes_AsString(value);
+#else
+            value_s = PyString_AsString(value);
+#endif
+            params->params[index].value.string = value_s;
+        }
 
         index++;
     }

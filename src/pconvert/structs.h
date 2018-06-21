@@ -3,8 +3,10 @@
 #define HASHSIZE 100
 
 typedef union typem_t {
+    char boolean;
+    long integer;
     float decimal;
-    int integer;
+    char *string;
 } typem;
 
 typedef struct param_t {
