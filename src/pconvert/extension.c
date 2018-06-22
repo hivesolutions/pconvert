@@ -521,7 +521,7 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
 
     /* builds the algorithms tuple that will expose the multiple algorithms
     supported by the pconvert infra-structure */
-    algorithms = Py_BuildValue("6s", PCONVERT_ALGORITHMS);
+    algorithms = Py_BuildValue("sssssssss", PCONVERT_ALGORITHMS);
 
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
@@ -547,7 +547,7 @@ PyMODINIT_FUNC initpconvert(void) {
 
     /* builds the algorithms tuple that will expose the multiple algorithms
     supported by the pconvert infra-structure */
-    algorithms = Py_BuildValue("6s", PCONVERT_ALGORITHMS);
+    algorithms = Py_BuildValue("sssssssss", PCONVERT_ALGORITHMS);
 
     /* adds a series of constants to the module that are
     going to be exposed to the developer */

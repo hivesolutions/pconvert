@@ -5,7 +5,8 @@
 #define PCONVERT_VERSION "0.3.4"
 #define PCONVERT_COMPILATION_DATE __DATE__
 #define PCONVERT_COMPILATION_TIME __TIME__
-#define PCONVERT_ALGORITHMS "blending", "multiply"
+#define PCONVERT_ALGORITHMS "multiplicative", "source_over", "destination_over",\
+    "mask_top", "first_top", "first_bottom", "disjoint_over", "disjoint_under", "disjoint_debug"
 
 #define TRUE 1
 #define FALSE 0
