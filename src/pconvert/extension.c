@@ -519,11 +519,16 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return NULL; }
 
+	/* builds the algorithms tuple that will expose the multiple algorithms
+	supported by the pconvert infra-structure */
+	algorithms = Py_BuildValue("6s", PCONVERT_ALGORITHMS);
+
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
 	PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
 	PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+	PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 
     /* returns the module that has just been created to
     the caller method/function (to be used) */
@@ -533,17 +538,22 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
 PyMODINIT_FUNC initpconvert(void) {
     /* allocates space for the module object to hold the
     module to be created */
-    PyObject *pconvert_module;
+    PyObject *pconvert_module, *algorithms;
 
     /* creates the pconvert extension module with the
     functions defined in the previous array */
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
 
+	/* builds the algorithms tuple that will expose the multiple algorithms
+	supported by the pconvert infra-structure */
+	algorithms = Py_BuildValue("6s", PCONVERT_ALGORITHMS);
+
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
 	PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
 	PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+	PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 }
 #endif
