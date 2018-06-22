@@ -3,6 +3,8 @@
 #include "structs.h"
 
 #define PCONVERT_VERSION "0.3.4"
+#define PCONVERT_COMPILATION_DATE __DATE__
+#define PCONVERT_COMPILATION_TIME __TIME__
 
 #define TRUE 1
 #define FALSE 0

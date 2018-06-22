@@ -522,6 +522,8 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
+	PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
+	PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
 
     /* returns the module that has just been created to
     the caller method/function (to be used) */
@@ -541,5 +543,7 @@ PyMODINIT_FUNC initpconvert(void) {
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
+	PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
+	PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
 }
 #endif
