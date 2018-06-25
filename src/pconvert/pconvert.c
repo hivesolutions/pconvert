@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 char *last_error_message = NULL;
-char last_error_message_b[1024] = "";
+char last_error_message_b[MAX_ERROR_L] = "";
 
 void set_last_error_f(char *message, ...) {
     va_list args;
@@ -821,7 +821,7 @@ ERROR_T popencl(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-	set_last_error("%s", "tobias");
+    set_last_error("%s", "tobias");
 
 
     if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }

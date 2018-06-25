@@ -38,8 +38,10 @@
 #define Z_BEST_COMPRESSION 9
 #define Z_DEFAULT_COMPRESSION (-1)
 
+#define MAX_ERROR_L 1024
+
 EXTERNAL_PREFIX char *last_error_message;
-EXTERNAL_PREFIX char last_error_message_b[1024];
+EXTERNAL_PREFIX char last_error_message_b[MAX_ERROR_L];
 
 typedef struct pcv_image {
     int width;
@@ -217,7 +219,7 @@ static FINLINE void blend_source_over_i(
 }
 
 static FINLINE void set_last_error(char *message, ...) {
-	last_error_message = message;
+    last_error_message = message;
 }
 
 void set_last_error_f(char *message, ...);
