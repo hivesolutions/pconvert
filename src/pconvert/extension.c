@@ -142,7 +142,10 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     destination_over = strcmp(algorithm, "destination_over") == 0;
 
     if(params_py != NULL) {
-        extension_build_params(params_py, &params);
+        VALIDATE_A(
+			extension_build_params(params_py, &params),
+            Py_RETURN_NONE
+        );
     }
 
     Py_BEGIN_ALLOW_THREADS;
@@ -225,7 +228,10 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     /* in case the parameters value has been provided, then it must be parsed
     as a list of dictionaries containing the parameters */
     if(params_py != NULL) {
-        extension_build_params(params_py, &params);
+        VALIDATE_A(
+			extension_build_params(params_py, &params),
+            Py_RETURN_NONE
+        );
     }
 
     /* retrieves the size of the paths sequence that has been provided
