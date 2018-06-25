@@ -1,11 +1,15 @@
 #include "stdafx.h"
 
-void extension_build_params(PyObject *params_py, params *params) {
+ERROR_T extension_build_params(PyObject *params_py, params *params) {
     size_t index;
     char *key_s, *value_s, value_b;
     long value_i;
     float value_f;
     PyObject *iterator, *element, *key, *value;
+
+	if(!PySequence_Check(params_py)) {
+		RAISE_S("[extension_build_params] Invalid params data type");
+	}
 
     params->length = 0;
 
@@ -82,6 +86,8 @@ void extension_build_params(PyObject *params_py, params *params) {
     }
 
     Py_DECREF(iterator);
+
+	NORMAL;
 };
 
 PyObject *extension_register(PyObject *self, PyObject *args) {
