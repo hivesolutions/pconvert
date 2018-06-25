@@ -220,4 +220,4 @@ static FINLINE void set_last_error(char *message, ...) {
 	last_error_message = message;
 }
 
-static void set_last_error_f(char *message, ...);
+void set_last_error_f(char *message, ...);
