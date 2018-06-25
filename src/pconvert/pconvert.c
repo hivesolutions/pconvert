@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+char *last_error_message = NULL;
+char last_error_message_b[1024] = "";
+
 void print_(const char *s, ...) {
     va_list args;
     va_start(args, s);
@@ -51,27 +54,27 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     fp = fopen(file_name, "rb");
 #endif
     if(!fp) {
-        RAISE_S("[read_png] File %s could not be opened for reading", file_name);
+        RAISE_M("[read_png] File %s could not be opened for reading", file_name);
     }
     count = fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8) || count != 8) {
-        RAISE_S("[read_png] File %s is not recognized as a PNG file", file_name);
+        RAISE_M("[read_png] File %s is not recognized as a PNG file", file_name);
     }
 
     /* initialize stuff, this is the structu that will be populated
     withe the complete stat of the PNG file reading */
     image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!image->png_ptr) {
-        RAISE_S("[read_png] png_create_read_struct failed");
+        RAISE_M("[read_png] png_create_read_struct failed");
     }
 
     image->info_ptr = png_create_info_struct(image->png_ptr);
     if(!image->info_ptr) {
-        RAISE_S("[read_png] png_create_info_struct failed");
+        RAISE_M("[read_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        RAISE_S("[read_png] Error during init_io");
+        RAISE_M("[read_png] Error during init_io");
     }
 
     png_init_io(image->png_ptr, fp);
@@ -89,7 +92,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     /* reads the complete file value in file, meaning that
     from this point on only decompression is remaining */
     if(setjmp(png_jmpbuf(image->png_ptr))) {
-        RAISE_S("[read_png] Error during read_image");
+        RAISE_M("[read_png] Error during read_image");
     }
 
     /* allocates space in memory for the buffer that will
@@ -810,6 +813,9 @@ ERROR_T popencl(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
+	set_last_error("%s", "tobias");
+
+
     if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
     if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
     else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }

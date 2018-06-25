@@ -2,6 +2,12 @@
 
 #include "structs.h"
 
+#ifdef _WIN32
+#define EXTERNAL_PREFIX __declspec(dllexport)
+#else
+#define EXTERNAL_PREFIX extern
+#endif
+
 #define PCONVERT_VERSION "0.3.5"
 #define PCONVERT_COMPILATION_DATE __DATE__
 #define PCONVERT_COMPILATION_TIME __TIME__
@@ -20,7 +26,7 @@
 #define NO_ERROR 0
 #define RAISE return ERROR
 #define RAISE_S(...) abort_(__VA_ARGS__); return ERROR
-#define RAISE_M(message) set_last_error(message); return ERROR
+#define RAISE_M(message, ...) set_last_error_f(message, __VA_ARGS__); return ERROR
 #define NORMAL return NO_ERROR
 #define IS_ERROR(input) input != NO_ERROR
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } while(FALSE)
@@ -37,7 +43,8 @@
 #define Z_BEST_COMPRESSION 9
 #define Z_DEFAULT_COMPRESSION (-1)
 
-char *last_error_message;
+EXTERNAL_PREFIX char *last_error_message;
+EXTERNAL_PREFIX char last_error_message_b[1024];
 
 typedef struct pcv_image {
     int width;
@@ -214,6 +221,14 @@ static FINLINE void blend_source_over_i(
     *(result + 3) = a;
 }
 
-static FINLINE void set_last_error(char *message) {
-    last_error_message = message;
+static FINLINE void set_last_error(char *message, ...) {
+	last_error_message = message;
+}
+
+static FINLINE void set_last_error_f(char *message, ...) {
+    va_list args;
+    va_start(args, message);
+    vsprintf(last_error_message_b, message, args);
+    va_end(args);
+    last_error_message = last_error_message_b;
 }
