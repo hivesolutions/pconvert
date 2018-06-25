@@ -231,7 +231,11 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     if(use_algorithms) {
         algorithms_size = PySequence_Size(algorithms);
         if(algorithms_size != size - 1) {
-            abort_("[extension_blend_multiple] Invalid algorithms list size");
+			PyErr_SetString(
+				PyExc_TypeError,
+				"[extension_blend_multiple] Invalid algorithms list size"
+			);
+			return NULL;
         }
     }
 
