@@ -8,7 +8,7 @@ ERROR_T extension_build_params(PyObject *params_py, params *params) {
     PyObject *iterator, *element, *key, *value;
 
     if(!PySequence_Check(params_py)) {
-        RAISE_S("[extension_build_params] Invalid params data type");
+        RAISE_M("[extension_build_params] Invalid params data type");
     }
 
     params->length = 0;
@@ -228,10 +228,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     /* in case the parameters value has been provided, then it must be parsed
     as a list of dictionaries containing the parameters */
     if(params_py != NULL) {
-        VALIDATE_A(
-            extension_build_params(params_py, &params),
-            Py_RETURN_NONE
-        );
+        VALIDATE_PY(extension_build_params(params_py, &params));
     }
 
     /* retrieves the size of the paths sequence that has been provided
