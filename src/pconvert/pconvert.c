@@ -669,8 +669,8 @@ ERROR_T compose_images_extra(
     NORMAL;
 }
 
-int pcompose(int argc, char **argv) {
-    if(argc != 3) { abort_("Usage: pconvert compose <directory>"); }
+ERROR_T pcompose(int argc, char **argv) {
+    if(argc != 3) { RAISE_S("Usage: pconvert compose <directory>"); }
 
     compose_images(argv[2], "alpha", NULL, "alpha");
     compose_images(argv[2], "alpha", NULL, "white");
@@ -709,7 +709,7 @@ int pcompose(int argc, char **argv) {
     compose_images(argv[2], "disjoint_debug", NULL, "blue");
     compose_images(argv[2], "disjoint_debug", NULL, "texture");
 
-    return 0;
+    NORMAL;
 }
 
 ERROR_T pconvert(int argc, char **argv) {
@@ -722,7 +722,7 @@ ERROR_T pconvert(int argc, char **argv) {
     write_png(&image, FALSE, argv[3]);
     release_image(&image);
 
-    NO_ERROR;
+    NORMAL;
 }
 
 float pbenchmark_algorithm(
@@ -743,11 +743,11 @@ float pbenchmark_algorithm(
     return time_elapsed;
 }
 
-int pbenchmark(int argc, char **argv) {
+ERROR_T pbenchmark(int argc, char **argv) {
     float time;
     FILE *file;
 
-    if(argc != 3) { abort_("Usage: pconvert benchmark <directory>"); }
+    if(argc != 3) { RAISE_S("Usage: pconvert benchmark <directory>"); }
 
     file = fopen("benchmark.txt", "wb");
 
@@ -773,16 +773,16 @@ int pbenchmark(int argc, char **argv) {
 
     fclose(file);
 
-    return 0;
+    NORMAL;
 }
 
-int popencl(int argc, char **argv) {
+ERROR_T popencl(int argc, char **argv) {
     float start_time;
     float end_time;
     float time_elapsed_cpu;
     float time_elapsed_gpu;
 
-    if(argc != 3) { abort_("Usage: pconvert opencl <directory>"); }
+    if(argc != 3) { RAISE_S("Usage: pconvert opencl <directory>"); }
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
