@@ -26,7 +26,8 @@
 #define NO_ERROR 0
 #define RAISE return ERROR
 #define RAISE_S(...) abort_(__VA_ARGS__); return ERROR
-#define RAISE_M(message, ...) set_last_error_f(message, __VA_ARGS__); return ERROR
+#define RAISE_M(message) set_last_error(message); return ERROR
+#define RAISE_F(message, ...) set_last_error_f(message, __VA_ARGS__); return ERROR
 #define NORMAL return NO_ERROR
 #define IS_ERROR(input) input != NO_ERROR
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } while(FALSE)

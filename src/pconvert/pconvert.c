@@ -54,11 +54,11 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     fp = fopen(file_name, "rb");
 #endif
     if(!fp) {
-        RAISE_M("[read_png] File %s could not be opened for reading", file_name);
+        RAISE_F("[read_png] File %s could not be opened for reading", file_name);
     }
     count = fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8) || count != 8) {
-        RAISE_M("[read_png] File %s is not recognized as a PNG file", file_name);
+        RAISE_F("[read_png] File %s is not recognized as a PNG file", file_name);
     }
 
     /* initialize stuff, this is the structu that will be populated
