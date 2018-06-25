@@ -34,7 +34,7 @@
 #define Z_BEST_COMPRESSION 9
 #define Z_DEFAULT_COMPRESSION (-1)
 
-unsigned char *last_error_message;
+char *last_error_message;
 
 typedef struct pcv_image {
     int width;
