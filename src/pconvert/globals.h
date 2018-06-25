@@ -220,10 +220,4 @@ static FINLINE void set_last_error(char *message, ...) {
 	last_error_message = message;
 }
 
-static void set_last_error_f(char *message, ...) {
-    va_list args;
-    va_start(args, message);
-    vsprintf(last_error_message_b, message, args);
-    va_end(args);
-    last_error_message = last_error_message_b;
-}
+static void set_last_error_f(char *message, ...);

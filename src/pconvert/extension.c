@@ -1,5 +1,14 @@
 #include "stdafx.h"
 
+ {
+    va_list args;
+    va_start(args, message);
+    vsprintf(last_error_message_b, message, args);
+    va_end(args);
+    last_error_message = last_error_message_b;
+}
+
+
 ERROR_T extension_build_params(PyObject *params_py, params *params) {
     size_t index;
     char *key_s, *value_s, value_b;

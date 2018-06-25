@@ -3,6 +3,14 @@
 char *last_error_message = NULL;
 char last_error_message_b[1024] = "";
 
+static void set_last_error_f(char *message, ...) {
+    va_list args;
+    va_start(args, message);
+    vsprintf(last_error_message_b, message, args);
+    va_end(args);
+    last_error_message = last_error_message_b;
+}
+
 void print_(const char *s, ...) {
     va_list args;
     va_start(args, s);
