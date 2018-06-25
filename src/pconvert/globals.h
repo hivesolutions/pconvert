@@ -26,8 +26,11 @@
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } while(FALSE)
 #define VALIDATE_R(input, ...) if(IS_ERROR(input)) { return __VA_ARGS__; } while(FALSE)
 #define VALIDATE_A(input, ...) if(IS_ERROR(input)) { __VA_ARGS__; } while(FALSE)
-#define VALIDATE_PY(input, ...) if(IS_ERROR(input)) { __VA_ARGS__; } while(FALSE)\
-    PyErr_SetString(PyExc_TypeError, last_error_message); return NULL
+#define VALIDATE_PY(input, ...) if(IS_ERROR(input)) {\
+    __VA_ARGS__;\
+    PyErr_SetString(PyExc_TypeError, last_error_message == NULL ? "Unknown error" : last_error_message);\
+    return NULL;\
+} while(FALSE)
 
 #define Z_NO_COMPRESSION 0
 #define Z_BEST_SPEED 1
