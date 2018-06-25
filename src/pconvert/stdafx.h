@@ -26,10 +26,12 @@
 #pragma comment(lib, "libpng.lib")
 #pragma comment(lib, "zlib.lib")
 #define FINLINE __inline
+#define EXTERNAL_PREFIX __declspec(dllexport)
 #endif
 
 #ifdef PUNIX
 #define FINLINE inline
+#define EXTERNAL_PREFIX extern
 #endif
 
 #ifdef PASS_ERROR

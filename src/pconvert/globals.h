@@ -2,12 +2,6 @@
 
 #include "structs.h"
 
-#ifdef _WIN32
-#define EXTERNAL_PREFIX __declspec(dllexport)
-#else
-#define EXTERNAL_PREFIX extern
-#endif
-
 #define PCONVERT_VERSION "0.3.5"
 #define PCONVERT_COMPILATION_DATE __DATE__
 #define PCONVERT_COMPILATION_TIME __TIME__
