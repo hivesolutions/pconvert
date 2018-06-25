@@ -217,3 +217,7 @@ static FINLINE void blend_source_over_i(
 static FINLINE void set_last_error(char *message) {
     last_error_message = message;
 }
+
+static FINLINE void unset_last_error() {
+    last_error_message = NULL;
+}

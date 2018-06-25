@@ -123,6 +123,8 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     is_inline = NULL;
     params_py = NULL;
 
+	unset_last_error();
+
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
@@ -209,6 +211,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     algorithms = NULL;
     is_inline = NULL;
     params_py = NULL;
+
+	unset_last_error();
 
     if(PyArg_ParseTupleAndKeywords(
         args,
