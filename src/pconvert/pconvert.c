@@ -158,23 +158,23 @@ ERROR_T write_png_extra(
     fp = fopen(file_name, "wb");
 #endif
     if(!fp) {
-        RAISE_S("[write_png] File %s could not be opened for writing", file_name);
+        RAISE_F("[write_png] File %s could not be opened for writing", file_name);
     }
 
     /* initialize stuff of the main structure, so that it may be used
     latter for the write operation */
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png_ptr) {
-        RAISE_S("[write_png] png_create_write_struct failed");
+        RAISE_M("[write_png] png_create_write_struct failed");
     }
 
     info_ptr = png_create_info_struct(png_ptr);
     if(!info_ptr) {
-        RAISE_S("[write_png] png_create_info_struct failed");
+        RAISE_M("[write_png] png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during init_io");
+        RAISE_M("[write_png] Error during init_io");
     }
 
     /* in case the multiply mode is defined the image structure
@@ -185,7 +185,7 @@ ERROR_T write_png_extra(
     the error checking verification process */
     png_init_io(png_ptr, fp);
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during writing header");
+        RAISE_M("[write_png] Error during writing header");
     }
 
     png_set_IHDR(
@@ -204,24 +204,24 @@ ERROR_T write_png_extra(
     info pointer into the PNG structure */
     png_write_info(png_ptr, info_ptr);
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during writing bytes");
+        RAISE_M("[write_png] Error during writing bytes");
     }
 
     png_set_compression_level(png_ptr, compression);
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during writing bytes");
+        RAISE_M("[write_png] Error during writing bytes");
     }
 
     png_set_filter(png_ptr, 0, PNG_FILTER_NONE);
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during writing bytes");
+        RAISE_M("[write_png] Error during writing bytes");
     }
 
     /* writes the complete set of bytes that are considered
     to be part of the image into PNG structure definition */
     png_write_image(png_ptr, image->rows);
     if(setjmp(png_jmpbuf(png_ptr))) {
-        RAISE_S("[write_png] Error during end of write");
+        RAISE_M("[write_png] Error during end of write");
     }
 
     png_write_end(png_ptr, NULL);
@@ -291,14 +291,14 @@ ERROR_T process_image(struct pcv_image *image) {
     int y;
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) == PNG_COLOR_TYPE_RGB) {
-        RAISE_S(
+        RAISE_M(
             "[process_image] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
             "(lacks the alpha channel)"
         );
     }
 
     if(png_get_color_type(image->png_ptr, image->info_ptr) != PNG_COLOR_TYPE_RGBA) {
-        RAISE_S(
+        RAISE_F(
             "[process_image] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
             PNG_COLOR_TYPE_RGBA,
             png_get_color_type(image->png_ptr, image->info_ptr)
@@ -681,7 +681,7 @@ ERROR_T compose_images_extra(
 }
 
 ERROR_T pcompose(int argc, char **argv) {
-    if(argc != 3) { RAISE_S("Usage: pconvert compose <directory>"); }
+    if(argc != 3) { RAISE_M("Usage: pconvert compose <directory>"); }
 
     compose_images(argv[2], "alpha", NULL, "alpha");
     compose_images(argv[2], "alpha", NULL, "white");
@@ -726,7 +726,7 @@ ERROR_T pcompose(int argc, char **argv) {
 ERROR_T pconvert(int argc, char **argv) {
     struct pcv_image image;
 
-    if(argc != 4) { RAISE_S("Usage: pconvert convert <file_in> <file_out>"); }
+    if(argc != 4) { RAISE_M("Usage: pconvert convert <file_in> <file_out>"); }
 
     read_png(argv[2], FALSE, &image);
     process_image(&image);
@@ -758,7 +758,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
     float time;
     FILE *file;
 
-    if(argc != 3) { RAISE_S("Usage: pconvert benchmark <directory>"); }
+    if(argc != 3) { RAISE_M("Usage: pconvert benchmark <directory>"); }
 
     file = fopen("benchmark.txt", "wb");
 
@@ -793,7 +793,7 @@ ERROR_T popencl(int argc, char **argv) {
     float time_elapsed_cpu;
     float time_elapsed_gpu;
 
-    if(argc != 3) { RAISE_S("Usage: pconvert opencl <directory>"); }
+    if(argc != 3) { RAISE_M("Usage: pconvert opencl <directory>"); }
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
