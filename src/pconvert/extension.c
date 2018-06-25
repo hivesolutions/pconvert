@@ -7,9 +7,9 @@ ERROR_T extension_build_params(PyObject *params_py, params *params) {
     float value_f;
     PyObject *iterator, *element, *key, *value;
 
-	if(!PySequence_Check(params_py)) {
-		RAISE_S("[extension_build_params] Invalid params data type");
-	}
+    if(!PySequence_Check(params_py)) {
+        RAISE_S("[extension_build_params] Invalid params data type");
+    }
 
     params->length = 0;
 
@@ -87,7 +87,7 @@ ERROR_T extension_build_params(PyObject *params_py, params *params) {
 
     Py_DECREF(iterator);
 
-	NORMAL;
+    NORMAL;
 };
 
 PyObject *extension_register(PyObject *self, PyObject *args) {
@@ -143,7 +143,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 
     if(params_py != NULL) {
         VALIDATE_A(
-			extension_build_params(params_py, &params),
+            extension_build_params(params_py, &params),
             Py_RETURN_NONE
         );
     }
@@ -229,7 +229,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     as a list of dictionaries containing the parameters */
     if(params_py != NULL) {
         VALIDATE_A(
-			extension_build_params(params_py, &params),
+            extension_build_params(params_py, &params),
             Py_RETURN_NONE
         );
     }
