@@ -23,7 +23,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     int y;
 
     /* allocates space for the header part of the image so that
-    it must be possible to check for the correct png header */
+    it must be possible to check for the correct PNG header */
     char header[8];
 
     /* allocates space for the pointer to the file that is going to
@@ -41,7 +41,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_uint_32 buffer_size;
     png_uint_32 row_size;
 
-    /* opens the file and tests for it being a png, this is required
+    /* opens the file and tests for it being a PNG, this is required
     to avoid possible problems while handling inproper files */
 #ifdef _MSC_VER
     wchar_t file_name_w[1024];
@@ -59,7 +59,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     }
 
     /* initialize stuff, this is the structu that will be populated
-    withe the complete stat of the png file reading */
+    withe the complete stat of the PNG file reading */
     image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!image->png_ptr) {
         RAISE_S("[read_png] png_create_read_struct failed");
@@ -132,7 +132,7 @@ ERROR_T write_png_extra(
     FILE *fp;
 
     /* allocates space for temporary pointer values to both the global
-    png file tables and the (meta-)information tables */
+    PNG file tables and the (meta-)information tables */
     png_structp png_ptr;
     png_infop info_ptr;
 
@@ -190,7 +190,7 @@ ERROR_T write_png_extra(
     );
 
     /* writes the "header" information described by the
-    info pointer into the png structure */
+    info pointer into the PNG structure */
     png_write_info(png_ptr, info_ptr);
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during writing bytes");
@@ -207,7 +207,7 @@ ERROR_T write_png_extra(
     }
 
     /* writes the complete set of bytes that are considered
-    to be part of the image into png structure definition */
+    to be part of the image into PNG structure definition */
     png_write_image(png_ptr, image->rows);
     if(setjmp(png_jmpbuf(png_ptr))) {
         RAISE_S("[write_png] Error during end of write");
@@ -712,17 +712,17 @@ int pcompose(int argc, char **argv) {
     return 0;
 }
 
-int pconvert(int argc, char **argv) {
+ERROR_T pconvert(int argc, char **argv) {
     struct pcv_image image;
 
-    if(argc != 4) { abort_("Usage: pconvert convert <file_in> <file_out>"); }
+    if(argc != 4) { RAISE_S("Usage: pconvert convert <file_in> <file_out>"); }
 
     read_png(argv[2], FALSE, &image);
     process_image(&image);
     write_png(&image, FALSE, argv[3]);
     release_image(&image);
 
-    return 0;
+    NO_ERROR;
 }
 
 float pbenchmark_algorithm(
