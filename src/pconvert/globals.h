@@ -22,7 +22,7 @@
 #define RAISE_S(...) abort_(__VA_ARGS__); return ERROR
 #define RAISE_M(message) set_last_error(message); return ERROR
 #define RAISE_F(message, ...) set_last_error_f(message, __VA_ARGS__); return ERROR
-#define EXCEPT_S(input) if(IS_ERROR(input)) {\
+#define EXCEPT_S(input, ...) if(IS_ERROR(input)) {\
     __VA_ARGS__;\
     printf(last_error == NULL ? "Unknown error" : last_error);\
     return ERROR;\
