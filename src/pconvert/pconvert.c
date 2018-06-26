@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-char *last_error_message = NULL;
-char last_error_message_b[MAX_ERROR_L] = "";
+char *last_error = NULL;
+char last_error_b[MAX_ERROR_L] = "";
 
 void set_last_error_f(char *message, ...) {
     va_list args;
     va_start(args, message);
-    vsprintf(last_error_message_b, message, args);
+    vsprintf(last_error_b, message, args);
     va_end(args);
-    last_error_message = last_error_message_b;
+    last_error = last_error_b;
 }
 
 void print_(const char *s, ...) {
@@ -823,11 +823,23 @@ ERROR_T popencl(int argc, char **argv) {
 int main(int argc, char **argv) {
     set_last_error("%s", "tobias");
 
+    if(argc < 2) {
+        abort_("Usage: pconvert <command> [args...]");
+        return ERROR;
+    }
 
-    if(argc < 2) { abort_("Usage: pconvert <command> [args...]"); }
-    if(strcmp(argv[1], "compose") == 0) { return pcompose(argc, argv); }
-    else if(strcmp(argv[1], "convert") == 0) { return pconvert(argc, argv); }
-    else if(strcmp(argv[1], "benchmark") == 0) { return pbenchmark(argc, argv); }
-    else if(strcmp(argv[1], "opencl") == 0) { return popencl(argc, argv); }
-    else { abort_("Usage: pconvert <command> [args...]"); return 0; }
+    if(strcmp(argv[1], "compose") == 0) {
+        EXCEPT_S(pcompose(argc, argv));
+    } else if(strcmp(argv[1], "convert") == 0) {
+        EXCEPT_S(pconvert(argc, argv));
+    } else if(strcmp(argv[1], "benchmark") == 0) {
+        EXCEPT_S(pbenchmark(argc, argv));
+    } else if(strcmp(argv[1], "opencl") == 0) {
+        EXCEPT_S(popencl(argc, argv));
+    } else {
+        abort_("Usage: pconvert <command> [args...]");
+        return ERROR;
+    }
+
+    return NO_ERROR;
 }

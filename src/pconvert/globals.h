@@ -22,6 +22,11 @@
 #define RAISE_S(...) abort_(__VA_ARGS__); return ERROR
 #define RAISE_M(message) set_last_error(message); return ERROR
 #define RAISE_F(message, ...) set_last_error_f(message, __VA_ARGS__); return ERROR
+#define EXCEPT_S(input) if(IS_ERROR(input)) {\
+    __VA_ARGS__;\
+    printf(last_error == NULL ? "Unknown error" : last_error);\
+    return ERROR;\
+} while(FALSE)
 #define NORMAL return NO_ERROR
 #define IS_ERROR(input) input != NO_ERROR
 #define VALIDATE(input) if(IS_ERROR(input)) { RAISE; } while(FALSE)
@@ -29,7 +34,7 @@
 #define VALIDATE_A(input, ...) if(IS_ERROR(input)) { __VA_ARGS__; } while(FALSE)
 #define VALIDATE_PY(input, ...) if(IS_ERROR(input)) {\
     __VA_ARGS__;\
-    PyErr_SetString(PyExc_TypeError, last_error_message == NULL ? "Unknown error" : last_error_message);\
+    PyErr_SetString(PyExc_TypeError, last_error == NULL ? "Unknown error" : last_error);\
     return NULL;\
 } while(FALSE)
 
@@ -40,8 +45,8 @@
 
 #define MAX_ERROR_L 1024
 
-EXTERNAL_PREFIX char *last_error_message;
-EXTERNAL_PREFIX char last_error_message_b[MAX_ERROR_L];
+EXTERNAL_PREFIX char *last_error;
+EXTERNAL_PREFIX char last_error_b[MAX_ERROR_L];
 
 typedef struct pcv_image {
     int width;
@@ -219,7 +224,7 @@ static FINLINE void blend_source_over_i(
 }
 
 static FINLINE void set_last_error(char *message, ...) {
-    last_error_message = message;
+    last_error = message;
 }
 
 void set_last_error_f(char *message, ...);
