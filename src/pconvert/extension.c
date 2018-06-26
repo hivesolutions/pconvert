@@ -484,6 +484,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     }
 
     Py_DECREF(iterator);
+    if(use_algorithms) { Py_DECREF(iteratorAlgorithms); }
 
     Py_BEGIN_ALLOW_THREADS;
     VALIDATE_PY(
