@@ -829,13 +829,13 @@ int main(int argc, char **argv) {
     }
 
     if(strcmp(argv[1], "compose") == 0) {
-        EXCEPT(pcompose(argc, argv));
+        EXCEPT_S(pcompose(argc, argv));
     } else if(strcmp(argv[1], "convert") == 0) {
-        EXCEPT(pconvert(argc, argv));
+        EXCEPT_S(pconvert(argc, argv));
     } else if(strcmp(argv[1], "benchmark") == 0) {
-        EXCEPT(pbenchmark(argc, argv));
+        EXCEPT_S(pbenchmark(argc, argv));
     } else if(strcmp(argv[1], "opencl") == 0) {
-        EXCEPT(popencl(argc, argv));
+        EXCEPT_S(popencl(argc, argv));
     } else {
         abort_("Usage: pconvert <command> [args...]");
         return ERROR;
