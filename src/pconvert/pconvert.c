@@ -3,14 +3,6 @@
 char *last_error = NULL;
 char last_error_b[MAX_ERROR_L] = "";
 
-void set_last_error_f(char *message, ...) {
-    va_list args;
-    va_start(args, message);
-    vsprintf(last_error_b, message, args);
-    va_end(args);
-    last_error = last_error_b;
-}
-
 void print_(const char *s, ...) {
     va_list args;
     va_start(args, s);
@@ -26,6 +18,14 @@ void abort_(const char *s, ...) {
     fprintf(stderr, "\n");
     va_end(args);
     RUN_ABORT;
+}
+
+void set_last_error_f(char *message, ...) {
+    va_list args;
+    va_start(args, message);
+    vsprintf(last_error_b, message, args);
+    va_end(args);
+    last_error = last_error_b;
 }
 
 ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
