@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name = "pconvert-python",
-    version = "0.3.5",
+    version = "0.3.6",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "PNG Converter",
