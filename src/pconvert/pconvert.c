@@ -28,6 +28,35 @@ void set_last_error_f(char *message, ...) {
     last_error = last_error_b;
 }
 
+ERROR_T libpng_version(char *buffer) {
+    /* allocates space for the version number (as an integer)
+    for the libpng library */
+    png_uint_32 version;
+    int major, medium, minor;
+    char version_s[128], major_s[3], medium_s[3], minor_s[3];
+
+    /* retrieves the libpng version value and then extracts
+    the multiple parts from it */
+    version = png_access_version_number();
+    sprintf(version_s, "%06d", version);
+
+    memcpy(major_s, &version_s[0], 2);
+    memcpy(medium_s, &version_s[2], 2);
+    memcpy(minor_s, &version_s[4], 2);
+
+    major_s[2] = '\0';
+    medium_s[2] = '\0';
+    minor_s[2] = '\0';
+
+    major = atoi(major_s);
+    medium = atoi(medium_s);
+    minor = atoi(minor_s);
+    
+    sprintf((char *) buffer, "%d.%d.%d", major, medium, minor);
+
+    NORMAL;
+}
+
 ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     /* allocates space for some of the simple values that are
     going to be used in the image processing */

@@ -72,6 +72,7 @@ typedef void (blend_algorithm) (
 void print_(const char *s, ...);
 void abort_(const char *s, ...);
 void set_last_error_f(char *message, ...);
+ERROR_T libpng_version(char *buffer);
 ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image);
 ERROR_T write_png(struct pcv_image *image, char multiply, char *file_name);
 ERROR_T write_png_extra(
