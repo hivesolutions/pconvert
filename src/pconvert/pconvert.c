@@ -51,7 +51,7 @@ ERROR_T libpng_version(char *buffer) {
     major = atoi(major_s);
     medium = atoi(medium_s);
     minor = atoi(minor_s);
-    
+
     sprintf((char *) buffer, "%d.%d.%d", major, medium, minor);
 
     NORMAL;

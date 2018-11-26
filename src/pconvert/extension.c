@@ -541,12 +541,19 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     references to be used in the intialization process */
     PyObject *pconvert_module, *algorithms;
 
+    /* allocates space for the version string of the libpng
+    library to be exposed to the module */
+    char libpng_version_s[16];
+
     /* creates the pconvert extension module with the
     functions defined in the previous array, in case
     no module is created the control flow is returned
     immediately to the caller function */
     pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return NULL; }
+
+    /* gathers the information on the currently running libpn version */
+    libpng_version(libpng_version_s);
 
     /* builds the algorithms tuple that will expose the multiple algorithms
     supported by the pconvert infra-structure */
@@ -557,6 +564,7 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+    PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 
     /* returns the module that has just been created to
@@ -569,10 +577,17 @@ PyMODINIT_FUNC initpconvert(void) {
     module to be created */
     PyObject *pconvert_module, *algorithms;
 
+    /* allocates space for the version string of the libpng
+    library to be exposed to the module */
+    char libpng_version_s[16];
+
     /* creates the pconvert extension module with the
     functions defined in the previous array */
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
+
+    /* gathers the information on the currently running libpn version */
+    libpng_version(libpng_version_s);
 
     /* builds the algorithms tuple that will expose the multiple algorithms
     supported by the pconvert infra-structure */
@@ -583,6 +598,8 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+    PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
+
 }
 #endif
