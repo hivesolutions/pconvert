@@ -1,4 +1,4 @@
-# P(NG)Convert
+# [P(NG)Convert](http://pconvert.hive.pt)
 
 Simple PNG conversion tool using libpng.
 
