@@ -1,6 +1,6 @@
 # [P(NG)Convert](http://pconvert.hive.pt)
 
-Simple PNG conversion tool using libpng.
+Simple PNG conversion tool using [libpng](http://www.libpng.org).
 
 ## Build
 
