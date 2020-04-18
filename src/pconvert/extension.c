@@ -349,8 +349,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     Py_BEGIN_ALLOW_THREADS;
 
     /* validates that both the bottom and the top path are correctly
-    read from the current file system, in case an error occurs return
-    an invalid (none) value to the caller python code */
+    read from the current file system, in case an error occurs an
+    exception should be raised to the caller Python code */
     VALIDATE_PY(
         read_png(bottom_path, demultiply, &bottom),
         Py_BLOCK_THREADS
@@ -537,7 +537,7 @@ PyMethodDef pconvert_functions[3] = {
 
 #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit_pconvert(void) {
-    /* allocates space for the multiple python object
+    /* allocates space for the multiple Python object
     references to be used in the initialization process */
     PyObject *pconvert_module, *algorithms;
 
