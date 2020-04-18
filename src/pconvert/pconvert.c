@@ -848,6 +848,13 @@ ERROR_T popencl(int argc, char **argv) {
     NORMAL;
 }
 
+ERROR_T pversion(int argc, char **argv) {
+    char libpng_version_s[16];
+    libpng_version(libpng_version_s);
+    printf("P(NG)Convert %s (libpng %s)\n", PCONVERT_VERSION, libpng_version_s);
+    NORMAL;
+}
+
 int main(int argc, char **argv) {
     set_last_error("%s", "tobias");
 
@@ -864,6 +871,8 @@ int main(int argc, char **argv) {
         EXCEPT_S(pbenchmark(argc, argv));
     } else if(strcmp(argv[1], "opencl") == 0) {
         EXCEPT_S(popencl(argc, argv));
+    } else if(strcmp(argv[1], "version") == 0) {
+        EXCEPT_S(pversion(argc, argv));
     } else {
         abort_("Usage: pconvert <command> [args...]");
         return ERROR;

@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python-dev libpng-dev
       - run: make
+      - run: ./pconvert version
   build-clang:
     name: Build Clang
     strategy:
@@ -23,3 +24,4 @@ jobs:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python-dev libpng-dev
       - run: make CC=clang
+      - run: ./pconvert version
