@@ -10,6 +10,7 @@ jobs:
     container: gcc:${{ matrix.gcc-version }}
     steps:
       - uses: actions/checkout@v1
+      - run: apt-get update && apt-get install -y -q python-dev
       - run: make
   build-clang:
     name: Build Clang
@@ -20,4 +21,5 @@ jobs:
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
       - uses: actions/checkout@v1
+      - run: apt-get update && apt-get install -y -q python-dev
       - run: CC=clang make
