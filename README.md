@@ -23,6 +23,24 @@ It's also possible to build the Python extension and install in a local machine.
 python setup.py install
 ```
 
+## Python Methods
+
+### `blend_images`
+
+| Argument | Type | Mandatory | Default | Description |
+| --- | --- | --- | --- | --- |
+| bottom_path | `str` | `true` | - | The path to the bottom image. |
+| top_path | `str` | `true` | - | The path to the top image. |
+| target_path | `str` | `true` | - | The path to the target, resulting image. |
+| algorithm | `str` | `false` | `multiplicative` | The blending algorithm to be used. |
+| is_inline | `bool` | `false` | `false` | If the inline methods should be used to perform the blending. |
+
+### `blend_multiple`
+
+| Argument | Type | Mandatory | Default | Description |
+| --- | --- | --- | --- | --- |
+| paths | `list` | `true` | - | The path to the bottom image. |
+
 ## Example
 
 Running a simple set of composition can be done using:
