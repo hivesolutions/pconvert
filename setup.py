@@ -20,7 +20,7 @@ setuptools.setup(
             libraries = [] if os.name in ("nt",) else ["m", "png"],
             library_dirs = ["/usr/local/lib"],
             extra_compile_args = [] if os.name in ("nt",) else [
-                "-O2",
+                "-O3",
                 "-finline-functions",
                 "-Winline"
             ],

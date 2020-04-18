@@ -2,7 +2,8 @@ CC=gcc
 CP=cp
 RM=rm
 SYS=posix
-CFLAGS=-c -Wall -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
+OPTIMIZATION=-O3 -finline-functions -Winline -march=native
+CFLAGS=$(OPTIMIZATION) -c -Wall -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
 RMFLAGS=-rf
