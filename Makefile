@@ -2,7 +2,7 @@ CC=gcc
 CP=cp
 RM=rm
 SYS=posix
-OPTIMIZATION=-O3 -finline-functions -Winline -march=native
+OPTIMIZATION=-O3 -finline-functions -Winline
 CFLAGS=$(OPTIMIZATION) -c -Wall -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
