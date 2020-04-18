@@ -538,7 +538,7 @@ PyMethodDef pconvert_functions[3] = {
 #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit_pconvert(void) {
     /* allocates space for the multiple python object
-    references to be used in the intialization process */
+    references to be used in the initialization process */
     PyObject *pconvert_module, *algorithms;
 
     /* allocates space for the version string of the libpng
@@ -552,7 +552,7 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     pconvert_module = PyModule_Create(&moduledef);
     if(pconvert_module == NULL) { return NULL; }
 
-    /* gathers the information on the currently running libpn version */
+    /* gathers the information on the currently running libpng version */
     libpng_version(libpng_version_s);
 
     /* builds the algorithms tuple that will expose the multiple algorithms
@@ -586,7 +586,7 @@ PyMODINIT_FUNC initpconvert(void) {
     pconvert_module = Py_InitModule("pconvert", pconvert_functions);
     if(pconvert_module == NULL) { return; }
 
-    /* gathers the information on the currently running libpn version */
+    /* gathers the information on the currently running libpng version */
     libpng_version(libpng_version_s);
 
     /* builds the algorithms tuple that will expose the multiple algorithms
@@ -600,6 +600,5 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
-
 }
 #endif
