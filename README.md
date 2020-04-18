@@ -25,12 +25,22 @@ python setup.py install
 
 ## Example
 
+Running a simple set of composition can be done using:
+
 ```bash
 pconvert compose assets/demo/
 ```
 
+To be able to convert one image into a normalized PNG format use the `convert` command as following:
+
 ```bash
 pconvert convert assets/demo/tux.png tux.out.png
+```
+
+To run a simple benchmark operation (results in `benchmark.txt`) using pconvert use:
+
+```bash
+pconvert benchmark assets/demo/
 ```
 
 ## License

@@ -1,12 +1,50 @@
 {
     "version": "0.2.0",
     "configurations": [{
-        "name": "C++ Launch",
+        "name": "Compose",
         "type": "cppdbg",
         "request": "launch",
         "preLaunchTask": "make",
         "program": "${workspaceRoot}/pconvert",
-        "args": [],
+        "args": ["compose", "assets/demo/"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "linux": {
+            "MIMode": "gdb"
+        },
+        "osx": {
+            "MIMode": "lldb"
+        },
+        "windows": {
+            "MIMode": "gdb"
+        }
+    }, {
+        "name": "Benchmark",
+        "type": "cppdbg",
+        "request": "launch",
+        "preLaunchTask": "make",
+        "program": "${workspaceRoot}/pconvert",
+        "args": ["benchmark", "assets/demo/"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "linux": {
+            "MIMode": "gdb"
+        },
+        "osx": {
+            "MIMode": "lldb"
+        },
+        "windows": {
+            "MIMode": "gdb"
+        }
+    }, {
+        "name": "Convert",
+        "type": "cppdbg",
+        "request": "launch",
+        "preLaunchTask": "make",
+        "program": "${workspaceRoot}/pconvert",
+        "args": ["convert", "assets/demo/tux.png", "tux.out.png"],
         "stopAtEntry": false,
         "cwd": "${workspaceRoot}",
         "environment": [],
