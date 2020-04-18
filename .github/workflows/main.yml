@@ -22,4 +22,4 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python-dev
-      - run: CC=clang make
+      - run: make CC=clang
