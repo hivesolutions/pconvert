@@ -165,7 +165,7 @@ ERROR_T write_png_extra(
     char *file_name,
     int compression,
     int filter
-)
+) {
     /* allocates space for the pointer to the file that is going to
     be used in the writing process of the file */
     FILE *fp;
