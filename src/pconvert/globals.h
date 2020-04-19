@@ -2,9 +2,29 @@
 
 #include "structs.h"
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 #define PCONVERT_VERSION "0.3.7"
 #define PCONVERT_COMPILATION_DATE __DATE__
 #define PCONVERT_COMPILATION_TIME __TIME__
+
+#ifdef _MSC_VER
+#define PCONVERT_PLATFORM_MSC true
+#define PCONVERT_COMPILER "msvc"
+#define PCONVERT_COMPILER_VERSION _MSC_VER
+#define PCONVERT_COMPILER_VERSION_STRING TOSTRING(_MSC_VER)
+#endif
+
+#ifdef __GNUC__
+#define PCONVERT_PLATFORM_GCC true
+#define PCONVERT_COMPILER "gcc"
+#define PCONVERT_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#define PCONVERT_COMPILER_VERSION_STRING __VERSION__
+#endif
+
+#define PCONVERT_PLATFORM_CPU_BITS sizeof(void *) * 8
+
 #define PCONVERT_ALGORITHMS "multiplicative", "source_over", "destination_over",\
     "mask_top", "first_top", "first_bottom", "disjoint_over", "disjoint_under", "disjoint_debug"
 
