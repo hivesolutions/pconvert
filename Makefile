@@ -11,10 +11,10 @@ CFLAGS=$(OPTIMIZATION) -c -Wall -I/usr/local/include -I/usr/include/python$(PYTH
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
 RMFLAGS=-rf
-LIBS=-lm -lpng
+LIBS=-lm -lpng -lpython
 PREFIX=/usr
 SRC_DIR=src/pconvert
-SOURCES=$(SRC_DIR)/stdafx.c $(SRC_DIR)/pconvert.c $(SRC_DIR)/structs.c $(SRC_DIR)/util.c $(SRC_DIR)/opencl.c
+SOURCES=$(wildcard $(SRC_DIR)/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
