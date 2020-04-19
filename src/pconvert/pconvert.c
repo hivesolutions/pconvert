@@ -784,11 +784,11 @@ float pbenchmark_algorithm(
 }
 
 ERROR_T pbenchmark(int argc, char **argv) {
-    #define ALGORITHMS_SIZE 2
+    #define ALGORITHMS_SIZE 5
     #define COMPRESSION_SIZE 3
     size_t index, index_j, index_k;
     float time;
-    char *algorithms[ALGORITHMS_SIZE] = { "source_over", "multiplicative" };
+    char *algorithms[ALGORITHMS_SIZE] = { "multiplicative", "source_over", "alpha", "disjoint_over", "disjoint_under" };
     int compression[COMPRESSION_SIZE] = { Z_NO_COMPRESSION, Z_BEST_SPEED, Z_BEST_COMPRESSION };
     char *compression_s[COMPRESSION_SIZE] = { "Z_NO_COMPRESSION", "Z_BEST_SPEED", "Z_BEST_COMPRESSION" };
 
@@ -808,7 +808,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
         for(index_j = 0; index_j < COMPRESSION_SIZE; index_j++) {
             for(index_k = 0; index_k < OPENCL_SIZE; index_k++) {
                 time = pbenchmark_algorithm(argv[2], algorithms[index], NULL, "alpha", compression[index_j], 0, use_opencl[index_k]);
-                printf("%s %s %s: %f\n", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time);
+                printf("%s %s %s: %0.2f ms\n", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time * 1000);
             }
         }
         printf("\n");
