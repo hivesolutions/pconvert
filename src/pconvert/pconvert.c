@@ -866,8 +866,6 @@ ERROR_T pversion(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    set_last_error("%s", "tobias");
-
     if(argc < 2) {
         abort_("Usage: pconvert <command> [args...]");
         return ERROR;
