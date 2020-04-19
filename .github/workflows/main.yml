@@ -24,7 +24,7 @@ jobs:
           make
       - name: Test P(NG)Convert
         run: |
-          ./bin/pconvert version
+          ./pconvert version
   build-clang:
     name: Build Clang
     strategy:
@@ -48,7 +48,7 @@ jobs:
           make CC=clang
       - name: Test P(NG)Convert
         run: |
-          ./bin/pconvert version
+          ./pconvert version
   build-gcc-cmake:
     name: Build GCC CMake
     strategy:
