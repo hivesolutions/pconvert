@@ -770,47 +770,49 @@ float pbenchmark_algorithm(
     params *params,
     char *background,
     int compression,
-    int filter
+    int filter,
+    char use_opencl
 ) {
     float start_time;
     float end_time;
     float time_elapsed;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(base_path, algorithm, params, background, compression, filter, FALSE);
+    compose_images_extra(base_path, algorithm, params, background, compression, filter, use_opencl);
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed = end_time - start_time;
     return time_elapsed;
 }
 
 ERROR_T pbenchmark(int argc, char **argv) {
+    #define ALGORITHMS_SIZE 2
+    #define COMPRESSION_SIZE 3
+    size_t index, index_j, index_k;
     float time;
-    FILE *file;
+    char *algorithms[ALGORITHMS_SIZE] = { "source_over", "multiplicative" };
+    int compression[COMPRESSION_SIZE] = { Z_NO_COMPRESSION, Z_BEST_SPEED, Z_BEST_COMPRESSION };
+    char *compression_s[COMPRESSION_SIZE] = { "Z_NO_COMPRESSION", "Z_BEST_SPEED", "Z_BEST_COMPRESSION" };
+
+#ifdef PCONVERT_OPENCL
+    #define OPENCL_SIZE 2
+    char use_opencl[OPENCL_SIZE] = { FALSE, TRUE };
+    char *use_opencl_s[OPENCL_SIZE] = { "CPU", "OPENCL" };
+#else
+    #define OPENCL_SIZE 1
+    char use_opencl[OPENCL_SIZE] = { FALSE };
+    char *use_opencl_s[OPENCL_SIZE] = { "CPU" };
+#endif
 
     if(argc != 3) { RAISE_M("Usage: pconvert benchmark <directory>"); }
 
-    file = fopen("benchmark.txt", "wb");
-
-    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_NO_COMPRESSION, 0);
-    fprintf(file, "source_over Z_NO_COMPRESSION: %f\n", time);
-
-    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, 0);
-    fprintf(file, "source_over Z_BEST_SPEED: %f\n", time);
-
-    time = pbenchmark_algorithm(argv[2], "source_over", NULL, "alpha", Z_BEST_COMPRESSION, 0);
-    fprintf(file, "source_over Z_BEST_COMPRESSION: %f\n", time);
-
-    fprintf(file, "\n");
-
-    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_NO_COMPRESSION, 0);
-    fprintf(file, "multiplicative Z_NO_COMPRESSION: %f\n", time);
-
-    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, 0);
-    fprintf(file, "multiplicative Z_BEST_SPEED: %f\n", time);
-
-    time = pbenchmark_algorithm(argv[2], "multiplicative", NULL, "alpha", Z_BEST_COMPRESSION, 0);
-    fprintf(file, "multiplicative Z_BEST_COMPRESSION: %f\n", time);
-
-    fclose(file);
+    for(index = 0; index < ALGORITHMS_SIZE; index++) {
+        for(index_j = 0; index_j < COMPRESSION_SIZE; index_j++) {
+            for(index_k = 0; index_k < OPENCL_SIZE; index_k++) {
+                time = pbenchmark_algorithm(argv[2], algorithms[index], NULL, "alpha", compression[index_j], 0, use_opencl[index_k]);
+                printf("%s %s %s: %f\n", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time);
+            }
+        }
+        printf("\n");
+    }
 
     NORMAL;
 }
