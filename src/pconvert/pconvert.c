@@ -82,7 +82,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_uint_32 row_size;
 
     /* opens the file and tests for it being a PNG, this is required
-    to avoid possible problems while handling inproper files */
+    to avoid possible problems while handling improper files */
 #ifdef _MSC_VER
     wchar_t file_name_w[1024];
     swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
@@ -134,7 +134,7 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
 
     /* allocates space in memory for the buffer that will
     be used for the "frame" buffer of the image data */
-    row_size = png_get_rowbytes(image->png_ptr, image->info_ptr);
+    row_size = (png_uint_32) png_get_rowbytes(image->png_ptr, image->info_ptr);
     buffer_size = row_size * image->height;
     buffer = (png_byte *) malloc(buffer_size);
 
