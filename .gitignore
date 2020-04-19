@@ -7,6 +7,11 @@
 
 pconvert
 benchmark.txt
+graph_info.json
+
+conan.lock
+conaninfo.txt
+conanbuildinfo.*
 
 /bin
 /dist

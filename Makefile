@@ -1,4 +1,8 @@
+-include conanbuildinfo.mak
+
 CC=gcc
+CPP=g++
+LD=$(CC)
 CP=cp
 RM=rm
 SYS=posix
@@ -15,9 +19,18 @@ OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
 PYTHON_VERSION=2.7
 
+# updates the internal variables with the values comming
+# from the conan package manager
+CFLAGS+=$(CONAN_CFLAGS)
+CFLAGS+=$(addprefix -I, $(CONAN_INCLUDE_DIRS))
+CFLAGS+= $(addprefix -D, $(CONAN_DEFINES))
+LDFLAGS+=$(addprefix -L, $(CONAN_LIB_DIRS))
+LIBS+=$(addprefix -l, $(CONAN_LIBS))
+
 ifeq ($(SYS),darwin)
   CC=clang
-  LDFLAGS+=-framework OpenCL
+  CPP=clang
+  LDFLAGS+=-framework OpenCL -framework Security
 endif
 
 ifeq ($(DEBUG),1)
@@ -34,7 +47,7 @@ clean:
 	$(RM) $(RMFLAGS) $(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

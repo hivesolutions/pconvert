@@ -62,6 +62,14 @@ To run a simple benchmark operation (results in `benchmark.txt`) using pconvert 
 pconvert benchmark assets/demo/
 ```
 
+## Conan
+
+This package makes use of the [Conan](https://conan.io) package manager to use run:
+
+```bash
+conan install . --build missing
+```
+
 ## License
 
 PConvert is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
