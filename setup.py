@@ -33,7 +33,7 @@ setuptools.setup(
                 "src/pconvert/util.c"
             ],
             define_macros = [
-               ("PCONVERT_EXTENSION", "1"),
+               ("PCONVERT_EXTENSION", None),
                ("PASS_ERROR", None)
             ]
         )
