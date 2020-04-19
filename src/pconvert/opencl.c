@@ -137,9 +137,12 @@ ERROR_T blend_kernel(
     error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
     if(error != CL_SUCCESS){ RAISE_M("[blend_kernel] Failed to write to source array"); }
 
-    clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
-    clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
-    clSetKernelArg(kernel, 2, sizeof(int), &size);
+    error = clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
+    error = clSetKernelArg(kernel, 1, sizeof(cl_mem), &mem_top);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
+    error = clSetKernelArg(kernel, 2, sizeof(int), &size);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
 
     error = clGetKernelWorkGroupInfo(
         kernel,
@@ -155,10 +158,13 @@ ERROR_T blend_kernel(
     if(local % rem != 0) { rem++; }
     global = local * rem;
 
-    clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
-    clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
+    error = clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed enqueue range kernel: %d", error); }
+    error = clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to enqueue read buffer: %d", error); }
 
-    clFinish(commands);
+    error = clFinish(commands);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to finish OpenCL commands: %d", error); }
 
     clReleaseMemObject(mem_bottom);
     clReleaseMemObject(mem_top);
