@@ -655,7 +655,7 @@ ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     png_uint_32 row_size = (png_uint_32) png_get_rowbytes(origin->png_ptr, origin->info_ptr);
     png_uint_32 buffer_size = row_size * origin->height;
     png_byte *buffer = (png_byte *) malloc(buffer_size);
-    copy_image(origin, target);
+    VALIDATE(copy_image(origin, target));
     target->rows = (png_bytep *) malloc(rows_size);
     memcpy(buffer, *origin->rows, buffer_size);
     for(y = 0; y < origin->height; y++) {
@@ -837,21 +837,21 @@ ERROR_T popencl(int argc, char **argv) {
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
-    compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE);
+    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
+    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
+    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_cpu = end_time - start_time;
 
     time_elapsed_gpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
-    compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE);
+    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
+    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
+    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_gpu = end_time - start_time;
 
