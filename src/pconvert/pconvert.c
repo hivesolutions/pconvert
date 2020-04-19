@@ -690,20 +690,30 @@ ERROR_T compose_images_extra(
     char name[1024];
     struct pcv_image bottom, top, final;
     char demultiply = is_multiplied(algorithm);
-    read_png(join_path(base_path, "sole.png", path), demultiply, &bottom);
-    read_png(join_path(base_path, "back.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
-    read_png(join_path(base_path, "front.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
-    read_png(join_path(base_path, "shoelace.png", path), demultiply, &top);
-    blend_images_extra(&bottom, &top, algorithm, params, use_opencl); release_image(&top);
+
+    VALIDATE(read_png(join_path(base_path, "sole.png", path), demultiply, &bottom));
+    VALIDATE(read_png(join_path(base_path, "back.png", path), demultiply, &top));
+    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
+    VALIDATE(release_image(&top));
+
+    VALIDATE(read_png(join_path(base_path, "front.png", path), demultiply, &top));
+    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
+    VALIDATE(release_image(&top));
+
+    VALIDATE(read_png(join_path(base_path, "shoelace.png", path), demultiply, &top));
+    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
+    VALIDATE(release_image(&top));
+
     if(demultiply) { multiply_image(&bottom); }
+
     sprintf(name, "background_%s.png", background);
-    read_png(join_path(base_path, name, path), FALSE, &final);
-    blend_images_extra(&final, &bottom, algorithm, params, use_opencl); release_image(&bottom);
+    VALIDATE(read_png(join_path(base_path, name, path), FALSE, &final));
+    VALIDATE(blend_images_extra(&final, &bottom, algorithm, params, use_opencl));
+    VALIDATE(release_image(&bottom));
+
     sprintf(name, "result_%s_%s.png", algorithm, background);
-    write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter);
-    release_image(&final);
+    VALIDATE(write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter));
+    VALIDATE(release_image(&final));
 
     NORMAL;
 }
@@ -711,42 +721,42 @@ ERROR_T compose_images_extra(
 ERROR_T pcompose(int argc, char **argv) {
     if(argc != 3) { RAISE_M("Usage: pconvert compose <directory>"); }
 
-    compose_images(argv[2], "alpha", NULL, "alpha");
-    compose_images(argv[2], "alpha", NULL, "white");
-    compose_images(argv[2], "alpha", NULL, "blue");
-    compose_images(argv[2], "alpha", NULL, "texture");
-    compose_images(argv[2], "multiplicative", NULL, "alpha");
-    compose_images(argv[2], "multiplicative", NULL, "white");
-    compose_images(argv[2], "multiplicative", NULL, "blue");
-    compose_images(argv[2], "multiplicative", NULL, "texture");
-    compose_images(argv[2], "source_over", NULL, "alpha");
-    compose_images(argv[2], "source_over", NULL, "white");
-    compose_images(argv[2], "source_over", NULL, "blue");
-    compose_images(argv[2], "source_over", NULL, "texture");
-    compose_images(argv[2], "destination_over", NULL, "alpha");
-    compose_images(argv[2], "destination_over", NULL, "white");
-    compose_images(argv[2], "destination_over", NULL, "blue");
-    compose_images(argv[2], "destination_over", NULL, "texture");
-    compose_images(argv[2], "first_top", NULL, "alpha");
-    compose_images(argv[2], "first_top", NULL, "white");
-    compose_images(argv[2], "first_top", NULL, "blue");
-    compose_images(argv[2], "first_top", NULL, "texture");
-    compose_images(argv[2], "first_bottom", NULL, "alpha");
-    compose_images(argv[2], "first_bottom", NULL, "white");
-    compose_images(argv[2], "first_bottom", NULL, "blue");
-    compose_images(argv[2], "first_bottom", NULL, "texture");
-    compose_images(argv[2], "disjoint_over", NULL, "alpha");
-    compose_images(argv[2], "disjoint_over", NULL, "white");
-    compose_images(argv[2], "disjoint_over", NULL, "blue");
-    compose_images(argv[2], "disjoint_over", NULL, "texture");
-    compose_images(argv[2], "disjoint_under", NULL, "alpha");
-    compose_images(argv[2], "disjoint_under", NULL, "white");
-    compose_images(argv[2], "disjoint_under", NULL, "blue");
-    compose_images(argv[2], "disjoint_under", NULL, "texture");
-    compose_images(argv[2], "disjoint_debug", NULL, "alpha");
-    compose_images(argv[2], "disjoint_debug", NULL, "white");
-    compose_images(argv[2], "disjoint_debug", NULL, "blue");
-    compose_images(argv[2], "disjoint_debug", NULL, "texture");
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "alpha"));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "white"));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "blue"));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "texture"));
 
     NORMAL;
 }
@@ -756,10 +766,10 @@ ERROR_T pconvert(int argc, char **argv) {
 
     if(argc != 4) { RAISE_M("Usage: pconvert convert <file_in> <file_out>"); }
 
-    read_png(argv[2], FALSE, &image);
-    process_image(&image);
-    write_png(&image, FALSE, argv[3]);
-    release_image(&image);
+    VALIDATE(read_png(argv[2], FALSE, &image));
+    VALIDATE(process_image(&image));
+    VALIDATE(write_png(&image, FALSE, argv[3]));
+    VALIDATE(release_image(&image));
 
     NORMAL;
 }
