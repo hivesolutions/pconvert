@@ -120,7 +120,7 @@ ERROR_T blend_kernel(
     }
 
     if(opencl_ctx.device_id == NULL) {
-        error = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
+        error = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, &device_id, NULL);
         if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
         opencl_ctx.platform_id = platform_id;
     } else {
