@@ -79,7 +79,7 @@ It's important to note that the usage of Conan is not mandatory and it's still p
 
 ```bash
 conan install . --build missing
-cmake . -DCMAKE_CL_64=1 -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64 -Wno-dev
+cmake . -DCMAKE_CL_64=1 -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64
 msbuild ALL_BUILD.vcxproj /P:Configuration=Release
 ```
 
