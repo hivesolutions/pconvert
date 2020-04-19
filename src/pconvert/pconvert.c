@@ -665,7 +665,13 @@ ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     NORMAL;
 }
 
-ERROR_T compose_images(char *base_path, char *algorithm, params *params, char *background) {
+ERROR_T compose_images(
+    char *base_path,
+    char *algorithm,
+    params *params,
+    char *background,
+    struct benchmark *benchmark
+) {
     return compose_images_extra(
         base_path,
         algorithm,
@@ -673,7 +679,8 @@ ERROR_T compose_images(char *base_path, char *algorithm, params *params, char *b
         background,
         Z_BEST_SPEED,
         PNG_FILTER_NONE,
-        FALSE
+        FALSE,
+        benchmark
     );
 }
 
@@ -684,36 +691,80 @@ ERROR_T compose_images_extra(
     char *background,
     int compression,
     int filter,
-    char use_opencl
+    char use_opencl,
+    struct benchmark *benchmark
 ) {
     char path[1024];
     char name[1024];
+    float start_time;
     struct pcv_image bottom, top, final;
     char demultiply = is_multiplied(algorithm);
 
-    VALIDATE(read_png(join_path(base_path, "sole.png", path), demultiply, &bottom));
-    VALIDATE(read_png(join_path(base_path, "back.png", path), demultiply, &top));
-    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
-    VALIDATE(release_image(&top));
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(read_png(join_path(base_path, "sole.png", path), demultiply, &bottom));
+        VALIDATE(read_png(join_path(base_path, "back.png", path), demultiply, &top))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->blend_time,
+        VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(release_image(&top))
+    );
 
-    VALIDATE(read_png(join_path(base_path, "front.png", path), demultiply, &top));
-    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
-    VALIDATE(release_image(&top));
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(read_png(join_path(base_path, "front.png", path), demultiply, &top))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->blend_time,
+        VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(release_image(&top))
+    );
 
-    VALIDATE(read_png(join_path(base_path, "shoelace.png", path), demultiply, &top));
-    VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl));
-    VALIDATE(release_image(&top));
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(read_png(join_path(base_path, "shoelace.png", path), demultiply, &top))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->blend_time,
+        VALIDATE(blend_images_extra(&bottom, &top, algorithm, params, use_opencl))
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(release_image(&top))
+    );
 
-    if(demultiply) { multiply_image(&bottom); }
+    BENCHMARK(
+        benchmark, start_time, benchmark->blend_time,
+        if(demultiply) { multiply_image(&bottom); }
+    );
 
-    sprintf(name, "background_%s.png", background);
-    VALIDATE(read_png(join_path(base_path, name, path), FALSE, &final));
-    VALIDATE(blend_images_extra(&final, &bottom, algorithm, params, use_opencl));
-    VALIDATE(release_image(&bottom));
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        sprintf(name, "background_%s.png", background);
+        VALIDATE(read_png(join_path(base_path, name, path), FALSE, &final));
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->blend_time,
+        VALIDATE(blend_images_extra(&final, &bottom, algorithm, params, use_opencl));
+    );
+    BENCHMARK(
+        benchmark, start_time, benchmark->read_png_time,
+        VALIDATE(release_image(&bottom))
+    );
 
-    sprintf(name, "result_%s_%s.png", algorithm, background);
-    VALIDATE(write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter));
-    VALIDATE(release_image(&final));
+    BENCHMARK(
+        benchmark, start_time, benchmark->write_png_time,
+        sprintf(name, "result_%s_%s.png", algorithm, background);
+        VALIDATE(write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter));
+        VALIDATE(release_image(&final))
+    );
 
     NORMAL;
 }
@@ -721,42 +772,42 @@ ERROR_T compose_images_extra(
 ERROR_T pcompose(int argc, char **argv) {
     if(argc != 3) { RAISE_M("Usage: pconvert compose <directory>"); }
 
-    VALIDATE(compose_images(argv[2], "alpha", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "alpha", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "alpha", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "alpha", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "source_over", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "source_over", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "source_over", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "source_over", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "destination_over", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "destination_over", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "destination_over", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "destination_over", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "first_top", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "first_top", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "first_top", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "first_top", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "texture"));
-    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "alpha"));
-    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "white"));
-    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "blue"));
-    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "texture"));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "alpha", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "multiplicative", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "source_over", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "destination_over", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "first_top", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "first_bottom", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_over", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_under", NULL, "texture", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "alpha", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "white", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "blue", NULL));
+    VALIDATE(compose_images(argv[2], "disjoint_debug", NULL, "texture", NULL));
 
     NORMAL;
 }
@@ -786,8 +837,12 @@ float pbenchmark_algorithm(
     float start_time;
     float end_time;
     float time_elapsed;
+    struct benchmark benchmark;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    EXCEPT_P(compose_images_extra(base_path, algorithm, params, background, compression, filter, use_opencl));
+    EXCEPT_P(compose_images_extra(
+        base_path, algorithm, params, background, compression,
+        filter, use_opencl, &benchmark
+    ));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed = end_time - start_time;
     return time_elapsed;
@@ -832,26 +887,28 @@ ERROR_T popencl(int argc, char **argv) {
     float end_time;
     float time_elapsed_cpu;
     float time_elapsed_gpu;
+    struct benchmark benchmark_cpu = { 0, 0, 0 };
+    struct benchmark benchmark_gpu = { 0, 0, 0 };
 
     if(argc != 3) { RAISE_M("Usage: pconvert opencl <directory>"); }
 
     time_elapsed_cpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
-    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
-    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
-    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
-    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE));
+    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE, &benchmark_cpu));
+    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE, &benchmark_cpu));
+    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE, &benchmark_cpu));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE, &benchmark_cpu));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, FALSE, &benchmark_cpu));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_cpu = end_time - start_time;
 
     time_elapsed_gpu = 0;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
-    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
-    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
-    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
-    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE));
+    VALIDATE(compose_images_extra(argv[2], "multiplicative", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE, &benchmark_gpu));
+    VALIDATE(compose_images_extra(argv[2], "source_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE, &benchmark_gpu));
+    VALIDATE(compose_images_extra(argv[2], "alpha", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE, &benchmark_gpu));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_over", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE, &benchmark_gpu));
+    VALIDATE(compose_images_extra(argv[2], "disjoint_under", NULL, "alpha", Z_BEST_SPEED, PNG_FILTER_NONE, TRUE, &benchmark_gpu));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed_gpu = end_time - start_time;
 

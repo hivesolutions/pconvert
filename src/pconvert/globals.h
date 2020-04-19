@@ -83,6 +83,12 @@
     return NULL;\
 } while(FALSE)
 
+#define BENCHMARK(benchmark, start, target, ...)\
+    start = (float) clock() / CLOCKS_PER_SEC;\
+    __VA_ARGS__;\
+    if (benchmark != NULL) { target = start; }\
+    while(FALSE)
+
 #define Z_NO_COMPRESSION 0
 #define Z_BEST_SPEED 1
 #define Z_BEST_COMPRESSION 9
@@ -102,6 +108,12 @@ typedef struct pcv_image {
     png_infop info_ptr;
     png_bytep *rows;
 } pcv_image_t;
+
+typedef struct benchmark {
+    float blend_time;
+    float read_png_time;
+    float write_png_time;
+} benchmark_t;
 
 typedef void (blend_algorithm) (
     params *params,
@@ -168,7 +180,13 @@ ERROR_T release_image(struct pcv_image *image);
 ERROR_T release_image_s(struct pcv_image *image, char destroy_struct);
 ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target);
 ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target);
-ERROR_T compose_images(char *base_path, char *algorithm, params *params, char *background);
+ERROR_T compose_images(
+    char *base_path,
+    char *algorithm,
+    params *params,
+    char *background,
+    struct benchmark *benchmark
+);
 ERROR_T compose_images_extra(
     char *base_path,
     char *algorithm,
@@ -176,7 +194,8 @@ ERROR_T compose_images_extra(
     char *background,
     int compression,
     int filter,
-    char use_opencl
+    char use_opencl,
+    struct benchmark *benchmark
 );
 char *join_path(char *base, char *extra, char *result);
 blend_algorithm *get_blend_algorithm(char *algorithm);
