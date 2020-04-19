@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget
-      - run: wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
+      - run: wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
       - run: make
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget
-      - run: wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
+      - run: wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
       - run: make CC=clang
