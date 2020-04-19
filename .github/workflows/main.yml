@@ -40,7 +40,9 @@ jobs:
           pip install --upgrade conan urllib3
           conan install . --build
           make CC=clang
-          ./pconvert version
+      - name: Test P(NG)Convert
+        run: |
+          ./bin/pconvert version
   build-gcc-cmake:
     name: Build GCC CMake
     strategy:
@@ -61,6 +63,8 @@ jobs:
           conan install . --build
           cmake .
           make
+      - name: Test P(NG)Convert
+        run: |
           ./bin/pconvert version
   build-windows-cmake:
     name: Build Windows CMake
@@ -71,4 +75,8 @@ jobs:
         run: |
           pip install --upgrade conan urllib3
           conan install . --build
-          cmake .
+          cmake . -DCMAKE_CL_64=1 -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64 -Wno-dev
+          msbuild ALL_BUILD.vcxproj /P:Configuration=Release
+      - name: Test P(NG)Convert
+        run: |
+          bin/pconvert version
