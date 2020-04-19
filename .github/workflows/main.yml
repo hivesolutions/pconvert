@@ -92,3 +92,21 @@ jobs:
       - name: Test P(NG)Convert
         run: |
           bin/pconvert version
+  build-macos-cmake:
+    name: Build macOS CMake
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build & Install Dependencies
+        run: |
+          pip install --upgrade conan urllib3
+          conan install . --build
+      - name: Setup msbuild
+        uses: microsoft/setup-msbuild@v1.0.0
+      - name: Build P(NG)Convert
+        run: |
+          cmake .
+          make
+      - name: Test P(NG)Convert
+        run: |
+          .bin/pconvert version
