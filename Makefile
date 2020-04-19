@@ -23,7 +23,7 @@ PYTHON_VERSION=2.7
 # from the conan package manager
 CFLAGS+=$(CONAN_CFLAGS)
 CFLAGS+=$(addprefix -I, $(CONAN_INCLUDE_DIRS))
-CFLAGS+= $(addprefix -D, $(CONAN_DEFINES))
+CFLAGS+=$(addprefix -D, $(CONAN_DEFINES))
 LDFLAGS+=$(addprefix -L, $(CONAN_LIB_DIRS))
 LIBS+=$(addprefix -l, $(CONAN_LIBS))
 
@@ -36,6 +36,10 @@ endif
 ifeq ($(DEBUG),1)
   CFLAGS+=-g
   LDFLAGS+=-g
+endif
+
+ifeq ($(EXTENSION),1)
+  CFLAGS+=-DPCONVERT_EXTENSION
 endif
 
 all: $(SOURCES) $(EXECUTABLE)

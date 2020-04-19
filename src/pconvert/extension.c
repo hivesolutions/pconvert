@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifdef PCONVERT_EXTENSION
+
 ERROR_T extension_build_params(PyObject *params_py, params *params) {
     size_t index;
     char *key_s, *value_s, value_b;
@@ -605,4 +607,6 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 }
+#endif
+
 #endif
