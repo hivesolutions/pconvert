@@ -11,6 +11,8 @@ class GlobalTest(unittest.TestCase):
         self.assertEqual(type(pconvert.VERSION), str)
         self.assertEqual(pconvert.VERSION, "0.3.10")
 
+        self.assertEqual(type(pconvert.FEATURES), str)
+
         self.assertEqual(type(pconvert.EXTENSION), bool)
         self.assertEqual(pconvert.EXTENSION, True)
 
