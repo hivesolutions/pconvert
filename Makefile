@@ -29,9 +29,7 @@ LIBS+=$(addprefix -l, $(CONAN_LIBS))
 ifeq ($(SYS),darwin)
   CC=clang
   CPP=clang
-  ifeq ($(OPENCL),1)
-    LDFLAGS+=-framework OpenCL -framework Security
-  endif
+  LDFLAGS+=-framework Security
 endif
 
 ifeq ($(DEBUG),1)
@@ -47,6 +45,11 @@ endif
 
 ifeq ($(OPENCL),1)
   CFLAGS+=-DPCONVERT_OPENCL
+  ifeq ($(SYS),darwin)
+    LDFLAGS+=-framework OpenCL
+  else
+    LIBS+=-lopencl
+  endif
 endif
 
 all: $(SOURCES) $(EXECUTABLE)
