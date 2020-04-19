@@ -9,7 +9,7 @@ find_package(PythonLibs)
 add_definitions(-DNO_PRAGMA_LIB)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-aux_source_directory(src/pconvert/ SOURCES)
+aux_source_directory(src/pconvert SOURCES)
 add_executable(pconvert ${SOURCES})
 
 target_include_directories(pconvert PUBLIC ${PYTHON_INCLUDE_PATH})
