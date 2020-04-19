@@ -857,9 +857,23 @@ ERROR_T pbenchmark(int argc, char **argv) {
     float time;
     char details = TRUE;
 
-    char *algorithms[ALGORITHMS_SIZE] = { "multiplicative", "source_over", "alpha", "disjoint_over", "disjoint_under" };
-    int compression[COMPRESSION_SIZE] = { Z_NO_COMPRESSION, Z_BEST_SPEED, Z_BEST_COMPRESSION };
-    char *compression_s[COMPRESSION_SIZE] = { "Z_NO_COMPRESSION", "Z_BEST_SPEED", "Z_BEST_COMPRESSION" };
+    char *algorithms[ALGORITHMS_SIZE] = {
+        "multiplicative",
+        "source_over",
+        "alpha",
+        "disjoint_over",
+        "disjoint_under"
+    };
+    int compression[COMPRESSION_SIZE] = {
+        Z_NO_COMPRESSION,
+        Z_BEST_SPEED,
+        Z_BEST_COMPRESSION
+    };
+    char *compression_s[COMPRESSION_SIZE] = {
+        "Z_NO_COMPRESSION",
+        "Z_BEST_SPEED",
+        "Z_BEST_COMPRESSION"
+    };
 
 #ifdef PCONVERT_OPENCL
     #define OPENCL_SIZE 2
