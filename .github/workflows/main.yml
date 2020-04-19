@@ -10,7 +10,7 @@ jobs:
     container: gcc:${{ matrix.gcc-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev 
+      - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget
       - run: wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz && tar -zxvf cmake-3.15.2.tar.gz && cd cmake-3.15.2 && ./bootstrap && make && sudo make install
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
@@ -25,7 +25,7 @@ jobs:
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
+      - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget
       - run: wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz && tar -zxvf cmake-3.15.2.tar.gz && cd cmake-3.15.2 && ./bootstrap && make && sudo make install
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
