@@ -86,6 +86,7 @@ ERROR_T blend_kernel(
     char *algorithm,
     params *params
 ) {
+    cl_platform_id platform_id;
     cl_device_id device_id;
     cl_context context;
     cl_command_queue commands;
@@ -98,6 +99,9 @@ ERROR_T blend_kernel(
 
     int rem;
     int error;
+
+    error = clGetPlatformIDs(1, &platform_id, NULL);
+    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to retrieve platform: %d", error); }
 
     error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
