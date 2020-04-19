@@ -652,7 +652,7 @@ ERROR_T copy_image(struct pcv_image *origin, struct pcv_image *target) {
 ERROR_T duplicate_image(struct pcv_image *origin, struct pcv_image *target) {
     int y;
     png_uint_32 rows_size = sizeof(png_bytep) * origin->height;
-    png_uint_32 row_size = png_get_rowbytes(origin->png_ptr, origin->info_ptr);
+    png_uint_32 row_size = (png_uint_32) png_get_rowbytes(origin->png_ptr, origin->info_ptr);
     png_uint_32 buffer_size = row_size * origin->height;
     png_byte *buffer = (png_byte *) malloc(buffer_size);
     copy_image(origin, target);

@@ -13,7 +13,7 @@ struct nlist_t *get_map(char *key) {
 
 struct nlist_t *set_map(char *key, void *value) {
     struct nlist_t *np;
-    unsigned hashval;
+    size_t hashval;
     np = get_map(key);
     if(np == NULL) {
         np = (struct nlist_t *) malloc(sizeof(*np));
