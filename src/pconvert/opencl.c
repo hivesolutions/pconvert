@@ -118,7 +118,7 @@ ERROR_T blend_kernel(
     error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
     if(error != CL_SUCCESS) {
         size_t len;
-        char buffer[2048];
+        char buffer[10240];
         clGetProgramBuildInfo(
             program,
             device_id,
