@@ -99,7 +99,7 @@ ERROR_T blend_kernel(
     int rem;
     int error;
 
-    error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
+    error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_CPU, 1, &device_id, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
 
     context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
