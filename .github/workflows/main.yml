@@ -10,7 +10,9 @@ jobs:
     container: gcc:${{ matrix.gcc-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q python-dev libpng-dev
+      - run: apt-get update && apt-get install -y -q python python-dev libpng-dev
+      - run: pip install conan
+      - run: conan install . --build missing
       - run: make
       - run: ./pconvert version
   build-clang:
@@ -22,6 +24,8 @@ jobs:
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q python-dev libpng-dev
+      - run: apt-get update && apt-get install -y -q python python-dev libpng-dev
+      - run: pip install conan
+      - run: conan install . --build missing
       - run: make CC=clang
       - run: ./pconvert version
