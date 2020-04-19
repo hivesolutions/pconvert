@@ -13,9 +13,14 @@ conan.lock
 conaninfo.txt
 conanbuildinfo.*
 
+CMakeCache.txt
+cmake_install.cmake
+
 /bin
 /dist
 /build
 /pconvert_python.egg-info
 /win32/vs2008ex/*/*
 /assets/demo/result*.png
+
+/CMakeFiles

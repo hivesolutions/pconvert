@@ -3,3 +3,4 @@ libpng/[>1.0]
 
 [generators]
 make
+cmake
