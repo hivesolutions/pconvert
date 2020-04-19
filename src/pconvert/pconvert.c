@@ -852,14 +852,15 @@ ERROR_T pversion(int argc, char **argv) {
     char libpng_version_s[16];
     libpng_version(libpng_version_s);
     printf(
-        "P(NG)Convert %s (%s %s) [%s %s %d bit] [libpng %s] \n",
+        "P(NG)Convert %s (%s %s) [%s %s %d bit] [libpng %s %s] \n",
         PCONVERT_VERSION,
         PCONVERT_COMPILATION_DATE,
         PCONVERT_COMPILATION_TIME,
         PCONVERT_COMPILER,
         PCONVERT_COMPILER_VERSION_STRING,
         (int) PCONVERT_PLATFORM_CPU_BITS,
-        libpng_version_s
+        libpng_version_s,
+        PCONVERT_FEATURES
     );
     printf("Copyright (c) 2008-2020 Hive Solutions Lda. All rights reserved.\n");
     NORMAL;

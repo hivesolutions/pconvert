@@ -18,18 +18,6 @@
 #include <Python.h>
 #endif
 
-#ifdef PCONVERT_EXTENSION
-#define PCONVERT_EXTENSION_V 1
-#else
-#define PCONVERT_EXTENSION_V 0
-#endif
-
-#ifdef PCONVERT_OPENCL
-#define PCONVERT_OPENCL_V 1
-#else
-#define PCONVERT_OPENCL_V 0
-#endif
-
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
 #define PWINDOWS 1
 #else

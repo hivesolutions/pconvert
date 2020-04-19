@@ -610,6 +610,7 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "COMPILER", PCONVERT_COMPILER);
     PyModule_AddStringConstant(pconvert_module, "COMPILER_VERSION", PCONVERT_COMPILER_VERSION_STRING);
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
+    PyModule_AddStringConstant(pconvert_module, "FEATURES", PCONVERT_FEATURES);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
     PyModule_AddObject(pconvert_module, "EXTENSION", extension);
     PyModule_AddObject(pconvert_module, "OPENCL", opencl);

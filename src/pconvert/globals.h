@@ -25,6 +25,24 @@
 
 #define PCONVERT_PLATFORM_CPU_BITS sizeof(void *) * 8
 
+#ifdef PCONVERT_EXTENSION
+#define PCONVERT_EXTENSION_V 1
+#define PCONVERT_EXTENSION_S " python"
+#else
+#define PCONVERT_EXTENSION_V 0
+#define PCONVERT_EXTENSION_S ""
+#endif
+
+#ifdef PCONVERT_OPENCL
+#define PCONVERT_OPENCL_V 1
+#define PCONVERT_OPENCL_S " opencl"
+#else
+#define PCONVERT_OPENCL_V 0
+#define PCONVERT_OPENCL_S ""
+#endif
+
+#define PCONVERT_FEATURES "base" PCONVERT_EXTENSION_S PCONVERT_OPENCL_S
+
 #define PCONVERT_ALGORITHMS "multiplicative", "source_over", "destination_over",\
     "mask_top", "first_top", "first_bottom", "disjoint_over", "disjoint_under", "disjoint_debug"
 
