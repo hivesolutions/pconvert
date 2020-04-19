@@ -787,7 +787,7 @@ float pbenchmark_algorithm(
     float end_time;
     float time_elapsed;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    EXCEPT_S(compose_images_extra(base_path, algorithm, params, background, compression, filter, use_opencl));
+    EXCEPT_P(compose_images_extra(base_path, algorithm, params, background, compression, filter, use_opencl));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed = end_time - start_time;
     return time_elapsed;
