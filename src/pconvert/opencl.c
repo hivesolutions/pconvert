@@ -138,6 +138,7 @@ ERROR_T blend_kernel(
     mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY, size, NULL, NULL);
 
     error = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
+    if(error != CL_SUCCESS){ RAISE_M("[blend_kernel] Failed to write to source array"); }
     error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
     if(error != CL_SUCCESS){ RAISE_M("[blend_kernel] Failed to write to source array"); }
 
