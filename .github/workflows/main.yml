@@ -10,8 +10,10 @@ jobs:
     container: gcc:${{ matrix.gcc-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q wget libssl-dev
-      - run: wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
+      - name: Build & Install CMake
+        run: |
+          apt-get update && apt-get install -y -q wget libssl-dev
+          wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
@@ -26,8 +28,10 @@ jobs:
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get update && apt-get install -y -q wget libssl-dev
-      - run: wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
+      - name: Build & Install CMake
+        run: |
+          apt-get update && apt-get install -y -q wget libssl-dev
+          wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget libssl-dev
       - run: pip install --upgrade conan urllib3
       - run: conan install . --build
