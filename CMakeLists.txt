@@ -7,6 +7,7 @@ conan_basic_setup()
 find_package(PythonLibs)
 
 add_definitions(-DNO_PRAGMA_LIB)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 add_executable(pconvert src/pconvert/stdafx.c src/pconvert/pconvert.c src/pconvert/structs.c src/pconvert/util.c src/pconvert/opencl.c)
 
