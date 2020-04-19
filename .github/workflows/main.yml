@@ -107,4 +107,4 @@ jobs:
           make
       - name: Test P(NG)Convert
         run: |
-          .bin/pconvert version
+          ./bin/pconvert version
