@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
       - run: pip install --upgrade conan urllib3
-      - run: conan install . --build missing
+      - run: conan install . --build
       - run: make
       - run: ./pconvert version
   build-clang:
@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v1
       - run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
       - run: pip install --upgrade conan urllib3
-      - run: conan install . --build missing
+      - run: conan install . --build
       - run: make CC=clang
       - run: ./pconvert version
