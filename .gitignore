@@ -15,6 +15,7 @@ conanbuildinfo.*
 
 CMakeCache.txt
 cmake_install.cmake
+/ALL_BUILD.*
 
 /bin
 /dist
@@ -23,4 +24,11 @@ cmake_install.cmake
 /win32/vs2008ex/*/*
 /assets/demo/result*.png
 
+/win32
+/Debug
+/Release
 /CMakeFiles
+/pconvert.dir
+/ALL_BUILD.*
+/ZERO_CHECK.*
+/pconvert.*
