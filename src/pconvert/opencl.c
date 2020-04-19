@@ -130,8 +130,8 @@ ERROR_T blend_kernel(
     kernel = clCreateKernel(program, algorithm, &error);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create kernel: %d", error); }
 
-    mem_bottom = clCreateBuffer(context, CL_MEM_READ_WRITE,  size, NULL, NULL);
-    mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY,  size, NULL, NULL);
+    mem_bottom = clCreateBuffer(context, CL_MEM_READ_WRITE, size, NULL, NULL);
+    mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY, size, NULL, NULL);
 
     error = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
     error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
@@ -156,7 +156,7 @@ ERROR_T blend_kernel(
     global = local * rem;
 
     clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
-    clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL );
+    clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
 
     clFinish(commands);
 
