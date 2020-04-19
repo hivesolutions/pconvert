@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.0.0)
 project(pconvert)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
