@@ -9,7 +9,8 @@ find_package(PythonLibs)
 add_definitions(-DNO_PRAGMA_LIB)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-add_executable(pconvert src/pconvert/stdafx.c src/pconvert/pconvert.c src/pconvert/structs.c src/pconvert/util.c src/pconvert/opencl.c)
+aux_source_directory(src/pconvert/ SOURCES)
+add_executable(pconvert ${SOURCES})
 
 target_include_directories(pconvert PUBLIC ${PYTHON_INCLUDE_PATH})
 target_link_libraries(pconvert ${CONAN_LIBS} ${PYTHON_LIBRARY})
