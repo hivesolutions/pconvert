@@ -86,7 +86,7 @@
 #define BENCHMARK(benchmark, start, target, ...)\
     start = (float) clock() / CLOCKS_PER_SEC;\
     __VA_ARGS__;\
-    if (benchmark != NULL) { target = start; }\
+    if (benchmark != NULL) { target += ((float) clock() / CLOCKS_PER_SEC) - start; }\
     while(FALSE)
 
 #define Z_NO_COMPRESSION 0

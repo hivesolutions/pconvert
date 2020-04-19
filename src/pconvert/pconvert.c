@@ -832,16 +832,16 @@ float pbenchmark_algorithm(
     char *background,
     int compression,
     int filter,
-    char use_opencl
+    char use_opencl,
+    struct benchmark *benchmark
 ) {
     float start_time;
     float end_time;
     float time_elapsed;
-    struct benchmark benchmark;
     start_time = (float) clock() / CLOCKS_PER_SEC;
     EXCEPT_P(compose_images_extra(
         base_path, algorithm, params, background, compression,
-        filter, use_opencl, &benchmark
+        filter, use_opencl, benchmark
     ));
     end_time = (float) clock() / CLOCKS_PER_SEC;
     time_elapsed = end_time - start_time;
@@ -851,8 +851,12 @@ float pbenchmark_algorithm(
 ERROR_T pbenchmark(int argc, char **argv) {
     #define ALGORITHMS_SIZE 5
     #define COMPRESSION_SIZE 3
+
+    struct benchmark benchmark;
     size_t index, index_j, index_k;
     float time;
+    char details = TRUE;
+
     char *algorithms[ALGORITHMS_SIZE] = { "multiplicative", "source_over", "alpha", "disjoint_over", "disjoint_under" };
     int compression[COMPRESSION_SIZE] = { Z_NO_COMPRESSION, Z_BEST_SPEED, Z_BEST_COMPRESSION };
     char *compression_s[COMPRESSION_SIZE] = { "Z_NO_COMPRESSION", "Z_BEST_SPEED", "Z_BEST_COMPRESSION" };
@@ -872,8 +876,24 @@ ERROR_T pbenchmark(int argc, char **argv) {
     for(index = 0; index < ALGORITHMS_SIZE; index++) {
         for(index_j = 0; index_j < COMPRESSION_SIZE; index_j++) {
             for(index_k = 0; index_k < OPENCL_SIZE; index_k++) {
-                time = pbenchmark_algorithm(argv[2], algorithms[index], NULL, "alpha", compression[index_j], 0, use_opencl[index_k]);
-                printf("%s %s %s: %0.2f ms\n", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time * 1000);
+                benchmark.blend_time = 0;
+                benchmark.read_png_time = 0;
+                benchmark.write_png_time = 0;
+                time = pbenchmark_algorithm(
+                    argv[2], algorithms[index], NULL, "alpha",
+                    compression[index_j], 0, use_opencl[index_k],
+                    &benchmark
+                );
+                printf("%s %s %s: %0.2fms", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time * 1000.0f);
+                if(details) {
+                    printf(
+                        " (blend %0.2fms, read %0.2fms, write %0.2fms)",
+                        benchmark.blend_time * 1000.0f,
+                        benchmark.read_png_time * 1000.0f,
+                        benchmark.write_png_time * 1000.0f
+                    );
+                }
+                printf("\n");
             }
         }
         printf("\n");
