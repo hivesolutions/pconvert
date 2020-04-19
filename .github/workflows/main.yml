@@ -16,7 +16,7 @@ jobs:
           wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - name: Build P(NG)Convert
         run: |
-          run: apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
+          apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
           pip install --upgrade conan urllib3
           conan install . --build
           make
