@@ -103,7 +103,7 @@ ERROR_T blend_kernel(
     error = clGetPlatformIDs(1, &platform_id, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to retrieve platform: %d", error); }
 
-    error = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
+    error = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
 
     context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
