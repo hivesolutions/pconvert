@@ -29,7 +29,9 @@ LIBS+=$(addprefix -l, $(CONAN_LIBS))
 ifeq ($(SYS),darwin)
   CC=clang
   CPP=clang
-  LDFLAGS+=-framework OpenCL -framework Security
+  ifeq ($(OPENCL),1)
+    LDFLAGS+=-framework OpenCL -framework Security
+  endif
 endif
 
 ifeq ($(DEBUG),1)
@@ -41,6 +43,10 @@ ifeq ($(EXTENSION),1)
   CFLAGS+=-DPCONVERT_EXTENSION -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
   LIBS+=-lpython
   PYTHON_VERSION=2.7
+endif
+
+ifeq ($(OPENCL),1)
+  CFLAGS+=-DPCONVERT_OPENCL
 endif
 
 all: $(SOURCES) $(EXECUTABLE)
