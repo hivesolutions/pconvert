@@ -101,8 +101,6 @@ jobs:
         run: |
           pip install --upgrade conan urllib3
           conan install . --build
-      - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1.0.0
       - name: Build P(NG)Convert
         run: |
           cmake .
