@@ -11,10 +11,12 @@
 
 #include <png.h>
 
+#ifdef PCONVERT_EXTENSION
 #define PYTHON_27
 #define PYTHON_THREADS
 
 #include <Python.h>
+#endif
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
 #define PWINDOWS 1

@@ -7,17 +7,16 @@ CP=cp
 RM=rm
 SYS=posix
 OPTIMIZATION=-O3 -finline-functions -Winline
-CFLAGS=$(OPTIMIZATION) -c -Wall -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
+CFLAGS=$(OPTIMIZATION) -c -Wall
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
 RMFLAGS=-rf
-LIBS=-lm -lpng -lpython
+LIBS=-lm -lpng
 PREFIX=/usr
 SRC_DIR=src/pconvert
 SOURCES=$(wildcard $(SRC_DIR)/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=pconvert
-PYTHON_VERSION=2.7
 
 # updates the internal variables with the values comming
 # from the conan package manager
@@ -39,7 +38,9 @@ ifeq ($(DEBUG),1)
 endif
 
 ifeq ($(EXTENSION),1)
-  CFLAGS+=-DPCONVERT_EXTENSION
+  CFLAGS+=-DPCONVERT_EXTENSION -I/usr/local/include -I/usr/include/python$(PYTHON_VERSION) -I/usr/local/include/python$(PYTHON_VERSION) $(shell python-config --includes)
+  LIBS+=-lpython
+  PYTHON_VERSION=2.7
 endif
 
 all: $(SOURCES) $(EXECUTABLE)
