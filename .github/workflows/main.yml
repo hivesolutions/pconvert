@@ -95,7 +95,7 @@ jobs:
       - name: Test P(NG)Convert
         run: |
           bin/pconvert version
-          bin/pconvert benchmark %cd%\assets\demo\
+          bin/pconvert benchmark ((Get-Item -Path ".\").FullName + "\assets\demo\")
   build-macos-cmake:
     name: Build macOS CMake
     runs-on: macos-latest
