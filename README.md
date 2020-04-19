@@ -70,6 +70,8 @@ This package makes use of the [Conan](https://conan.io) package manager to use r
 conan install . --build missing
 ```
 
+It's important to note that the usage of Conan is not mandatory and it's still possible to build P(NG)Convert without it.
+
 ## License
 
 PConvert is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
