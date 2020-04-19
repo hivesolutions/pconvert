@@ -24,7 +24,9 @@ cmake_install.cmake
 /win32/vs2008ex/*/*
 /assets/demo/result*.png
 
+/x64
 /win32
+/lib
 /Debug
 /Release
 /CMakeFiles

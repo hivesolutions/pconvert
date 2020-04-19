@@ -23,8 +23,10 @@
 #endif
 
 #ifdef PWINDOWS
+#ifndef NO_PRAGMA_LIB
 #pragma comment(lib, "libpng.lib")
 #pragma comment(lib, "zlib.lib")
+#endif
 #define FINLINE __inline
 #define EXTERNAL_PREFIX __declspec(dllexport)
 #endif

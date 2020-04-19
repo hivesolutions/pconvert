@@ -73,6 +73,16 @@ conan install . --build missing
 
 It's important to note that the usage of Conan is not mandatory and it's still possible to build P(NG)Convert without it.
 
+## CMake
+
+### Windows
+
+```bash
+conan install . --build missing
+cmake . -DCMAKE_CL_64=1 -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64 -Wno-dev
+msbuild ALL_BUILD.vcxproj /P:Configuration=Release
+```
+
 ## License
 
 PConvert is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
