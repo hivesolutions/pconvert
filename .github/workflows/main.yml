@@ -79,7 +79,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Install Dependencies
+      - name: Build & Install Dependencies
         run: |
           pip install --upgrade conan urllib3
           conan install . --build
