@@ -564,6 +564,8 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+    PyModule_AddStringConstant(pconvert_module, "COMPILER", PCONVERT_COMPILER);
+    PyModule_AddStringConstant(pconvert_module, "COMPILER_VERSION", PCONVERT_COMPILER_VERSION_STRING);
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 
@@ -598,6 +600,8 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_DATE", PCONVERT_COMPILATION_DATE);
     PyModule_AddStringConstant(pconvert_module, "COMPILATION_TIME", PCONVERT_COMPILATION_TIME);
+    PyModule_AddStringConstant(pconvert_module, "COMPILER", PCONVERT_COMPILER);
+    PyModule_AddStringConstant(pconvert_module, "COMPILER_VERSION", PCONVERT_COMPILER_VERSION_STRING);
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
 }
