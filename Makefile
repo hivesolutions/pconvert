@@ -48,7 +48,7 @@ ifeq ($(OPENCL),1)
   ifeq ($(SYS),darwin)
     LDFLAGS+=-framework OpenCL
   else
-    LIBS+=-lopencl
+    LIBS+=-lOpenCL
   endif
 endif
 
