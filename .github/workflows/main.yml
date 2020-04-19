@@ -83,6 +83,8 @@ jobs:
         run: |
           pip install --upgrade conan urllib3
           conan install . --build
+      - name: Setup msbuild
+        uses: warrenbuckley/Setup-MSBuild@v1
       - name: Build P(NG)Convert
         run: |
           cmake . -DCMAKE_CL_64=1 -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64
