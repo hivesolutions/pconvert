@@ -761,7 +761,7 @@ ERROR_T compose_images_extra(
 
     BENCHMARK(
         benchmark, start_time, benchmark->write_png_time,
-        sprintf(name, "result_%s_%s.png", algorithm, background);
+        sprintf(name, "result_%s_%s_%s.png", algorithm, background, use_opencl ? "opencl" : "cpu");
         VALIDATE(write_png_extra(&final, FALSE, join_path(base_path, name, path), compression, filter));
         VALIDATE(release_image(&final))
     );
