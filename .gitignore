@@ -2,6 +2,7 @@
 *.ncb
 *.user
 *.suo
+*.pyc
 
 .DS_Store
 
