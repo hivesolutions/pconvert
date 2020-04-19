@@ -2,6 +2,17 @@
 
 #ifdef PCONVERT_OPENCL
 
+typedef struct opencl_ctx {
+    cl_platform_id platform_id;
+    cl_device_id device_id;
+    cl_context context;
+    cl_program program;
+    cl_kernel kernel;
+    size_t local;
+} opencl_ctx_t;
+
+struct opencl_ctx opencl_ctx = { NULL, NULL, NULL, NULL, NULL, 0 };
+
 cl_program load_program(cl_context context, char *algorithm, int *error) {
     cl_program program;
     FILE *file;
@@ -13,7 +24,7 @@ cl_program load_program(cl_context context, char *algorithm, int *error) {
     join_path(path, ".cl", path);
 
     file = fopen(path, "rb");
-    if (!file) {
+    if(!file) {
         fprintf(stderr, "Failed to load kernel.\n %s\n", path);
         (*error) = ERROR;
         return NULL;
@@ -100,47 +111,87 @@ ERROR_T blend_kernel(
     int rem;
     int error;
 
-    error = clGetPlatformIDs(1, &platform_id, NULL);
-    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to retrieve platform: %d", error); }
+    if(opencl_ctx.platform_id == NULL) {
+        error = clGetPlatformIDs(1, &platform_id, NULL);
+        if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to retrieve platform: %d", error); }
+        opencl_ctx.platform_id = platform_id;
+    } else {
+        platform_id = opencl_ctx.platform_id;
+    }
 
-    error = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
-    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
+    if(opencl_ctx.device_id == NULL) {
+        error = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
+        if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create a device group: %d", error); }
+        opencl_ctx.platform_id = platform_id;
+    } else {
+        device_id = opencl_ctx.device_id;
+    }
 
-    context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
-    if(!context) { RAISE_F("[blend_kernel] Failed to create a compute context: %d", error); }
+    if(opencl_ctx.context == NULL) {
+        context = clCreateContext(0, 1, &device_id, NULL, NULL, &error);
+        if(!context) { RAISE_F("[blend_kernel] Failed to create a compute context: %d", error); }
+        opencl_ctx.context = context;
+    } else {
+        context = opencl_ctx.context;
+    }
+
+    if(opencl_ctx.program == NULL) {
+        program = load_program(context, algorithm, &error);
+        if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create the program: %d", error); }
+
+        error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+        if(error != CL_SUCCESS) {
+            size_t len;
+            char buffer[10240];
+            clGetProgramBuildInfo(
+                program,
+                device_id,
+                CL_PROGRAM_BUILD_LOG,
+                sizeof(buffer),
+                buffer,
+                &len
+            );
+            printf("%s\n", buffer);
+            RAISE_F("[blend_kernel] Failed to build the program: %d", error);
+        }
+        opencl_ctx.program = program;
+    } else {
+        program = opencl_ctx.program;
+    }
+
+    if(opencl_ctx.kernel == NULL) {
+        kernel = clCreateKernel(program, algorithm, &error);
+        if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create kernel: %d", error); }
+        opencl_ctx.kernel = kernel;
+    } else {
+        kernel = opencl_ctx.kernel;
+    }
+
+    if(opencl_ctx.local == 0) {
+        error = clGetKernelWorkGroupInfo(
+            kernel,
+            device_id,
+            CL_KERNEL_WORK_GROUP_SIZE,
+            sizeof(local),
+            &local,
+            NULL
+        );
+        if(error != CL_SUCCESS){ RAISE_F("[blend_kernel] Failed to retrieve work group info: %d", error); }
+        opencl_ctx.local = local;
+    } else {
+        local = opencl_ctx.local;
+    }
 
     commands = clCreateCommandQueue(context, device_id, 0, &error);
     if(!commands) { RAISE_F("[blend_kernel] Failed to create a command queue: %d", error); }
-
-    program = load_program(context, algorithm, &error);
-    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create the program: %d", error); }
-
-    error = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-    if(error != CL_SUCCESS) {
-        size_t len;
-        char buffer[10240];
-        clGetProgramBuildInfo(
-            program,
-            device_id,
-            CL_PROGRAM_BUILD_LOG,
-            sizeof(buffer),
-            buffer,
-            &len
-        );
-        printf("%s\n", buffer);
-        RAISE_F("[blend_kernel] Failed to build the program: %d", error);
-    }
-
-    kernel = clCreateKernel(program, algorithm, &error);
-    if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to create kernel: %d", error); }
 
     mem_bottom = clCreateBuffer(context, CL_MEM_READ_WRITE, size, NULL, NULL);
     mem_top = clCreateBuffer(context, CL_MEM_READ_ONLY, size, NULL, NULL);
 
     error = clEnqueueWriteBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
-    if(error != CL_SUCCESS){ RAISE_M("[blend_kernel] Failed to write to source array"); }
+    if(error != CL_SUCCESS){ RAISE_F("[blend_kernel] Failed to write to source array: %d", error); }
     error = clEnqueueWriteBuffer(commands, mem_top, CL_TRUE, 0, size, top, 0, NULL, NULL);
-    if(error != CL_SUCCESS){ RAISE_M("[blend_kernel] Failed to write to source array"); }
+    if(error != CL_SUCCESS){ RAISE_F("[blend_kernel] Failed to write to source array: %d", error); }
 
     error = clSetKernelArg(kernel, 0, sizeof(cl_mem), &mem_bottom);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
@@ -149,34 +200,32 @@ ERROR_T blend_kernel(
     error = clSetKernelArg(kernel, 2, sizeof(int), &size);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
 
-    error = clGetKernelWorkGroupInfo(
-        kernel,
-        device_id,
-        CL_KERNEL_WORK_GROUP_SIZE,
-        sizeof(local),
-        &local,
-        NULL
-    );
-    if(error != CL_SUCCESS){ RAISE_F("[blend_kernel] Failed to retrieve work group info: %d", error); }
-
+    /* calculates the total amount of memory that should be allocated on the global
+    area of the chunk set (required computation) */
     rem = size / local;
     if(local % rem != 0) { rem++; }
     global = local * rem;
 
+    /* sends the kernel to the target device and makes it ready for the execution */
     error = clEnqueueNDRangeKernel(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed enqueue range kernel: %d", error); }
+
     error = clEnqueueReadBuffer(commands, mem_bottom, CL_TRUE, 0, size, bottom, 0, NULL, NULL);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to enqueue read buffer: %d", error); }
 
+    /* waits until all the pending command are executed on the remote device
+    effectively executing all the pending logic in buffer */
     error = clFinish(commands);
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to finish OpenCL commands: %d", error); }
 
     clReleaseMemObject(mem_bottom);
     clReleaseMemObject(mem_top);
-    clReleaseProgram(program);
-    clReleaseKernel(kernel);
     clReleaseCommandQueue(commands);
-    clReleaseContext(context);
+
+    /* TODO release this memory somehow */
+    //clReleaseKernel(kernel);
+    //clReleaseProgram(program);
+    //clReleaseContext(context);
 
     NORMAL;
 }
