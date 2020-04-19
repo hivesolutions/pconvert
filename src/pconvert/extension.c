@@ -579,7 +579,7 @@ PyMODINIT_FUNC PyInit_pconvert(void) {
 PyMODINIT_FUNC initpconvert(void) {
     /* allocates space for the module object to hold the
     module to be created */
-    PyObject *pconvert_module, *algorithms;
+    PyObject *pconvert_module, *algorithms, *extension, *opencl;
 
     /* allocates space for the version string of the libpng
     library to be exposed to the module */
@@ -597,6 +597,11 @@ PyMODINIT_FUNC initpconvert(void) {
     supported by the pconvert infra-structure */
     algorithms = Py_BuildValue("sssssssss", PCONVERT_ALGORITHMS);
 
+    /* creates both the extension and teh opencl boolean values to indicate
+    the existence or not of theses features to the extension*/
+    extension = PyBool_FromLong(PCONVERT_EXTENSION_V);
+    opencl = PyBool_FromLong(PCONVERT_OPENCL_V);
+
     /* adds a series of constants to the module that are
     going to be exposed to the developer */
     PyModule_AddStringConstant(pconvert_module, "VERSION", PCONVERT_VERSION);
@@ -606,6 +611,8 @@ PyMODINIT_FUNC initpconvert(void) {
     PyModule_AddStringConstant(pconvert_module, "COMPILER_VERSION", PCONVERT_COMPILER_VERSION_STRING);
     PyModule_AddStringConstant(pconvert_module, "LIBPNG_VERSION", libpng_version_s);
     PyModule_AddObject(pconvert_module, "ALGORITHMS", algorithms);
+    PyModule_AddObject(pconvert_module, "EXTENSION", extension);
+    PyModule_AddObject(pconvert_module, "OPENCL", opencl);
 }
 #endif
 
