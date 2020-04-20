@@ -855,6 +855,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
     struct benchmark benchmark;
     size_t index, index_j, index_k;
     float time;
+    char label[128];
     char details = TRUE;
 
     char *algorithms[ALGORITHMS_SIZE] = {
@@ -898,7 +899,8 @@ ERROR_T pbenchmark(int argc, char **argv) {
                     compression[index_j], 0, use_opencl[index_k],
                     &benchmark
                 );
-                printf("%s %s %s: %0.2fms", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time * 1000.0f);
+                sprintf(label, "%s %s %s", algorithms[index], compression_s[index_j], use_opencl_s[index_k]);
+                printf("%-42s%0.2fms", label, time * 1000.0f);
                 if(details) {
                     printf(
                         " (blend %0.2fms, read %0.2fms, write %0.2fms)",
