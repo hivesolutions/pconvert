@@ -13,7 +13,7 @@ cl_program load_program(cl_context context, char *algorithm, int *error) {
     join_path(path, ".cl", path);
 
     file = fopen(path, "rb");
-    if (!file) {
+    if(!file) {
         fprintf(stderr, "Failed to load kernel.\n %s\n", path);
         (*error) = ERROR;
         return NULL;

@@ -839,7 +839,7 @@ float pbenchmark_algorithm(
     float end_time;
     float time_elapsed;
     start_time = (float) clock() / CLOCKS_PER_SEC;
-    EXCEPT_P(compose_images_extra(
+    EXCEPT_S(compose_images_extra(
         base_path, algorithm, params, background, compression,
         filter, use_opencl, benchmark
     ));
@@ -855,6 +855,9 @@ ERROR_T pbenchmark(int argc, char **argv) {
     struct benchmark benchmark;
     size_t index, index_j, index_k;
     float time;
+    char label[128];
+    char time_s[64];
+    char is_success = TRUE;
     char details = TRUE;
 
     char *algorithms[ALGORITHMS_SIZE] = {
@@ -898,8 +901,12 @@ ERROR_T pbenchmark(int argc, char **argv) {
                     compression[index_j], 0, use_opencl[index_k],
                     &benchmark
                 );
-                printf("%s %s %s: %0.2fms", algorithms[index], compression_s[index_j], use_opencl_s[index_k], time * 1000.0f);
-                if(details) {
+                is_success = time >= 0.0f;
+                sprintf(label, "%s %s %s", algorithms[index], compression_s[index_j], use_opencl_s[index_k]);
+                if (is_success) sprintf(time_s, "%0.2fms", time * 1000.0f);
+                else sprintf(time_s, "ERROR!");
+                printf("%-42s %s", label, time_s);
+                if(details == TRUE && is_success == TRUE) {
                     printf(
                         " (blend %0.2fms, read %0.2fms, write %0.2fms)",
                         benchmark.blend_time * 1000.0f,
