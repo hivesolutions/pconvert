@@ -38,7 +38,7 @@ ERROR_T libpng_version(char *buffer) {
     /* retrieves the libpng version value and then extracts
     the multiple parts from it */
     version = png_access_version_number();
-    sprintf(version_s, "%06d", version);
+    sprintf(version_s, "%06d", (int) version);
 
     memcpy(major_s, &version_s[0], 2);
     memcpy(medium_s, &version_s[2], 2);
