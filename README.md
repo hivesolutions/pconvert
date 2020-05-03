@@ -75,6 +75,14 @@ It's important to note that the usage of Conan is not mandatory and it's still p
 
 ## CMake
 
+### Linux & MacOS
+
+```bash
+conan install . --build missing
+cmake .
+make
+```
+
 ### Windows
 
 ```bash
