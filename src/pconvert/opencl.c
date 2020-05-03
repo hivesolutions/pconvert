@@ -201,7 +201,8 @@ ERROR_T blend_kernel(
     if(error != CL_SUCCESS) { RAISE_F("[blend_kernel] Failed to set arguments: %d", error); }
 
     /* calculates the total amount of memory that should be allocated on the global
-    area of the chunk set (required computation) */
+    area of the chunk set (required computation) this computation takes into account
+    the total number of cores available */
     rem = size / local;
     if(local % rem != 0) { rem++; }
     global = local * rem;
