@@ -12,11 +12,12 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install CMake
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q wget libssl-dev
+          apt-get update && apt-get install -y -q wget libssl-dev
           wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - name: Build & Install Dependencies
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q python python-pip python-dev libpng-dev
+          apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
+          pip install --upgrade pip distutils
           pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
@@ -37,11 +38,12 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install CMake
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q wget libssl-dev
+          apt-get update && apt-get install -y -q wget libssl-dev
           wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - name: Build & Install Dependencies
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q python python-pip python-dev libpng-dev wget libssl-dev
+          apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev wget libssl-dev
+          pip install --upgrade pip distutils
           pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
@@ -62,11 +64,12 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install CMake
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q wget libssl-dev
+          apt-get update && apt-get install -y -q wget libssl-dev
           wget https://github.com/Kitware/CMake/releases/download/v3.16.6/cmake-3.16.6.tar.gz && tar -zxvf cmake-3.16.6.tar.gz && cd cmake-3.16.6 && ./bootstrap && make && make install
       - name: Build & Install Dependencies
         run: |
-          apt-get update && apt-get -y -q upgrade && apt-get install -y -q python python-pip python-dev libpng-dev
+          apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
+          pip install --upgrade pip distutils
           pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
@@ -84,6 +87,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install Dependencies
         run: |
+          pip install --upgrade pip distutils
           pip install --upgrade conan urllib3
           conan install . --build
       - name: Setup msbuild
@@ -103,6 +107,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install Dependencies
         run: |
+          pip install --upgrade pip distutils
           pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
