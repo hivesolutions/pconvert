@@ -17,8 +17,7 @@ jobs:
       - name: Build & Install Dependencies
         run: |
           apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
-          curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py "pip<20"
-          pip install --upgrade conan urllib3
+          pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
@@ -44,7 +43,7 @@ jobs:
         run: |
           apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py "pip<20"
-          pip install --upgrade conan urllib3
+          pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
@@ -70,7 +69,7 @@ jobs:
         run: |
           apt-get update && apt-get install -y -q python python-pip python-dev libpng-dev
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py "pip<20"
-          pip install --upgrade conan urllib3
+          pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
@@ -88,7 +87,7 @@ jobs:
       - name: Build & Install Dependencies
         run: |
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py "pip<20"
-          pip install --upgrade conan urllib3
+          pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Setup msbuild
         uses: microsoft/setup-msbuild@v1.0.0
@@ -108,7 +107,7 @@ jobs:
       - name: Build & Install Dependencies
         run: |
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py "pip<20"
-          pip install --upgrade conan urllib3
+          pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
