@@ -853,10 +853,11 @@ ERROR_T pbenchmark(int argc, char **argv) {
     #define COMPRESSION_SIZE 3
 
     struct benchmark benchmark;
-    size_t index, index_j, index_k;
-    float time;
+    size_t index, index_j, index_k, index_c;
+    float time, result, total = 0.0f;
     char label[128];
     char time_s[64];
+    char count = 1;
     char is_success = TRUE;
     char details = TRUE;
 
@@ -888,24 +889,33 @@ ERROR_T pbenchmark(int argc, char **argv) {
     char *use_opencl_s[OPENCL_SIZE] = { "CPU" };
 #endif
 
-    if(argc != 3) { RAISE_M("Usage: pconvert benchmark <directory>"); }
+    if(argc < 3) { RAISE_M("Usage: pconvert benchmark <directory> [count]"); }
+    if(argc > 3) { count = atoi(argv[3]); }
 
     for(index = 0; index < ALGORITHMS_SIZE; index++) {
         for(index_j = 0; index_j < COMPRESSION_SIZE; index_j++) {
             for(index_k = 0; index_k < OPENCL_SIZE; index_k++) {
+                time = 0.0f;
                 benchmark.blend_time = 0;
                 benchmark.read_png_time = 0;
                 benchmark.write_png_time = 0;
-                time = pbenchmark_algorithm(
-                    argv[2], algorithms[index], NULL, "alpha",
-                    compression[index_j], 0, use_opencl[index_k],
-                    &benchmark
-                );
-                is_success = time >= 0.0f;
                 sprintf(label, "%s %s %s", algorithms[index], compression_s[index_j], use_opencl_s[index_k]);
+                printf("%-42s ", label);
+                fflush(stdout);
+                for(index_c = 0; index_c < count; index_c++) {
+                    result = pbenchmark_algorithm(
+                        argv[2], algorithms[index], NULL, "alpha",
+                        compression[index_j], 0, use_opencl[index_k],
+                        &benchmark
+                    );
+                    time += result;
+                    total += result;
+                    is_success = result >= 0.0f;
+                    if (!is_success) break;
+                }
                 if (is_success) sprintf(time_s, "%0.2fms", time * 1000.0f);
                 else sprintf(time_s, "ERROR!");
-                printf("%-42s %s", label, time_s);
+                printf(time_s);
                 if(details == TRUE && is_success == TRUE) {
                     printf(
                         " (blend %0.2fms, read %0.2fms, write %0.2fms)",
@@ -919,6 +929,8 @@ ERROR_T pbenchmark(int argc, char **argv) {
         }
         printf("\n");
     }
+
+    printf("total %0.2fms\n", total * 1000.0f);
 
     NORMAL;
 }
