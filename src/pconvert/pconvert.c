@@ -81,8 +81,8 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_uint_32 buffer_size;
     png_uint_32 row_size;
 
-    /* opens the file and tests for it being a PNG, this is required
-    to avoid possible problems while handling improper files */
+    /* opens the file and tests for proper opening, this is required
+    to avoid possible problems while handling improper file reading */
 #ifdef _MSC_VER
     wchar_t file_name_w[1024];
     swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
@@ -93,6 +93,9 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     if(!fp) {
         RAISE_F("[read_png] File %s could not be opened for reading", file_name);
     }
+
+    /* tries to read the PNG signature from the file and in case it's
+    not valid raises an error indicating so */
     count = fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8) || count != 8) {
         RAISE_F("[read_png] File %s is not recognized as a PNG file", file_name);
@@ -852,11 +855,12 @@ ERROR_T pbenchmark(int argc, char **argv) {
     #define ALGORITHMS_SIZE 5
     #define COMPRESSION_SIZE 3
 
-    struct benchmark benchmark;
-    size_t index, index_j, index_k;
-    float time;
+    struct benchmark benchmark, benchmark_total = { 0, 0, 0};
+    size_t index, index_j, index_k, index_c;
+    float time, result, total = 0.0f;
     char label[128];
     char time_s[64];
+    char count = 1;
     char is_success = TRUE;
     char details = TRUE;
 
@@ -888,24 +892,33 @@ ERROR_T pbenchmark(int argc, char **argv) {
     char *use_opencl_s[OPENCL_SIZE] = { "CPU" };
 #endif
 
-    if(argc != 3) { RAISE_M("Usage: pconvert benchmark <directory>"); }
+    if(argc < 3) { RAISE_M("Usage: pconvert benchmark <directory> [count]"); }
+    if(argc > 3) { count = atoi(argv[3]); }
 
     for(index = 0; index < ALGORITHMS_SIZE; index++) {
         for(index_j = 0; index_j < COMPRESSION_SIZE; index_j++) {
             for(index_k = 0; index_k < OPENCL_SIZE; index_k++) {
+                time = 0.0f;
                 benchmark.blend_time = 0;
                 benchmark.read_png_time = 0;
                 benchmark.write_png_time = 0;
-                time = pbenchmark_algorithm(
-                    argv[2], algorithms[index], NULL, "alpha",
-                    compression[index_j], 0, use_opencl[index_k],
-                    &benchmark
-                );
-                is_success = time >= 0.0f;
                 sprintf(label, "%s %s %s", algorithms[index], compression_s[index_j], use_opencl_s[index_k]);
+                printf("%-42s ", label);
+                fflush(stdout);
+                for(index_c = 0; index_c < (size_t) count; index_c++) {
+                    result = pbenchmark_algorithm(
+                        argv[2], algorithms[index], NULL, "alpha",
+                        compression[index_j], 0, use_opencl[index_k],
+                        &benchmark
+                    );
+                    time += result;
+                    total += result;
+                    is_success = result >= 0.0f;
+                    if (!is_success) break;
+                }
                 if (is_success) sprintf(time_s, "%0.2fms", time * 1000.0f);
                 else sprintf(time_s, "ERROR!");
-                printf("%-42s %s", label, time_s);
+                printf("%s", time_s);
                 if(details == TRUE && is_success == TRUE) {
                     printf(
                         " (blend %0.2fms, read %0.2fms, write %0.2fms)",
@@ -914,11 +927,25 @@ ERROR_T pbenchmark(int argc, char **argv) {
                         benchmark.write_png_time * 1000.0f
                     );
                 }
+                benchmark_total.blend_time += benchmark.blend_time;
+                benchmark_total.read_png_time += benchmark.read_png_time;
+                benchmark_total.write_png_time += benchmark.read_png_time;
                 printf("\n");
             }
         }
         printf("\n");
     }
+
+    printf("%-42s %0.2fms", "total_execution", total * 1000.0f);
+    if(details == TRUE) {
+        printf(
+            " (blend %0.2fms, read %0.2fms, write %0.2fms)",
+            benchmark_total.blend_time * 1000.0f,
+            benchmark_total.read_png_time * 1000.0f,
+            benchmark_total.write_png_time * 1000.0f
+        );
+    }
+    printf("\n");
 
     NORMAL;
 }
