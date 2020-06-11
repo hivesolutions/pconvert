@@ -7,6 +7,7 @@ CP=cp
 RM=rm
 SYS=posix
 OPTIMIZATION=-O3 -finline-functions -Winline
+VECTORIZE=-ftree-vectorize -march=native -mavx2 -mfpmath=sse -ftree-vectorizer-verbose=5
 CFLAGS=$(OPTIMIZATION) -c -Wall
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
@@ -35,6 +36,10 @@ endif
 ifeq ($(DEBUG),1)
   CFLAGS+=-g
   LDFLAGS+=-g
+endif
+
+ifeq ($(AGRESSIVE),1)
+  CFLAGS+=$(VECTORIZE)
 endif
 
 ifeq ($(EXTENSION),1)
