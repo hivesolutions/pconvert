@@ -81,8 +81,8 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     png_uint_32 buffer_size;
     png_uint_32 row_size;
 
-    /* opens the file and tests for it being a PNG, this is required
-    to avoid possible problems while handling improper files */
+    /* opens the file and tests for proper opening, this is required
+    to avoid possible problems while handling improper file reading */
 #ifdef _MSC_VER
     wchar_t file_name_w[1024];
     swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
@@ -93,6 +93,9 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     if(!fp) {
         RAISE_F("[read_png] File %s could not be opened for reading", file_name);
     }
+
+    /* tries to read the PNG signature from the file and in case it's
+    not valid raises an error indicating so */
     count = fread(header, 1, 8, fp);
     if(png_sig_cmp((void *) header, 0, 8) || count != 8) {
         RAISE_F("[read_png] File %s is not recognized as a PNG file", file_name);
@@ -915,7 +918,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
                 }
                 if (is_success) sprintf(time_s, "%0.2fms", time * 1000.0f);
                 else sprintf(time_s, "ERROR!");
-                printf(time_s);
+                printf("%s", time_s);
                 if(details == TRUE && is_success == TRUE) {
                     printf(
                         " (blend %0.2fms, read %0.2fms, write %0.2fms)",
