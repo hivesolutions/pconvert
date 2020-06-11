@@ -852,7 +852,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
     #define ALGORITHMS_SIZE 5
     #define COMPRESSION_SIZE 3
 
-    struct benchmark benchmark;
+    struct benchmark benchmark, benchmark_total = { 0, 0, 0};
     size_t index, index_j, index_k, index_c;
     float time, result, total = 0.0f;
     char label[128];
@@ -924,13 +924,25 @@ ERROR_T pbenchmark(int argc, char **argv) {
                         benchmark.write_png_time * 1000.0f
                     );
                 }
+                benchmark_total.blend_time += benchmark.blend_time;
+                benchmark_total.read_png_time += benchmark.read_png_time;
+                benchmark_total.write_png_time += benchmark.read_png_time;
                 printf("\n");
             }
         }
         printf("\n");
     }
 
-    printf("%-42s %0.2fms\n", "total_execution", total * 1000.0f);
+    printf("%-42s %0.2fms", "total_execution", total * 1000.0f);
+    if(details == TRUE) {
+        printf(
+            " (blend %0.2fms, read %0.2fms, write %0.2fms)",
+            benchmark_total.blend_time * 1000.0f,
+            benchmark_total.read_png_time * 1000.0f,
+            benchmark_total.write_png_time * 1000.0f
+        );
+    }
+    printf("\n");
 
     NORMAL;
 }
