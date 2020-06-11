@@ -902,7 +902,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
                 sprintf(label, "%s %s %s", algorithms[index], compression_s[index_j], use_opencl_s[index_k]);
                 printf("%-42s ", label);
                 fflush(stdout);
-                for(index_c = 0; index_c < count; index_c++) {
+                for(index_c = 0; index_c < (size_t) count; index_c++) {
                     result = pbenchmark_algorithm(
                         argv[2], algorithms[index], NULL, "alpha",
                         compression[index_j], 0, use_opencl[index_k],
