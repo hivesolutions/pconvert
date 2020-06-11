@@ -7,7 +7,8 @@ CP=cp
 RM=rm
 SYS=posix
 OPTIMIZATION=-O3 -finline-functions -Winline
-VECTORIZE=-ftree-vectorize -march=native -mavx2 -mfpmath=sse -ftree-vectorizer-verbose=5
+VECTORIZE=-ftree-vectorize -march=native -mavx2 -mfpmath=sse
+DIAGNOSE=-fopt-info-vec-all
 CFLAGS=$(OPTIMIZATION) -c -Wall
 LDFLAGS=-L/usr/local/lib
 CPFLAGS=-rf
@@ -40,6 +41,10 @@ endif
 
 ifeq ($(AGRESSIVE),1)
   CFLAGS+=$(VECTORIZE)
+endif
+
+ifeq ($(DIAGNOSTICS),1)
+  CFLAGS+=$(DIAGNOSE)
 endif
 
 ifeq ($(EXTENSION),1)
