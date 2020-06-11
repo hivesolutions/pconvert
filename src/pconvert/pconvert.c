@@ -930,7 +930,7 @@ ERROR_T pbenchmark(int argc, char **argv) {
         printf("\n");
     }
 
-    printf("total %0.2fms\n", total * 1000.0f);
+    printf("%-42s %0.2fms\n", "total_execution", total * 1000.0f);
 
     NORMAL;
 }
