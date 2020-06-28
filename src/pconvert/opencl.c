@@ -223,11 +223,14 @@ ERROR_T blend_kernel(
     clReleaseMemObject(mem_top);
     clReleaseCommandQueue(commands);
 
-    /* TODO release this memory somehow */
+    /* TODO release this memory somehow at a cleanup
+    operation to be execute at the end */
     //clReleaseKernel(kernel);
     //clReleaseProgram(program);
     //clReleaseContext(context);
 
+    /* returns with the normal code, indicating that no
+    error has ocurred within the execution of the function */
     NORMAL;
 }
 
