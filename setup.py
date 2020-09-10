@@ -9,7 +9,7 @@ setuptools.setup(
     version = "0.3.11",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
-    description = "PNG Converter",
+    description = "PNG Convert",
     license = "Apache License, Version 2.0",
     keywords = "pconvert converted compositor",
     url = "http://pconvert.hive.pt",
