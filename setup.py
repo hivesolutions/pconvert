@@ -13,7 +13,7 @@ setuptools.setup(
     license = "Apache License, Version 2.0",
     keywords = "pconvert converted compositor",
     url = "http://pconvert.hive.pt",
-        packages = [
+    packages = [
         "pconvert_py",
         "pconvert_py.test"
     ],
