@@ -104,8 +104,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     int run_inline;
     char demultiply, source_over, destination_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
-    PyObject *is_inline, *params_py;
-    PyDictObject *options;
+    PyObject *is_inline, *params_py, *options;
     struct pcv_image bottom, top;
     param values[32];
     params params = { 0, values };
@@ -115,8 +114,8 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
         "target_path",
         "algorithm",
         "is_inline",
-        "options",
         "params",
+        "options",
         NULL
     };
 
@@ -125,8 +124,8 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     target_path = NULL;
     algorithm = NULL;
     is_inline = NULL;
-    options = NULL;
     params_py = NULL;
+    options = NULL;
 
     set_last_error(NULL);
 
@@ -140,6 +139,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
         &target_path,
         &algorithm,
         &is_inline,
+        &params_py,
         &options
     ) == 0) { return NULL; }
 
@@ -193,8 +193,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     char *bottom_path, *top_path, *target_path, *algorithm = NULL;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
-        *is_inline, *algorithms, *algorithm_o, *algorithm_so, *params_py;
-    PyDictObject *options;
+        *is_inline, *algorithms, *algorithm_o, *algorithm_so, *params_py, *options;
     Py_ssize_t size, algorithms_size;
     param values[32];
     params params = { 0, values };
@@ -204,8 +203,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         "algorithm",
         "algorithms",
         "is_inline",
-        "options",
         "params",
+        "options",
         NULL
     };
 
@@ -218,8 +217,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     algorithm = NULL;
     algorithms = NULL;
     is_inline = NULL;
-    options = NULL;
     params_py = NULL;
+    options = NULL;
 
     set_last_error(NULL);
 
@@ -233,8 +232,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         &algorithm,
         &algorithms,
         &is_inline,
-        &options,
-        &params_py
+        &params_py,
+        &options
     ) == 0) { return NULL; }
 
     /* tries to determine the target values for the optional parameters
