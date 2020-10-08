@@ -105,6 +105,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     char demultiply, source_over, destination_over;
     char *bottom_path, *top_path, *target_path, *algorithm;
     PyObject *is_inline, *params_py;
+    PyDictObject *options;
     struct pcv_image bottom, top;
     param values[32];
     params params = { 0, values };
@@ -114,6 +115,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
         "target_path",
         "algorithm",
         "is_inline",
+        "options",
         "params",
         NULL
     };
@@ -123,6 +125,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     target_path = NULL;
     algorithm = NULL;
     is_inline = NULL;
+    options = NULL;
     params_py = NULL;
 
     set_last_error(NULL);
@@ -130,13 +133,14 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
-        "sss|sO",
+        "sss|sOOO",
         kwlist,
         &bottom_path,
         &top_path,
         &target_path,
         &algorithm,
-        &is_inline
+        &is_inline,
+        &options
     ) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
@@ -190,6 +194,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
         *is_inline, *algorithms, *algorithm_o, *algorithm_so, *params_py;
+    PyDictObject *options;
     Py_ssize_t size, algorithms_size;
     param values[32];
     params params = { 0, values };
@@ -199,6 +204,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
         "algorithm",
         "algorithms",
         "is_inline",
+        "options",
         "params",
         NULL
     };
@@ -212,6 +218,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     algorithm = NULL;
     algorithms = NULL;
     is_inline = NULL;
+    options = NULL;
     params_py = NULL;
 
     set_last_error(NULL);
@@ -219,13 +226,14 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
-        "Os|sOOO",
+        "Os|sOOOO",
         kwlist,
         &paths,
         &target_path,
         &algorithm,
         &algorithms,
         &is_inline,
+        &options,
         &params_py
     ) == 0) { return NULL; }
 
