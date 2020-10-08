@@ -15,8 +15,6 @@ pconvert.blend_multiple(
     is_inline = True
 )
 
-# this example supplies an optional parameter called `options` which pconvert-rust uses
-# despite not being used by this pconvert version, it is backwards compatible
 pconvert.blend_multiple(
     (
         os.path.abspath("../../assets/demo/sole.png"),
@@ -26,7 +24,6 @@ pconvert.blend_multiple(
     os.path.abspath("result.destination_over.png"),
     algorithm = "destination_over",
     options = {
-        "num_threads": 20,
         "compression": "best",
         "filter": "nofilter"
     }
