@@ -103,8 +103,8 @@ PyObject *extension_unregister(PyObject *self, PyObject *args) {
 PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
     char demultiply, source_over, destination_over;
-    char *bottom_path, *top_path, *target_path, *algorithm;
-    PyObject *is_inline, *params_py, *options;
+    char *bottom_path, *top_path, *target_path;
+    PyObject *algorithm, *is_inline, *params_py, *options;
     struct pcv_image bottom, top;
     param values[32];
     params params = { 0, values };
@@ -132,7 +132,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
-        "sss|sOOO",
+        "sss|OOOO",
         kwlist,
         &bottom_path,
         &top_path,
@@ -144,6 +144,7 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
     ) == 0) { return NULL; }
 
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
+    algorithm = algorithm == Py_None ? "multiplicative" : algorithm;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
     demultiply = is_multiplied(algorithm);
     source_over = strcmp(algorithm, "source_over") == 0;
@@ -190,10 +191,10 @@ PyObject *extension_blend_images(PyObject *self, PyObject *args, PyObject *kwarg
 PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwargs) {
     int run_inline;
     char demultiply, source_over, destination_over, use_algorithms;
-    char *bottom_path, *top_path, *target_path, *algorithm = NULL;
+    char *bottom_path, *top_path, *target_path;
     struct pcv_image bottom, top;
     PyObject *paths, *iterator, *iteratorAlgorithms, *element, *first, *second,
-        *is_inline, *algorithms, *algorithm_o, *algorithm_so, *params_py, *options;
+        *is_inline, *algorithm,*algorithms, *algorithm_o, *algorithm_so, *params_py, *options;
     Py_ssize_t size, algorithms_size;
     param values[32];
     params params = { 0, values };
@@ -225,7 +226,7 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     if(PyArg_ParseTupleAndKeywords(
         args,
         kwargs,
-        "Os|sOOOO",
+        "Os|OOOOO",
         kwlist,
         &paths,
         &target_path,
@@ -239,6 +240,8 @@ PyObject *extension_blend_multiple(PyObject *self, PyObject *args, PyObject *kwa
     /* tries to determine the target values for the optional parameters
     of the current function (fallback operations) */
     algorithm = algorithm == NULL ? "multiplicative" : algorithm;
+    algorithm = algorithm == Py_None ? "multiplicative" : algorithm;
+    algorithms = algorithms == Py_None ? NULL : algorithms;
     run_inline = is_inline == NULL ? 0 : PyBool_Check(is_inline);
 
     /* determines the boolean/flag values for both the multiplied entitlement,
