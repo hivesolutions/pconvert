@@ -100,7 +100,7 @@ PConvert is currently licensed under the [Apache License, Version 2.0](http://ww
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/hivesolutions/pconvert.svg?branch=master)](https://travis-ci.org/hivesolutions/pconvert)
+[![Build Status](https://travis-ci.com/hivesolutions/pconvert.svg?branch=master)](https://travis-ci.com/hivesolutions/pconvert)
 [![Build Status GitHub](https://github.com/hivesolutions/pconvert/workflows/Main%20Workflow/badge.svg)](https://github.com/hivesolutions/pconvert/actions)
 [![Coverage Status](https://coveralls.io/repos/hivesolutions/pconvert/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/pconvert?branch=master)
 [![PyPi Status](https://img.shields.io/pypi/v/pconvert-python.svg)](https://pypi.python.org/pypi/pconvert-python)
