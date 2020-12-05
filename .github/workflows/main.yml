@@ -87,7 +87,7 @@ jobs:
           pip install --upgrade "conan<1.25" urllib3
           conan install . --build
       - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1.0.0
+        uses: microsoft/setup-msbuild@v1.0.2
       - name: Build P(NG)Convert
         run: |
           cmake . -DCMAKE_CL_64=1 -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64
@@ -103,7 +103,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Install Dependencies
         run: |
-          pip install --upgrade "conan<1.25" urllib3
+          pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
