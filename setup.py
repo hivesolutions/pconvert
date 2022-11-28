@@ -24,9 +24,9 @@ setuptools.setup(
     ext_modules = [
         setuptools.Extension(
             "pconvert",
-            include_dirs = ["src/pconvert", "/usr/local/include"],
+            include_dirs = ["src/pconvert", "/usr/include", "/usr/local/include", "/opt/homebrew/include"],
             libraries = [] if os.name in ("nt",) else ["m", "png"],
-            library_dirs = ["/usr/local/lib"],
+            library_dirs = ["/usr/lib", "/usr/local/lib", "/opt/homebrew/lib"],
             extra_compile_args = [] if os.name in ("nt",) else [
                 "-O3",
                 "-finline-functions",
