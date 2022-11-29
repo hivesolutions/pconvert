@@ -13,12 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* New long description support in `setup.py`
-* Better size error diagnostics
+*
 
 ### Fixed
 
 *
+
+## [0.4.6] - 2022-11-29
+
+### Changed
+
+* New long description support in `setup.py`
+* Better size error diagnostics
 
 ## [0.4.5] - 2022-11-29
 
