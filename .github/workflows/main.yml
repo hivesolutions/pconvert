@@ -123,10 +123,10 @@ jobs:
       matrix:
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, "3.10", rc]
     runs-on: ubuntu-latest
-    container: python:${{ matrix.gcc-version }}
+    container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v1
       - name: Build & Install Dependencies
         run: apt-get update && apt-get install -y -q libpng-dev
-      - name: Build & Test P(NG)Convert
+      - name: Build & Test Python Extension
         run: python setup.py test
