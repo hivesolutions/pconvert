@@ -22,7 +22,7 @@ jobs:
       - name: Deploy Python Extension
         run: |
           pip install twine wheel
-          python setup.py sdist bdist_wheel
+          python setup.py sdist
           python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
         env:
           PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
