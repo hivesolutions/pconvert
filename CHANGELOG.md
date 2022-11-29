@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Initial deploy support on GitHub Actions
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [0.4.4] - 2022-11-29
+
+### Added
+
+* Initial deploy support on GitHub Actions
 
 ## [0.4.3] - 2022-11-29
 
