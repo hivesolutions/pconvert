@@ -23,12 +23,3 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then pip install coveralls; fi
 script: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coverage run --source=pconvert setup.py test; else python setup.py test; fi
 after_success: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coveralls; fi
-deploy:
-  provider: pypi
-  user: joamag
-  password:
-    secure: wtyeg0DSJeTjZu1/2l6s3LlWY/5D+QC/8bZ4Se2VKZw2EtRvI9ecZxo+ajGXcr6/kSwNCx+mNQvNhbyLOfkfXpD3lRewU84LqRRR4fBjN2XcvfJqq3KCGKVdaDYx/6EL1OYjIOhE5rInudaqLYozGaysProTNZOWXUc27mJXa8yQP3CCd/IQ1mHEX03y2qhL0osbz8e2Tl/pAvU6j5BGwhNU1KrgfVp6eOvOV3/iGspwKvGovo+kfrlHqv1XWGiYA9RKyBmYnfj7bWg3AMJQN2L3Gbw4DkUcMigbBK0p+mdd3b2B/XBuXTVmn3OTrsRMBHiqSE6jA+YRJaaDcG2dHaOW0irnkzxfOtk2jOWwHqvt2h+vkCXxJY4sbAZPz2LRrRtSzUJc8Mwg+y0qCG/m3YFfDF727NUCkuInj64KDewzIIXHxTOEYsBiwIPWfiaz99Cz7KSGrvHlODu3efTXOzhvfcUM9S9mTeCuAn2uO+1x5nmnvvgt/FJaCndalI1jsLPm570TvLtLyEVpB9d7XcWkXFH1hVOi3sfZgYIJr8vggciqA05Dgz6LRgSLDZDkJ4/uNV1Kt49Q6eUWGDipuhSDv8qRSrOqdDxuz82Ql0C/NFNzaYuwDdqHgLwil8r6Y83OGvKlc68Ciy6tE882Uy08HAEAZs6yyCK8h0XwQFA=
-  distributions: sdist
-  on:
-    tags: true
-    python: "2.7"
