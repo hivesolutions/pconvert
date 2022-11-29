@@ -1,6 +1,6 @@
 [requires]
 libpng/[>1.0]
-zlib/[<1.2.11]
+zlib/[>1.2]
 
 [generators]
 make
