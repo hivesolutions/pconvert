@@ -11,6 +11,9 @@ jobs:
     container: gcc:${{ matrix.gcc-version }}
     steps:
       - uses: actions/checkout@v1
+      - name: Install Dependencies
+        run: |
+          apt-get update && apt-get install -y -q wget libpng-dev
       - name: Build P(NG)Convert
         run: |
           make
@@ -28,6 +31,9 @@ jobs:
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
       - uses: actions/checkout@v1
+      - name: Install Dependencies
+        run: |
+          apt-get update && apt-get install -y -q wget libpng-dev
       - name: Build P(NG)Convert
         run: |
           make CC=clang
