@@ -84,8 +84,14 @@ ERROR_T read_png(char *file_name, char demultiply, struct pcv_image *image) {
     /* opens the file and tests for proper opening, this is required
     to avoid possible problems while handling improper file reading */
 #ifdef _MSC_VER
+    char is_absolute = strncmp(file_name, "./", 2) != 0 &&\
+        strstr(file_name, ":\\");
     wchar_t file_name_w[1024];
-    swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
+    if(is_absolute) {
+        swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
+    } else {
+        swprintf(file_name_w, 1024, L"%hs", file_name);
+    }
     fp = _wfopen(file_name_w, L"rb");
 #else
     fp = fopen(file_name, "rb");
@@ -182,8 +188,14 @@ ERROR_T write_png_extra(
     writting of the final file and the verifies it the open operation
     has been completed with the proper success */
 #ifdef _MSC_VER
+    char is_absolute = strncmp(file_name, "./", 2) != 0 &&\
+        strstr(file_name, ":\\");
     wchar_t file_name_w[1024];
-    swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
+    if(is_absolute) {
+        swprintf(file_name_w, 1024, L"\\\\?\\%hs", file_name);
+    } else {
+        swprintf(file_name_w, 1024, L"%hs", file_name);
+    }
     fp = _wfopen(file_name_w, L"wb");
 #else
     fp = fopen(file_name, "wb");
