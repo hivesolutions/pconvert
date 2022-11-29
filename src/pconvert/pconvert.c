@@ -378,7 +378,13 @@ ERROR_T blend_images_extra(
     ERROR_T err;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_extra] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_extra] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
     if(use_opencl == TRUE) {
@@ -398,11 +404,19 @@ ERROR_T blend_images(
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
-    blend_algorithm *operation = get_blend_algorithm(algorithm);
+    blend_algorithm *operation;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
+
+    operation = get_blend_algorithm(algorithm);
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];
@@ -443,7 +457,13 @@ ERROR_T blend_images_i(
     png_byte rt, gt, bt, at;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_i] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_i] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
     for(y = 0; y < bottom->height; y++) {
@@ -487,7 +507,13 @@ ERROR_T blend_images_source_over_fast(
     png_byte rt, gt, bt, at;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_source_over_fast] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_source_over_fast] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
     for(y = 0; y < bottom->height; y++) {
@@ -542,7 +568,13 @@ ERROR_T blend_images_destination_over_fast(
     png_byte rt, gt, bt, at;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_destination_over_fast] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_destination_over_fast] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
     for(y = 0; y < bottom->height; y++) {
@@ -594,13 +626,21 @@ ERROR_T blend_images_debug(
     int x, y;
     png_byte rb, gb, bb, ab;
     png_byte rt, gt, bt, at;
-    blend_algorithm *operation = get_blend_algorithm(algorithm);
+    blend_algorithm *operation;
+    FILE *file;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_debug] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_debug] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
-    FILE *file = fopen(file_path, "wb");
+    operation = get_blend_algorithm(algorithm);
+    file = fopen(file_path, "wb");
 
     for(y = 0; y < bottom->height; y++) {
         png_byte *rowBottom = bottom->rows[y];

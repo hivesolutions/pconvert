@@ -53,7 +53,13 @@ ERROR_T blend_images_opencl(
     int buffer_size = row_size * bottom->height;
 
     if(bottom->width != top->width || bottom->height != top->height) {
-        RAISE_M("[blend_images_opencl] Inconsistent image sizes");
+        RAISE_F(
+            "[blend_images_opencl] Inconsistent image sizes %dx%d and %dx%d",
+            top->width,
+            top->height,
+            bottom->width,
+            bottom->height
+        );
     }
 
     bottom_array = malloc(buffer_size);
