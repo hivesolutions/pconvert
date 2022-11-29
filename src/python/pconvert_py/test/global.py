@@ -9,7 +9,7 @@ class GlobalTest(unittest.TestCase):
 
     def test_basic(self):
         self.assertEqual(type(pconvert.VERSION), str)
-        self.assertEqual(pconvert.VERSION, "0.4.6")
+        self.assertEqual(pconvert.VERSION, "0.4.7")
 
         self.assertEqual(type(pconvert.FEATURES), str)
 
