@@ -1,0 +1,29 @@
+name: Deploy Workflow
+on:
+  push:
+    tags:
+      - "*"
+jobs:
+  build:
+    name: Build Python
+    strategy:
+      matrix:
+        python-version: [2.7]
+    runs-on: ubuntu-latest
+    container: python:${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build & Install Dependencies
+        run: apt-get update && apt-get install -y -q libpng-dev
+      - name: Python Information
+        run: python --version
+      - name: Build & Test Python Extension
+        run: python setup.py test
+      - name: Deploy Python Extension
+        run: |
+          pip install twine wheel
+          python setup.py sdist bdist_wheel
+          python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

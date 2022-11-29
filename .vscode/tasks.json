@@ -4,19 +4,17 @@
     "args": [
         "DEBUG=1"
     ],
-    "tasks": [
-        {
-            "label": "make",
-            "type": "shell",
-            "command": "make",
-            "args": [
-                "DEBUG=1"
-            ],
-            "problemMatcher": [],
-            "group": {
-                "_id": "build",
-                "isDefault": false
-            }
+    "tasks": [{
+        "label": "make",
+        "type": "shell",
+        "command": "make",
+        "args": [
+            "DEBUG=1"
+        ],
+        "problemMatcher": [],
+        "group": {
+            "_id": "build",
+            "isDefault": false
         }
-    ]
+    }]
 }

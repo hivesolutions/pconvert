@@ -121,12 +121,14 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, "3.10", rc]
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, "3.10", "3.11", rc]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v1
       - name: Build & Install Dependencies
         run: apt-get update && apt-get install -y -q libpng-dev
+      - name: Python Information
+        run: python --version
       - name: Build & Test Python Extension
         run: python setup.py test
