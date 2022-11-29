@@ -58,7 +58,7 @@ jobs:
         run: |
           apt-get update && apt-get install -y -q wget python python-dev libpng-dev
           wget https://bootstrap.pypa.io/pip/2.7/get-pip.py && python get-pip.py
-          pip install --upgrade "conan<1.25" urllib3
+          pip install --upgrade conan urllib3
           conan install . --build
       - name: Build P(NG)Convert
         run: |
