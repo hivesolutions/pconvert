@@ -1,139 +1,14 @@
-name: Main Workflow
-on: [push]
+name: Deploy Workflow
+on:
+  push:
+    tags:
+      - "*"
 jobs:
-  build-gcc:
-    name: Build GCC
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        gcc-version: [5, 6, 7, 8, 9, 10, 11, 12, 13]
-    runs-on: ubuntu-latest
-    container: gcc:${{ matrix.gcc-version }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Install Dependencies
-        run: |
-          apt-get update && apt-get install -y -q wget libpng-dev
-      - name: Build P(NG)Convert
-        run: |
-          make
-      - name: Test P(NG)Convert
-        run: |
-          ./pconvert version
-          ./pconvert benchmark assets/demo/
-  build-clang:
-    name: Build Clang
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        clang-version: [3, 4, 5, 6, 7, 8, 10, 12, 14]
-    runs-on: ubuntu-latest
-    container: silkeh/clang:${{ matrix.clang-version }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Install Dependencies
-        run: |
-          apt-get update && apt-get install -y -q wget libpng-dev
-      - name: Build P(NG)Convert
-        run: |
-          make CC=clang
-      - name: Test P(NG)Convert
-        run: |
-          ./pconvert version
-          ./pconvert benchmark assets/demo/
-  build-gcc-cmake:
-    name: Build GCC CMake
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        gcc-version: [7, 8, 9, 10, 11, 12, 13]
-        cmake-version: ["3.25.0"]
-        cmake-type: ["binary"]
-    runs-on: ubuntu-latest
-    container: gcc:${{ matrix.gcc-version }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Install CMake
-        run: |
-          apt-get update && apt-get install -y -q wget libssl-dev
-          wget https://github.com/Kitware/CMake/releases/download/v${{ matrix.cmake-version }}/cmake-${{ matrix.cmake-version }}-linux-x86_64.tar.gz && tar -zxvf cmake-${{ matrix.cmake-version }}-linux-x86_64.tar.gz && cd cmake-${{ matrix.cmake-version }}-linux-x86_64 && ln -s $(pwd)/bin/cmake /usr/local/bin/cmake
-        if: matrix.cmake-type == 'binary'
-      - name: Build & Install CMake
-        run: |
-          apt-get update && apt-get install -y -q wget libssl-dev
-          wget https://ftp.osuosl.org/pub/blfs/conglomeration/cmake/cmake-${{ matrix.cmake-version }}.tar.gz && tar -zxvf cmake-${{ matrix.cmake-version }}.tar.gz && cd cmake-${{ matrix.cmake-version }} && ./bootstrap && make && make install
-        if: matrix.cmake-type == 'source'
-      - name: Build & Install Dependencies
-        run: |
-          apt-get update && apt-get install -y -q wget python3 python3-dev libpng-dev
-          wget https://bootstrap.pypa.io/pip/get-pip.py && python3 get-pip.py
-          pip3 install --upgrade conan urllib3
-          conan install . --build
-      - name: Build P(NG)Convert
-        run: |
-          cmake .
-          make
-      - name: Test P(NG)Convert
-        run: |
-          ./bin/pconvert version
-          ./bin/pconvert benchmark assets/demo/
-  build-windows-cmake:
-    name: Build Windows CMake
-    timeout-minutes: 30
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build & Install Dependencies
-        run: |
-          pip3 install --upgrade conan urllib3
-          conan install . --build
-      - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1.1
-      - name: Build P(NG)Convert
-        run: |
-          cmake . -DCMAKE_CL_64=1 -DCMAKE_GENERATOR_PLATFORM=x64 -Ax64
-          msbuild ALL_BUILD.vcxproj /P:Configuration=Release
-      - name: Test P(NG)Convert
-        run: |
-          bin/pconvert version
-          bin/pconvert benchmark ((Get-Item -Path ".\").FullName + "\assets\demo\")
-  build-macos-cmake:
-    name: Build macOS CMake
-    timeout-minutes: 30
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build & Install Dependencies
-        run: |
-          export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/2.7/bin
-          pip3 install --upgrade "conan>1.50.0" "urllib3<1.27"
-          conan install . --build
-      - name: Build P(NG)Convert
-        run: |
-          cmake .
-          make
-      - name: Test P(NG)Convert
-        run: |
-          ./bin/pconvert version
-          ./bin/pconvert benchmark assets/demo/
-  build-python:
+  build:
     name: Build Python
-    timeout-minutes: 30
     strategy:
       matrix:
-        python-version: [
-          2.7,
-          3.5,
-          3.6,
-          3.7,
-          3.8,
-          3.9,
-          "3.10",
-          "3.11",
-          "3.12",
-          latest,
-          rc,
-        ]
+        python-version: [2.7]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
@@ -144,3 +19,11 @@ jobs:
         run: python --version
       - name: Build & Test Python Extension
         run: python setup.py test
+      - name: Deploy Python Extension
+        run: |
+          pip install twine wheel
+          python setup.py sdist
+          python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
