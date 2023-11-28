@@ -3,6 +3,7 @@
 *.user
 *.suo
 *.pyc
+*.pyd
 
 .DS_Store
 
