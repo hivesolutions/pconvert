@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container: gcc:${{ matrix.gcc-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Install Dependencies
         run: |
           apt-get update && apt-get install -y -q wget libpng-dev
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Install Dependencies
         run: |
           apt-get update && apt-get install -y -q wget libpng-dev
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     container: gcc:${{ matrix.gcc-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Install CMake
         run: |
           apt-get update && apt-get install -y -q wget libssl-dev
@@ -82,7 +82,7 @@ jobs:
     timeout-minutes: 30
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Build & Install Dependencies
         run: |
           pip3 install --upgrade conan urllib3
@@ -102,7 +102,7 @@ jobs:
     timeout-minutes: 30
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Build & Install Dependencies
         run: |
           export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/2.7/bin
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Build & Install Dependencies
         run: apt-get update && apt-get install -y -q libpng-dev
       - name: Python Information
