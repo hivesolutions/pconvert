@@ -67,10 +67,10 @@ pconvert benchmark assets/demo/
 
 ## Conan
 
-This package makes use of the [Conan](https://conan.io) package manager to use run:
+This package makes use of the [Conan](https://conan.io) (version 1.x) package manager to use run:
 
 ```bash
-pip install --upgrade conan
+pip install --upgrade "conan<2"
 conan install . --build missing
 ```
 
