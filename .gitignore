@@ -20,6 +20,7 @@ cmake_install.cmake
 
 /ALL_BUILD.*
 
+/.venv
 /.vscode/settings.json
 
 /bin
