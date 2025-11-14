@@ -112,7 +112,7 @@ jobs:
           conan install . --build
       - name: Build P(NG)Convert
         run: |
-          cmake .
+          cmake . -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           make
       - name: Test P(NG)Convert
         run: |
