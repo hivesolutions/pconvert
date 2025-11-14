@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        clang-version: [4, 5, 6, 7, 8, 10, 12, 13, 14, 15, 16, 17]
+        clang-version: [12, 13, 14, 15, 16, 17]
     runs-on: ubuntu-latest
     container: silkeh/clang:${{ matrix.clang-version }}
     steps:
@@ -108,7 +108,7 @@ jobs:
       - name: Build & Install Dependencies
         run: |
           export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/2.7/bin
-          pip3 install --upgrade "conan>1.50.0, <2" "urllib3<1.27"
+          pip3 install --break-system-packages --upgrade "conan>1.50.0, <2" "urllib3<1.27"
           conan install . --build
       - name: Build P(NG)Convert
         run: |
