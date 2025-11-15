@@ -37,13 +37,13 @@ python setup.py install
 
 ### `blend_multiple`
 
-| Argument    | Type   | Mandatory | Default          | Description                                                                   |
-| ----------- | ------ | --------- | ---------------- | ----------------------------------------------------------------------------- |
-| paths       | `list` | `true`    | -                | The sequence of paths of the images to be blended from bottom to top.         |
-| target_path | `str`  | `true`    | -                | The path of the target (resulting) image.                                     |
-| algorithm   | `str`  | `false`   | `multiplicative` | The blending algorithm to be used to blend all images in a pair-wise fashion. |
-| algorithms  | `list` | `false`   | -                | The sequence of blending algorithms to use for each blending operation. If defined, `algorithm` will not be used.       |
-| is_inline   | `bool` | `false`   | `false`          | If the inline methods should be used to perform the blending.                 |
+| Argument    | Type   | Mandatory | Default          | Description                                                                                                       |
+| ----------- | ------ | --------- | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| paths       | `list` | `true`    | -                | The sequence of paths of the images to be blended from bottom to top.                                             |
+| target_path | `str`  | `true`    | -                | The path of the target (resulting) image.                                                                         |
+| algorithm   | `str`  | `false`   | `multiplicative` | The blending algorithm to be used to blend all images in a pair-wise fashion.                                     |
+| algorithms  | `list` | `false`   | -                | The sequence of blending algorithms to use for each blending operation. If defined, `algorithm` will not be used. |
+| is_inline   | `bool` | `false`   | `false`          | If the inline methods should be used to perform the blending.                                                     |
 
 ## Example
 
@@ -100,7 +100,6 @@ PConvert is currently licensed under the [Apache License, Version 2.0](http://ww
 
 ## Build Automation
 
-[![Build Status](https://app.travis-ci.com/hivesolutions/pconvert.svg?branch=master)](https://travis-ci.com/github/hivesolutions/pconvert)
-[![Build Status GitHub](https://github.com/hivesolutions/pconvert/workflows/Main%20Workflow/badge.svg)](https://github.com/hivesolutions/pconvert/actions)
+[![Build Status](https://github.com/hivesolutions/pconvert/workflows/Main%20Workflow/badge.svg)](https://github.com/hivesolutions/pconvert/actions)
 [![Coverage Status](https://coveralls.io/repos/hivesolutions/pconvert/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/pconvert?branch=master)
 [![PyPi Status](https://img.shields.io/pypi/v/pconvert-python.svg)](https://pypi.python.org/pypi/pconvert-python)
