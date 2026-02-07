@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        gcc-version: [9, 10, 11, 12, 13]
+        gcc-version: [11, 12, 13, 14, 15]
         cmake-version: ["3.25.0"]
         cmake-type: ["binary"]
     runs-on: ubuntu-latest
@@ -104,7 +104,7 @@ jobs:
   build-macos-cmake:
     name: Build macOS CMake
     timeout-minutes: 30
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build & Install Dependencies
