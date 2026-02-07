@@ -18,5 +18,9 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 aux_source_directory(src/pconvert SOURCES)
 add_executable(pconvert ${SOURCES})
 
-target_include_directories(pconvert PUBLIC ${PYTHON_INCLUDE_PATH})
-target_link_libraries(pconvert PNG::PNG ZLIB::ZLIB ${PYTHON_LIBRARY})
+target_link_libraries(pconvert PNG::PNG ZLIB::ZLIB)
+
+if(PythonLibs_FOUND)
+    target_include_directories(pconvert PUBLIC ${PYTHON_INCLUDE_PATH})
+    target_link_libraries(pconvert ${PYTHON_LIBRARY})
+endif()
