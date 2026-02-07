@@ -3,5 +3,6 @@ libpng/[>1.0]
 zlib/[>1.2.0]
 
 [generators]
-make
-cmake
+CMakeToolchain
+CMakeDeps
+MakeDeps

@@ -1,4 +1,4 @@
--include conanbuildinfo.mak
+-include conandeps.mak
 
 CC=gcc
 CPP=g++

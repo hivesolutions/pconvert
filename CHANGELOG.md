@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Migrated from Conan 1 to Conan 2 - updated generators, CMake integration, and CI workflow
 
 ### Fixed
 
